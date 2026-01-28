@@ -1,98 +1,145 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Offers } from "@/constants";
+import { DATABASE_ID, databases } from "@/libs/appwrite";
+import { OfferStructure } from "@/types/offerStructure.type";
+import Feather from "@expo/vector-icons/Feather";
+import { Fragment, useEffect, useState } from "react";
+import {
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+export default function Index() {
+  let [offers, setOffers] = useState<OfferStructure[]>([]);
+  let backupOffer = [];
 
-export default function HomeScreen() {
+  useEffect(() => {
+    // fetchOffers();
+  }, []);
+
+  // let fetchOffers = async () => {
+  //   // First we try to connect to appwrite.
+  //   try {
+  //     let offerData = await databases.listRows({
+  //       databaseId: DATABASE_ID,
+  //       tableId: "offers",
+  //       queries: [],
+  //     });
+  //     let testItem = offerData.rows.map((item) => {
+  //       return {
+  //         name: item.name,
+  //         id: item.id,
+  //         price: item.price,
+  //         items: item.items,
+  //       };
+  //     });
+
+  //     //! Here is the problem. can't set the response to desired type
+  //     console.log(testItem);
+  //     backupOffer = testItem;
+  //     console.log("wolfing");
+  //     console.log(backupOffer);
+  //     // setOffers(testItem as unknown as OfferStructure[]);
+  //     // console.log(offerData.rows)
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     console.log(offers);
+  //   }
+  // };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <SafeAreaView>
+      <FlatList
+        style={styles.mainView}
+        data={Offers}
+        renderItem={({ item, index }) => {
+          return (
+            <View>
+              <Pressable
+                style={[styles.offerContainer, { backgroundColor: item.color }, (index+1) % 2 === 0 ? {flexDirection : 'row'} : {flexDirection : "row-reverse"}]}
+              >
+                {({ pressed }) => (
+                  <Fragment>
+                    <View style={styles.imageWrapper}>
+                      <Image
+                        source={item.image}
+                        style={styles.imageStyles}
+                        resizeMode="contain"
+                      />
+                    </View>
+                    <View style={styles.detailsWrapper}>
+                      <Text style={styles.offerText}>{item.name}</Text>
+                      <Feather
+                        name="arrow-right-circle"
+                        size={32}
+                        color="#fdf13f"
+                      />
+                    </View>
+                  </Fragment>
+                )}
+              </Pressable>
+            </View>
+          );
+        }}
+      ></FlatList>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+let styles = StyleSheet.create({
+  mainView: {
+    backgroundColor: "#FFF",
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  offerContainer: {
+    flex: 1,
+    height: 200,
+    marginBottom: 10,
+    // flexDirection: "row-reverse",
+    backgroundColor: "#dfdfdf",
+    // borderColor  : "#a8a8a8",
+    // borderWidth : 2,
+    shadowColor: "#000000",
+    shadowOpacity: 100,
+    shadowRadius: 40,
+    paddingLeft: 20,
+    paddingRight: 10,
+    borderRadius: 16,
+    justifyContent: "space-around",
+    marginLeft: 2,
+    marginRight: 2,
+    fontFamily: "Poppins",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  imageWrapper: {
+    width: 220,
+    height: 200,
+    overflow: "hidden",
+    // backgroundColor  : "violet"
+  },
+  imageStyles: {
+    width: "auto",
+    height: 220,
+    maxHeight: 300,
+  },
+  detailsWrapper: {
+    minWidth: 80,
+    maxWidth: 160,
+    height: "auto",
+    maxHeight: 200,
+    justifyContent: "center",
+    alignItems: "flex-start",
+    // backgroundColor  : "yellow"
+  },
+  offerText: {
+    color: "#fff",
+    fontSize: 30,
+    wordWrap : 'no-wrap',
+    fontWeight: "900",
+    // width : 80,
+    // height : 80
   },
 });
