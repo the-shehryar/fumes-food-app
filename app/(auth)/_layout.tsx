@@ -13,14 +13,13 @@ import {images} from "@/constants";
 export default function _Layout() {
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       {/* <Text>Auth Page</Text> */}
       <ScrollView keyboardShouldPersistTaps="handled" style={styles.scrollViewStyles}>
         <View style={[{height : Dimensions.get('screen').height / 2.25}, styles.heroImageContainer]}>
             <ImageBackground style={styles.heroImage} source={images.sandwichBackground} resizeMode="stretch" />
         </View>
-
       </ScrollView>
       <Slot />
     </KeyboardAvoidingView>

@@ -15,9 +15,14 @@ import {
 } from "react-native";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
+import { account } from "@/libs/appwrite";
+import { SignInForm } from "@/type";
+import { useAuth } from "@/libs/auth-context";
 
 export default function SignIn() {
   let [form, setForm] = useState<SignInForm>({ email: "", password: "" });
+  // let {signIn} = useAuth()
+
 
   function handleEmailSignup() {
     router.push("/(auth)/signup");
@@ -26,7 +31,7 @@ export default function SignIn() {
     router.push("/(auth)/login");
   }
 
-  function handleSignIn() {
+  async function handleSignIn() {
     //* Make Validation Checks here now
     console.log(form);
 
@@ -42,6 +47,8 @@ export default function SignIn() {
       Alert.alert("Error", `Please enter valid email & password`);
     }
 
+
+    
     // router.push("/(auth)/signup")
   }
 

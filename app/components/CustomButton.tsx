@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
+import { CustomButtonProps } from "@/type";
 function CustomButton({
   onPressTouch,
   title,

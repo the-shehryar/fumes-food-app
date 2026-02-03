@@ -1,0 +1,12 @@
+### Signup Screen
+    -> Added Password Validation Indicator 
+    -> Added conditonal rendering for Password Validation Indicator 
+    -> User Registeration Implemented
+
+### Index Screen
+    -> Index Initial Design Implemented
+    -> Horizontal FlatList Added which shows the popular offers (dummy data)
+
+### CustomInput Component
+    -> Added labels
+    -> Added conditonal rendering for labels
