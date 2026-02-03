@@ -1,11 +1,13 @@
+import { CustomInputProps } from "@/type";
 import React, { useState } from "react";
-import { StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, View, Text } from "react-native";
 
 const CustomInput = ({
   placeholder = "Enter Text",
   value,
   onChangeText,
   label,
+  labelVisble = false,
   secureTextEntry,
   keyboardType = "default",
 }: CustomInputProps) => {
@@ -13,6 +15,9 @@ const CustomInput = ({
 
   return (
     <View style={styles.inputWrapper}>
+      {
+        labelVisble ? <Text style={styles.labelStyles}>{label}</Text> : undefined
+        }
       <TextInput
         style={[styles.basicInputStyle, isFocused ? styles.inputFocused : styles.inputBlur]}
         autoCapitalize="none"
@@ -34,6 +39,10 @@ const CustomInput = ({
 let styles = StyleSheet.create({
   inputWrapper : {
     paddingHorizontal : 40
+  },
+  labelStyles: {
+    marginBottom  : 8,
+    color : "#ff611d"
   },
   basicInputStyle: {
     marginBottom: 20,

@@ -1,8 +1,11 @@
+import { Models } from "react-native-appwrite";
+
 interface CustomInputProps {
     placeholder? : string;
     value?: string;
     onChangeText? : (text:string) => void;
     label? : string;
+    labelVisble? : boolean
     secureTextEntry? : boolean;
     keyboardType? : "default" | 'email-address' | 'numeric' | 'phone-pad'
 }  
@@ -26,4 +29,12 @@ interface SignUpForm {
     name : string,
     email : string,
     password : string
+}
+
+type AuthContextType = {
+    user : Models.User<Models.Preferences> | null;
+    fetchingUser : boolean;
+    signIn : (email : string, password : string)=> Promise<string | null>;
+    signUp : (email : string, password : string, name : string)=> Promise<string | null>;
+    signOut : ()=> void;
 }

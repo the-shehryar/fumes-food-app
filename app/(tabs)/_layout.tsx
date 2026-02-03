@@ -13,7 +13,7 @@ export default function RootLayout() {
         name="index"
         options={{
           title: "Home",
-          headerShown: true,
+          headerShown: false,
           tabBarIcon: ({ color, size, focused }) => {
             return focused ? (
               <Octicons name="home" size={24} color={color} />

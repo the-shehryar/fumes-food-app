@@ -1,14 +1,16 @@
-import { Offers } from "@/constants";
-import { DATABASE_ID, databases } from "@/libs/appwrite";
+import { images, Offers } from "@/constants";
 import { OfferStructure } from "@/types/offerStructure.type";
 import Feather from "@expo/vector-icons/Feather";
+import { LinearGradient } from "expo-linear-gradient";
 import { Fragment, useEffect, useState } from "react";
 import {
   FlatList,
   Image,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -53,93 +55,300 @@ export default function Index() {
   // };
 
   return (
-    <SafeAreaView>
-      <FlatList
-        style={styles.mainView}
-        data={Offers}
-        renderItem={({ item, index }) => {
-          return (
-            <View>
-              <Pressable
-                style={[styles.offerContainer, { backgroundColor: item.color }, (index+1) % 2 === 0 ? {flexDirection : 'row'} : {flexDirection : "row-reverse"}]}
-              >
-                {({ pressed }) => (
-                  <Fragment>
-                    <View style={styles.imageWrapper}>
-                      <Image
-                        source={item.image}
-                        style={styles.imageStyles}
-                        resizeMode="contain"
-                      />
-                    </View>
-                    <View style={styles.detailsWrapper}>
-                      <Text style={styles.offerText}>{item.name}</Text>
-                      <Feather
-                        name="arrow-right-circle"
-                        size={32}
-                        color="#fdf13f"
-                      />
-                    </View>
-                  </Fragment>
-                )}
-              </Pressable>
+    <SafeAreaView style={{ backgroundColor: "#fff" }}>
+      <ScrollView>
+        <View style={styles.customTopBarWrapper}></View>
+        <View style={styles.heroImageWrapper}>
+          <Image
+            style={styles.dryStyles}
+            source={images.burgerBackground}
+            resizeMode="contain"
+          />
+          <Image
+            style={styles.transparentBurgerStyles}
+            source={images.burgerTransparent}
+            resizeMode="contain"
+          />
+        </View>
+        <View style={styles.heroTextWrapper}>
+          <View style={styles.slideIndicator}>
+            <LinearGradient
+              colors={["#FF611D", "#FFA680"]}
+              style={styles.background}
+            >
+              <View style={styles.firstArm}></View>
+            </LinearGradient>
+
+            <View style={styles.indicatorTextWrapper}>
+              <Text style={styles.indicatorTextStyles}>2</Text>
+              <Text style={styles.indicatorTextShadowStyles}></Text>
             </View>
-          );
-        }}
-      ></FlatList>
+
+            <LinearGradient
+              // Background Linear Gradient
+              colors={["#FF611D", "#FFA680"]}
+              style={styles.background}
+            >
+              <View style={styles.secondArm}></View>
+            </LinearGradient>
+          </View>
+
+          <View style={styles.slideText}>
+            <View>
+              <Text style={{ fontSize: 24, fontWeight: "600", color: "#000" }}>
+                A Special Dish with —{" "}
+              </Text>
+              <Text
+                style={{ fontSize: 40, fontWeight: "900", color: "#FF611D" }}
+              >
+                Endless Taste
+              </Text>
+            </View>
+            <View>
+              <Text style={{ fontSize: 12, color: "#6e6e72" }}>
+                Close your eyes on the first bite, and you'll swear you're
+                standing in a sun-drenched Mediterranean kitchen.
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View
+          style={{
+            width: "100%",
+            marginTop: 40,
+            paddingHorizontal: 30,
+            height: 30,
+            justifyContent: "center",
+            alignItems: "flex-start",
+          }}
+        >
+          <Text style={{ fontSize: 24, fontWeight: "900" }}>
+            Popular Offers
+          </Text>
+        </View>
+        <FlatList
+          style={styles.mainView}
+          data={Offers}
+          horizontal
+          renderItem={({ item, index }) => {
+            return (
+              <View>
+                <Pressable style={[styles.offerContainer]}>
+                  {({ pressed }) => (
+                    <Fragment>
+                      <View style={styles.imageWrapper}>
+                        <Image
+                          source={item.image}
+                          style={styles.imageStyles}
+                          resizeMode="contain"
+                        />
+                      </View>
+                      <View style={styles.detailsWrapper}>
+                        <Text style={styles.offerTag}>{item.tag}</Text>
+                        <Text style={styles.offerText}>{item.name}</Text>
+                        <Text style={styles.miniDesc}>{item.description}</Text>
+                        <TouchableOpacity
+                          style={styles.button}
+                          onPress={() => console.log("Pressed")}
+                        >
+                          <Text style={{fontSize : 10, marginHorizontal :  2, color : '#fff'}}>Order Now</Text>
+                          <Feather name="arrow-right" color={'#fff'} size={10}/>
+                        </TouchableOpacity>
+                        {/* <Text style={styles.offerPromotion}>Enjoy 50% Off</Text> */}
+                      </View>
+                    </Fragment>
+                  )}
+                </Pressable>
+              </View>
+            );
+          }}
+        ></FlatList>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 let styles = StyleSheet.create({
+  heroTextWrapper: {
+    width: "100%",
+    height: 140,
+    overflow: "visible",
+    flexDirection: "row",
+    // backgroundColor: "violet",
+  },
+  fragmentStyles: {},
+  slideIndicator: {
+    width: "16%",
+    height: "100%",
+    // backgroundColor: "#10cf90",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+  },
+  slideText: {
+    width: "70%",
+    height: "100%",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "flex-start",
+  },
+  firstArm: {
+    width: 4,
+    height: "16%",
+  },
+  secondArm: {
+    width: 4,
+    height: "50%",
+    borderRadius: 2,
+  },
+  indicatorTextWrapper: {
+    // width : '100%',
+    height: "24%",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+    // backgroundColor  : "red"
+  },
+  indicatorTextStyles: {
+    fontSize: 14,
+    fontWeight: "bold",
+    zIndex: 10,
+  },
+  indicatorTextShadowStyles: {
+    backgroundColor: "#00000020", // Shadow color with opacity
+    width: 10,
+    height: 10,
+    bottom: 4,
+    left: -4,
+    zIndex: 4,
+    filter: "blur(4px)",
+  },
+  customTopBarWrapper: {
+    width: "100%",
+    height: 40,
+    backgroundColor: "#fff",
+  },
+  heroImageWrapper: {
+    width: "100%",
+    height: 340,
+    position: "relative",
+  },
+  dryStyles: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "contain",
+  },
+  transparentBurgerStyles: {
+    width: "100%",
+    height: "80%",
+    position: "absolute",
+    top: "10%",
+  },
   mainView: {
+    width: "100%",
+    height: 200,
+    marginTop: 24,
+    overflowX: "hidden",
+    paddingHorizontal: 30,
     backgroundColor: "#FFF",
   },
   offerContainer: {
-    flex: 1,
-    height: 200,
+    flexDirection: "row",
+    // borderRightColor : "#fff",
+    width: 380,
+    height: 180,
     marginBottom: 10,
-    // flexDirection: "row-reverse",
-    backgroundColor: "#dfdfdf",
-    // borderColor  : "#a8a8a8",
-    // borderWidth : 2,
+    backgroundColor: "#ffffff",
     shadowColor: "#000000",
     shadowOpacity: 100,
     shadowRadius: 40,
-    paddingLeft: 20,
-    paddingRight: 10,
+    paddingLeft: 24,
+    paddingRight: 24,
     borderRadius: 16,
-    justifyContent: "space-around",
-    marginLeft: 2,
-    marginRight: 2,
-    fontFamily: "Poppins",
+    marginHorizontal: 4,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 50,
   },
   imageWrapper: {
-    width: 220,
-    height: 200,
+    width: 140,
+    height: 140,
     overflow: "hidden",
-    // backgroundColor  : "violet"
+    justifyContent: "center",
+    borderRadius: 12,
+    // backgroundColor: "violet",
   },
   imageStyles: {
     width: "auto",
-    height: 220,
-    maxHeight: 300,
+    height: 180,
+    // maxHeight: 300,
   },
   detailsWrapper: {
-    minWidth: 80,
-    maxWidth: 160,
-    height: "auto",
-    maxHeight: 200,
-    justifyContent: "center",
+    width: 200,
+    height: 120,
+    maxHeight: 160,
+    flexDirection: "column",
+    justifyContent: "space-between",
     alignItems: "flex-start",
-    // backgroundColor  : "yellow"
+    paddingLeft: 12,
+    // backgroundColor: "yellow",
   },
   offerText: {
-    color: "#fff",
-    fontSize: 30,
-    wordWrap : 'no-wrap',
-    fontWeight: "900",
+    color: "#000",
+    fontSize: 16,
+    wordWrap: "no-wrap",
+    fontWeight: "bold",
+    justifyContent: "flex-start",
     // width : 80,
     // height : 80
+  },
+  offerTag: {
+    fontSize: 8,
+    color: "#FF611D",
+    textTransform: "uppercase",
+    fontWeight: "bold",
+  },
+  miniDesc: {
+    fontSize: 10,
+    color: "#6e6e72",
+    marginVertical: 1,
+  },
+  offerPromotion : {
+    fontSize : 4
+  },
+
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#030303",
+  },
+  button: {
+    width : 160,
+    height : 40,
+    backgroundColor: "#FF611D",
+    padding: 5,
+    borderRadius: 5,
+    justifyContent : 'center',
+    alignItems : "center",
+    flexDirection :"row"
+    // marginBottom : 4
+  },
+  background: {
+    borderRadius: 2,
+  },
+});
+
+let popularSectionStyles = StyleSheet.create({
+  mainHeading: {
+    color: "#000",
+    fontSize: 24,
+  },
+  secondaryText: {
+    color: "#10cf90",
+    fontSize: 24,
   },
 });

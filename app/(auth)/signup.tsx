@@ -1,44 +1,110 @@
 import Logo from "@/assets/images/applogo.svg";
-import { account } from "@/libs/appwrite";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   Dimensions,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { ID } from "react-native-appwrite";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
-export default function SignIn() {
+
+import {
+  lowerCaseCheckRegex,
+  numberCheckRegex,
+  passwordRegex,
+  specialCharacterCheckRegex,
+  upperCaseCheckRegex,
+} from "@/constants";
+import { useAuth } from "@/libs/auth-context";
+import { SignUpForm } from "@/type";
+import Feather from "@expo/vector-icons/Feather";
+
+export default function SignUp() {
+  let [errorMessage, setErrorMessage] = useState<string>("");
+
+  let [passwordLevel, setPasswordLevel] = useState({
+    lowerCase: false,
+    upperCase: false,
+    specialCharacter: false,
+    numberCharacter: false,
+    passwordLength: 0,
+  });
+
+  let rules = [
+    {
+      label: "Atleast one lower case value",
+      test: (value: string) => lowerCaseCheckRegex.test(value),
+    },
+    {
+      label: "Atleast one upper case value",
+      test: (value: string) => upperCaseCheckRegex.test(value),
+    },
+    {
+      label: "Atleast one number value",
+      test: (value: string) => numberCheckRegex.test(value),
+    },
+    {
+      label: "Atleast one special value",
+      test: (value: string) => specialCharacterCheckRegex.test(value),
+    },
+  ];
+
   let [signUpForm, setSignUpForm] = useState<SignUpForm>({
     name: "",
     email: "",
     password: "",
   });
 
+  let { user, signUp } = useAuth();
+
+  const showToast = (message: string) => {
+    if (Platform.OS === "android") {
+      ToastAndroid.show(message, ToastAndroid.TOP);
+    } else {
+      // Alert works on both platforms, but looks different from an Android toast
+      Alert.alert(message);
+    }
+  };
 
   async function handleOnPress() {
-    console.log(signUpForm)
-    // try {
-    //   let userCreation = await account.create({
-    //     userId: ID.unique(),
-    //     name: signUpForm.name,
-    //     email: signUpForm.email,
-    //     password: signUpForm.password,
-    //   });
-    //   console.log("success");
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    // router.push("/(auth)/signIn");
-    // console.log("tocuhed");
+    console.log(signUpForm);
+
+    //* Clear Previous Errors
+    setErrorMessage("");
+
+    if (!signUpForm.email || !signUpForm.password || !signUpForm.name) {
+      showToast("Please fill the form properly");
+      return;
+    }
+    if (!passwordRegex.test(signUpForm.password)) {
+      showToast("Please follow the password requirements");
+      return;
+    }
+    if (
+      signUpForm.email &&
+      passwordRegex.test(signUpForm.password) &&
+      signUpForm.name
+    ) {
+      try {
+        let userCreation = await signUp(
+          signUpForm.email,
+          signUpForm.password,
+          signUpForm.name,
+        );
+        showToast("Successfully registered");
+        router.replace('/(auth)/signIn')
+      } catch (error) {
+        console.log(error);
+      }
+    }
   }
   return (
     <KeyboardAvoidingView
@@ -49,21 +115,21 @@ export default function SignIn() {
         <View>
           <Logo style={styles.logoWrapper} />
           <CustomInput
-            placeholder="Name *"
+            placeholder="Name"
             value={signUpForm.name}
             onChangeText={(text) => {
-              setSignUpForm((prev)=> ({...prev, name : text}))
+              setSignUpForm((prev) => ({ ...prev, name: text }));
             }}
-            label=""
+            label="Name"
             keyboardType="default"
           />
           <CustomInput
             placeholder="Email"
             value={signUpForm.email}
             onChangeText={(text) => {
-              setSignUpForm((prev)=> ({...prev, email : text}))
+              setSignUpForm((prev) => ({ ...prev, email: text }));
             }}
-            label=""
+            label="Email"
             keyboardType="email-address"
           />
           <CustomInput
@@ -71,11 +137,33 @@ export default function SignIn() {
             value={signUpForm.password}
             secureTextEntry
             onChangeText={(text) => {
-              setSignUpForm((prev)=> ({...prev, password : text}))
+              setSignUpForm((prev) => ({ ...prev, password: text }));
             }}
-            label=""
+            label="Password"
             keyboardType="default"
           />
+          <View style={styles.rulesWrapper}>
+            {signUpForm.password.length > 0 ? (
+              rules.map((rule, index) => {
+                let isValid = rule.test(signUpForm.password);
+                return (
+                  <View key={index} style={styles.ruleStyles}>
+                    <Feather
+                      name="check"
+                      size={12}
+                      color={isValid ? "#ff611d" : "#dcdfdf"}
+                    />
+                    <Text style={{ fontSize: 12, marginLeft: 4 }}>
+                      {rules[index].label}
+                    </Text>
+                  </View>
+                );
+              })
+            ) : (
+              <></>
+            )}
+          </View>
+
           <View style={styles.CtaBtnWrapper}>
             <CustomButton
               color={"#ff611d"}
@@ -88,7 +176,9 @@ export default function SignIn() {
           </View>
           <View style={styles.signInBtnDirector}>
             <Text style={styles.directingLine}>Already have an account?</Text>
-            <Link style={styles.underlinedLink} href={'/(auth)/signIn'}>SignIn</Link>
+            <Link style={styles.underlinedLink} href={"/(auth)/signIn"}>
+              SignIn
+            </Link>
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -98,6 +188,20 @@ export default function SignIn() {
 
 let styles = StyleSheet.create({
   eyboardWrapperv: {},
+  rulesWrapper: {
+    width: "100%",
+    paddingHorizontal: 40,
+    justifyContent: "center",
+    alignItems: "flex-start",
+    marginBottom: 20,
+  },
+  ruleStyles: {
+    // backgroundColor : "violet",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    flexDirection: "row",
+    marginVertical: 2,
+  },
   signInWrapper: {
     position: "absolute",
     top: Dimensions.get("screen").height / 2.25 - 160,
@@ -131,17 +235,17 @@ let styles = StyleSheet.create({
     marginVertical: 20,
     justifyContent: "center",
     alignItems: "center",
-    flexDirection: "row"
+    flexDirection: "row",
   },
   underlinedLink: {
     fontSize: 12,
-    fontWeight : 'bold',
+    fontWeight: "bold",
     color: "#ff611d",
     textDecorationLine: "underline",
   },
-   directingLine : {
-    marginHorizontal : 4
-  }
+  directingLine: {
+    marginHorizontal: 4,
+  },
 
   //   container: {
   //   flex: 1,
