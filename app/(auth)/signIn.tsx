@@ -15,12 +15,22 @@ import {
 } from "react-native";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
-import { account } from "@/libs/appwrite";
+import { account, signIn } from "@/libs/appwrite";
 import { SignInForm } from "@/type";
 
 
 export default function SignIn() {
   let [form, setForm] = useState<SignInForm>({ email: "", password: "" });
+  let {email, password} = form
+
+  let handleSignIn = async () => {
+    try {
+      signIn({email,password})
+      router.replace('/')
+    } catch (error) {
+      throw new Error(error as string) 
+    }
+  }
 
   return (
     <KeyboardAvoidingView
@@ -65,6 +75,7 @@ export default function SignIn() {
               leftIcon={false}
               title="Sign In"
               style="default"
+              onPressTouch={handleSignIn}
             />
           </View>
           <View style={styles.signUpBtnDirector}>
