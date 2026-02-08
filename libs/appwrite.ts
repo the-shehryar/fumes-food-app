@@ -7,7 +7,9 @@ Accounts is for users, Client is for Conncetion, TablesDB is the actual database
 
 DATABASE_ID is the unqiue id of database in use
 */
-import { Account, Client, TablesDB } from "react-native-appwrite";
+
+import { CreateUserParams, SignInParams } from "@/type";
+import { Account, Avatars, Client, ID, TablesDB } from "react-native-appwrite";
 
 export const client = new Client()
   .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!)
@@ -16,5 +18,44 @@ export const client = new Client()
 
 export const account = new Account(client);
 export const databases = new TablesDB(client);
+export const avatars = new Avatars(client);
 
 export const DATABASE_ID = process.env.EXPO_PUBLIC_DATABASES_ID!;
+
+export const createUser = async ({
+  email,
+  name,
+  password,
+}: CreateUserParams) => {
+  try {
+    const newUser = await account.create({
+      userId: ID.unique(),
+      name,
+      email,
+      password,
+    });
+
+    if(!newUser) throw new Error('Account creation failed')
+
+      
+  signIn({email, password})
+  let avatarUrl = avatars.getInitialsURL(name)
+
+  const newUserData = databases.createRow({
+    databaseId : DATABASE_ID,
+    tableId : 'users',
+    rowId : ID.unique(),
+    data : {
+      accountId : newUser.$id,
+      email, password, name,
+      avatar : avatarUrl
+    }
+  })
+  } catch (error) {
+    throw new Error(error as string);
+  }
+};
+
+
+
+export const signIn =({email, password} : SignInParams)=>{}

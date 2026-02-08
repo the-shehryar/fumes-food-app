@@ -152,8 +152,8 @@ export default function Index() {
                           style={styles.button}
                           onPress={() => console.log("Pressed")}
                         >
-                          <Text style={{fontSize : 10, marginHorizontal :  2, color : '#fff'}}>Order Now</Text>
-                          <Feather name="arrow-right" color={'#fff'} size={10}/>
+                          <Text style={{fontSize : 10, marginHorizontal :  4, color : '#fff'}}>Order Now</Text>
+                          <Feather name="arrow-right" color={'#fff'} size={8}/>
                         </TouchableOpacity>
                         {/* <Text style={styles.offerPromotion}>Enjoy 50% Off</Text> */}
                       </View>

@@ -23,7 +23,6 @@ import {
   specialCharacterCheckRegex,
   upperCaseCheckRegex,
 } from "@/constants";
-import { useAuth } from "@/libs/auth-context";
 import { SignUpForm } from "@/type";
 import Feather from "@expo/vector-icons/Feather";
 
@@ -63,7 +62,6 @@ export default function SignUp() {
     password: "",
   });
 
-  let { user, signUp } = useAuth();
 
   const showToast = (message: string) => {
     if (Platform.OS === "android") {
@@ -74,38 +72,6 @@ export default function SignUp() {
     }
   };
 
-  async function handleOnPress() {
-    console.log(signUpForm);
-
-    //* Clear Previous Errors
-    setErrorMessage("");
-
-    if (!signUpForm.email || !signUpForm.password || !signUpForm.name) {
-      showToast("Please fill the form properly");
-      return;
-    }
-    if (!passwordRegex.test(signUpForm.password)) {
-      showToast("Please follow the password requirements");
-      return;
-    }
-    if (
-      signUpForm.email &&
-      passwordRegex.test(signUpForm.password) &&
-      signUpForm.name
-    ) {
-      try {
-        let userCreation = await signUp(
-          signUpForm.email,
-          signUpForm.password,
-          signUpForm.name,
-        );
-        showToast("Successfully registered");
-        router.replace('/(auth)/signIn')
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  }
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -171,7 +137,6 @@ export default function SignUp() {
               leftIcon={false}
               title="Sign Up"
               style="default"
-              onPressTouch={handleOnPress}
             />
           </View>
           <View style={styles.signInBtnDirector}>

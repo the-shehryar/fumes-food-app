@@ -1,5 +1,4 @@
 import { account } from "@/libs/appwrite";
-import AuthProvider, { useAuth } from "@/libs/auth-context";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
 import { Models } from "react-native-appwrite";
@@ -14,23 +13,6 @@ export default function RootLayout() {
  function RouterGuard({ children }: { children: React.ReactNode }) {
     let router = useRouter();
     let segment = useSegments()
-    let {user, fetchingUser} = useAuth()
-
-
-    useEffect(() => {
-      let isAuthSection = segment[0] === '(auth)'
-      let inSignUp = segment[0] === 'signup'
-
-      if (user === null && !isAuthSection && !fetchingUser) {
-        console.log('This block runs')
-        router.replace("/(auth)/login");
-      }
-      else if(user && isAuthSection && !fetchingUser){
-        console.log('everything is going good and user presists')
-        router.replace('/')
-        console.log(user)
-      }
-    }, [user]);
 
     return <>{children}</>;
   }
@@ -47,7 +29,6 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <AuthProvider>
       <RouterGuard>      
       {!isAuthenticated ? (
         <Stack>
@@ -62,6 +43,5 @@ export default function RootLayout() {
         </Stack>
       )}
       </RouterGuard>
-    </AuthProvider>
   );
 }

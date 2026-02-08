@@ -21,6 +21,15 @@ interface CustomButtonProps {
     color? : string; 
     isLoading? : boolean;
 }  
+interface CreateUserParams {
+    name : string,
+    email : string,
+    password : string
+}
+interface SignInParams {
+    email : string,
+    password : string
+}
 interface SignInForm {
     email : string,
     password : string
