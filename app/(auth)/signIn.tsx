@@ -17,40 +17,10 @@ import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
 import { account } from "@/libs/appwrite";
 import { SignInForm } from "@/type";
-import { useAuth } from "@/libs/auth-context";
+
 
 export default function SignIn() {
   let [form, setForm] = useState<SignInForm>({ email: "", password: "" });
-  // let {signIn} = useAuth()
-
-
-  function handleEmailSignup() {
-    router.push("/(auth)/signup");
-  }
-  function handleAuthRedirection() {
-    router.push("/(auth)/login");
-  }
-
-  async function handleSignIn() {
-    //* Make Validation Checks here now
-    console.log(form);
-
-    //? Destruct the state
-    let { email, password } = form;
-
-    if (!email || !password) {
-      Alert.alert(
-        "Error",
-        !email ? `Please enter a valid email` : `Please enter a valid password`,
-      );
-    } else if (!email && !password) {
-      Alert.alert("Error", `Please enter valid email & password`);
-    }
-
-
-    
-    // router.push("/(auth)/signup")
-  }
 
   return (
     <KeyboardAvoidingView
@@ -95,7 +65,6 @@ export default function SignIn() {
               leftIcon={false}
               title="Sign In"
               style="default"
-              onPressTouch={handleSignIn}
             />
           </View>
           <View style={styles.signUpBtnDirector}>
@@ -120,7 +89,6 @@ export default function SignIn() {
             title="Try another way"
             textStyle="#000"
             style="big-filled"
-            onPressTouch={handleAuthRedirection}
             // value="googleAuth"
           />
         </View>
