@@ -25,8 +25,11 @@ import {
 } from "@/constants";
 import { SignUpForm } from "@/type";
 import Feather from "@expo/vector-icons/Feather";
+import { createUser } from "@/libs/appwrite";
 
 export default function SignUp() {
+  let [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+
   let [errorMessage, setErrorMessage] = useState<string>("");
 
   let [passwordLevel, setPasswordLevel] = useState({
@@ -62,6 +65,23 @@ export default function SignUp() {
     password: "",
   });
 
+
+  let {name, email, password} = signUpForm
+
+
+const handleSignUp = async ()=>{
+
+  setIsSubmitting(true)
+  try {
+    let session = await createUser({name, password, email})
+    router.replace('/')
+  } catch (error) {
+    throw new Error(error as string)
+  }finally{
+    setIsSubmitting(false)
+  }
+
+}
 
   const showToast = (message: string) => {
     if (Platform.OS === "android") {
@@ -137,6 +157,7 @@ export default function SignUp() {
               leftIcon={false}
               title="Sign Up"
               style="default"
+              onPressTouch={handleSignUp}
             />
           </View>
           <View style={styles.signInBtnDirector}>

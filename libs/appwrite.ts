@@ -9,7 +9,7 @@ DATABASE_ID is the unqiue id of database in use
 */
 
 import { CreateUserParams, SignInParams } from "@/type";
-import { Account, Avatars, Client, ID, TablesDB } from "react-native-appwrite";
+import { Account, Avatars, Client, ID, Query, TablesDB } from "react-native-appwrite";
 
 export const client = new Client()
   .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!)
@@ -58,4 +58,29 @@ export const createUser = async ({
 
 
 
-export const signIn =({email, password} : SignInParams)=>{}
+export const signIn = async ({email, password} : SignInParams)=>{
+  try {
+    let session = await account.createEmailPasswordSession({email, password})
+    
+  } catch (error) {
+    throw new Error(error as string)
+  }
+}
+
+export let getCurrentUser = async ()=>{
+  try {
+    let currentAccount = await account.get();
+    if(!currentAccount) throw new Error("Can't get the account")
+
+    let currentUser  = await databases.listRows({
+      databaseId : DATABASE_ID,
+      tableId : "users",
+      queries : [Query.equal('accountId', currentAccount.$id)]
+    })
+    if(!currentUser) throw new Error("User does not exists")
+
+      return currentUser.rows[0]
+  } catch (error) {
+    throw new Error(error as string)
+  }
+}
