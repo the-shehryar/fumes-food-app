@@ -8,7 +8,9 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   View,
+  Button
 } from "react-native";
+import * as Sentry from '@sentry/react-native'
 import CustomButton from "../components/CustomButton";
 import Feather from "@expo/vector-icons/Feather";
 import AppleIcon from '@/assets/images/ic_round-apple.svg'
@@ -84,6 +86,7 @@ function handleEmailSignup (){
               onPressTouch={handleEmailLogin}
             />
             </View>
+            <Button title='Try!' onPress={ () => { Sentry.captureException(new Error('First error')) }}/>
           <View style={styles.CtaBtnWrapper}>
             <CustomButton
               color={"#0000009a"}

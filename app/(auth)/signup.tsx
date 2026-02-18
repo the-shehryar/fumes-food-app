@@ -19,26 +19,56 @@ import CustomInput from "../components/CustomInput";
 import {
   lowerCaseCheckRegex,
   numberCheckRegex,
-  passwordRegex,
   specialCharacterCheckRegex,
   upperCaseCheckRegex,
 } from "@/constants";
+import { createUser } from "@/libs/appwrite";
 import { SignUpForm } from "@/type";
 import Feather from "@expo/vector-icons/Feather";
-import { createUser } from "@/libs/appwrite";
+import useAuthStore from "@/stores/auth.store";
+
 
 export default function SignUp() {
+  let {user} = useAuthStore() 
   let [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-
-  let [errorMessage, setErrorMessage] = useState<string>("");
-
-  let [passwordLevel, setPasswordLevel] = useState({
-    lowerCase: false,
-    upperCase: false,
-    specialCharacter: false,
-    numberCharacter: false,
-    passwordLength: 0,
+  let [signUpForm, setSignUpForm] = useState<SignUpForm>({
+    name: "",
+    email: "",
+    password: "",
   });
+  let { name, email, password } = signUpForm;
+
+  const submitSignUp = async () => {
+    console.log(`${email} + ${password} + ${name}`);
+    setIsSubmitting(true)
+    try {
+      !email || !password
+        ? Platform.OS === "android"
+          ? ToastAndroid.show(
+              "Please provide all the required information",
+              ToastAndroid.TOP,
+            )
+          : Alert.alert("Error", "Please provide right info")
+        : ''
+        if(email && password){
+          await createUser({ name, email, password });
+          ToastAndroid.show("User Registered Scuccessfully", ToastAndroid.SHORT)
+          console.log(user)
+          router.replace('/')
+        }
+    } catch (error:any) {
+      let errorString = new Error(error as string)
+      console.log(errorString)
+      Platform.OS === "android"
+        ? ToastAndroid.show(`${errorString}`, ToastAndroid.TOP)
+        : Alert.alert("Error", error.message);
+
+      throw new Error(error as string);
+    }
+    finally {
+      setIsSubmitting(false)
+    }
+  };
 
   let rules = [
     {
@@ -58,39 +88,6 @@ export default function SignUp() {
       test: (value: string) => specialCharacterCheckRegex.test(value),
     },
   ];
-
-  let [signUpForm, setSignUpForm] = useState<SignUpForm>({
-    name: "",
-    email: "",
-    password: "",
-  });
-
-
-  let {name, email, password} = signUpForm
-
-
-const handleSignUp = async ()=>{
-
-  setIsSubmitting(true)
-  try {
-    let session = await createUser({name, password, email})
-    router.replace('/')
-  } catch (error) {
-    throw new Error(error as string)
-  }finally{
-    setIsSubmitting(false)
-  }
-
-}
-
-  const showToast = (message: string) => {
-    if (Platform.OS === "android") {
-      ToastAndroid.show(message, ToastAndroid.TOP);
-    } else {
-      // Alert works on both platforms, but looks different from an Android toast
-      Alert.alert(message);
-    }
-  };
 
   return (
     <KeyboardAvoidingView
@@ -157,7 +154,7 @@ const handleSignUp = async ()=>{
               leftIcon={false}
               title="Sign Up"
               style="default"
-              onPressTouch={handleSignUp}
+              onPressTouch={submitSignUp}
             />
           </View>
           <View style={styles.signInBtnDirector}>

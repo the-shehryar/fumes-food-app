@@ -12,14 +12,23 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Button
 } from "react-native";
+import * as Sentry from '@sentry/react-native'
 import { SafeAreaView } from "react-native-safe-area-context";
+import useAuthStore from "@/stores/auth.store";
 
 export default function Index() {
   let [offers, setOffers] = useState<OfferStructure[]>([]);
   let backupOffer = [];
 
+
+
+  let {user} = useAuthStore()
+  
+
   useEffect(() => {
+    console.log("user - lo", JSON.stringify(user, null, 2))
     // fetchOffers();
   }, []);
 
@@ -150,7 +159,7 @@ export default function Index() {
                         <Text style={styles.miniDesc}>{item.description}</Text>
                         <TouchableOpacity
                           style={styles.button}
-                          onPress={() => console.log("Pressed")}
+                          onPress={() => console.log(user)}
                         >
                           <Text style={{fontSize : 10, marginHorizontal :  4, color : '#fff'}}>Order Now</Text>
                           <Feather name="arrow-right" color={'#fff'} size={8}/>
@@ -164,6 +173,7 @@ export default function Index() {
             );
           }}
         ></FlatList>
+        
       </ScrollView>
     </SafeAreaView>
   );

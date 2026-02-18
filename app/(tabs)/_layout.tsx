@@ -2,7 +2,11 @@ import { Tabs } from "expo-router";
 import Octicons from "@expo/vector-icons/Octicons";
 import Feather from '@expo/vector-icons/Feather';
 
-export default function RootLayout() {
+
+export default function TabLayout() {
+
+  
+  
   return (
     <Tabs
       screenOptions={{
