@@ -1,7 +1,8 @@
 import Logo from "@/assets/images/applogo.svg";
 import GoogleIcon from "@/assets/images/google-icon.svg";
+import { SignInForm } from "@/type";
 import { Link, router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
@@ -10,27 +11,44 @@ import {
   Platform,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
-import { account, signIn } from "@/libs/appwrite";
-import { SignInForm } from "@/type";
-
+import { signIn } from "@/libs/appwrite";
+import useAuthStore from "@/stores/auth.store";
 
 export default function SignIn() {
   let [form, setForm] = useState<SignInForm>({ email: "", password: "" });
-  let {email, password} = form
+  //* Destructuring from state
+  let { email, password } = form;
+  let [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  let {fetchAuthenticatedUser} = useAuthStore()
 
-  let handleSignIn = async () => {
+  const signInUser = async () => {
+    if (!email || !password)
+    // showing toast message to inform user
+      Platform.OS === "android"
+        ? ToastAndroid.show(
+            "Please provide all the required information",
+            ToastAndroid.TOP,
+          )
+        : Alert.alert("Error", "Please provide right info");
+        //* perfroming Sign In 
+        await signIn({email, password})
+        router.replace('/')
     try {
-      signIn({email,password})
-      router.replace('/')
     } catch (error) {
-      throw new Error(error as string) 
+      throw new Error(error as string);
     }
-  }
+  };
+
+
+  useEffect(()=> {
+    fetchAuthenticatedUser()
+  }, [])
 
   return (
     <KeyboardAvoidingView
@@ -75,7 +93,7 @@ export default function SignIn() {
               leftIcon={false}
               title="Sign In"
               style="default"
-              onPressTouch={handleSignIn}
+              onPressTouch={signInUser}
             />
           </View>
           <View style={styles.signUpBtnDirector}>
@@ -152,7 +170,7 @@ let styles = StyleSheet.create({
     width: "100%",
     height: "auto",
     marginVertical: 20,
-    marginBottom : 40,
+    marginBottom: 40,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
@@ -160,7 +178,7 @@ let styles = StyleSheet.create({
   underlinedLink: {
     fontSize: 12,
     color: "#ff611d",
-    fontWeight: 'bold',
+    fontWeight: "bold",
     textDecorationLine: "underline",
   },
   directingLine: {

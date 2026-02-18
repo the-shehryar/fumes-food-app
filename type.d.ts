@@ -40,10 +40,12 @@ interface SignUpForm {
     password : string
 }
 
-type AuthContextType = {
-    user : Models.User<Models.Preferences> | null;
-    fetchingUser : boolean;
-    signIn : (email : string, password : string)=> Promise<string | null>;
-    signUp : (email : string, password : string, name : string)=> Promise<string | null>;
-    signOut : ()=> void;
+export interface User extends Models.Row {
+    name: string;
+    email: string;
+    accountId : string,
+    avatarUrl: string;
+    $id : any,
+    $updatedAt : any,
+    $createdAt : any
 }
