@@ -64,3 +64,31 @@ export const Offers = [
     description : "Stir-fried vegetables, meat, noodles with savory sauces."
   },
 ];
+
+
+export const CategoriesLocal = [
+  {
+    name  : 'Burger',
+    image : sandwichBackground
+  },
+  {
+    name  : 'Pizza',
+    image : pizzaOffer
+  },
+  {
+    name  : 'Rice',
+    image : chineeseOffer
+  },
+  {
+    name  : 'Coffee',
+    image : coffeeOffer
+  },
+  {
+    name  : 'Sandwich',
+    image : sandwichBackground
+  },
+  {
+    name  : 'Rice',
+    image : chineeseOffer
+  },
+]

@@ -95,9 +95,12 @@ export const createUser = async ({
 
 export const signIn = async ({ email, password }: SignInParams) => {
   try {
+    console.log('trying to signIn')
     let session = await account.createEmailPasswordSession({ email, password });
   } catch (error) {
     throw new Error(error as string);
+  }finally {
+    console.log('are you in?')
   }
 };
 

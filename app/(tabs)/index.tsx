@@ -1,4 +1,4 @@
-import { images, Offers } from "@/constants";
+import { CategoriesLocal, images, Offers } from "@/constants";
 import { OfferStructure } from "@/types/offerStructure.type";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
@@ -169,6 +169,39 @@ export default function Index() {
                     </Fragment>
                   )}
                 </Pressable>
+
+                {/* <View style={styles.background}></View> */}
+              </View>
+            );
+          }}
+        ></FlatList>
+
+
+        {/*  This flat list will render circular filters */}
+
+        <FlatList
+          style={circularFilter.cirularFilerMain}
+          data={CategoriesLocal}
+          horizontal
+          renderItem={({ item, index }) => {
+            return (
+              <View style={circularFilter.circularBtnWrapper} >
+                <Pressable style={[circularFilter.circularBtn]}>
+                  {({ pressed }) => (
+                    <Fragment>
+                      <View>
+                        <Image
+                          source={item.image}
+                          style={circularFilter.imageStyles}
+                          resizeMode="contain"
+                        />
+                      </View>
+                    </Fragment>
+                  )}
+                </Pressable>
+                <Text style={circularFilter.btnText}>{item.name}</Text>
+
+                {/* <View style={styles.background}></View> */}
               </View>
             );
           }}
@@ -362,3 +395,36 @@ let popularSectionStyles = StyleSheet.create({
     fontSize: 24,
   },
 });
+
+
+let circularFilter = StyleSheet.create({
+  cirularFilerMain : {
+    width : 'auto',
+    height : 'auto',
+    paddingTop : 20,
+  },
+  btnText : {
+    fontSize : 10, 
+    marginTop : 8,
+  },
+  circularBtn : {
+    width : '100%',
+    height : 70,
+    borderRadius : "50%",
+    elevation : 4,
+    overflow : "hidden",
+  },
+  circularBtnWrapper : {
+    width : 70,
+
+    // backgroundColor : "red",
+    justifyContent : "center",
+    alignItems : "center",
+    marginHorizontal : 8
+  },
+  imageStyles : {
+    width : 'auto',
+    height : "100%"
+  }
+
+})

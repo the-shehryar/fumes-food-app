@@ -86,7 +86,7 @@ function handleEmailSignup (){
               onPressTouch={handleEmailLogin}
             />
             </View>
-            <Button title='Try!' onPress={ () => { Sentry.captureException(new Error('First error')) }}/>
+            {/* <Button title='Try!' onPress={ () => { Sentry.captureException(new Error('First error')) }}/> */}
           <View style={styles.CtaBtnWrapper}>
             <CustomButton
               color={"#0000009a"}

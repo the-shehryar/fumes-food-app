@@ -1,23 +1,23 @@
-import { CustomInputProps } from "@/type";
+import {CustomSearchInputProps, CustomInputProps} from '@/type'
+import Feather from '@expo/vector-icons/Feather';
 import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
-const CustomInput = ({
+const CustomSearchInput = ({
   placeholder = "Enter Text",
   value,
   onChangeText,
   label,
-  labelVisble = false,
-  secureTextEntry,
+  icon,
   keyboardType = "default",
-}: CustomInputProps) => {
+}: CustomSearchInputProps) => {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
     <View style={styles.inputWrapper}>
-      {labelVisble ? (
-        <Text style={styles.labelStyles}>{label}</Text>
-      ) : undefined}
+      <View style={styles.inputIcon}>
+      {icon ? <Feather size={20} name='search' color={'#d9d9d9'} /> : ''}
+      </View>
       <TextInput
         style={[
           styles.basicInputStyle,
@@ -28,8 +28,8 @@ const CustomInput = ({
         value={value}
         placeholder={placeholder}
         onChangeText={onChangeText}
-        secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
+        placeholderTextColor={'#d9d9d9'}
         onFocus={() => setIsFocused(true)}
         onBlur={() => {
           setIsFocused(false);
@@ -41,17 +41,37 @@ const CustomInput = ({
 
 let styles = StyleSheet.create({
   inputWrapper: {
-    paddingHorizontal: 40,
+    width : '90%',
+    paddingHorizontal: 10,
+    // backgroundColor : "green",
+    justifyContent : "center",
+    alignItems : 'center',
+    flexDirection : "row",
+    backgroundColor: "#f5f5f5",
+    borderRadius: 4,
+    elevation : 24,
+    //? use shadow color to change elevation color
+    shadowColor : "#524c4c5b",
+    overflow : 'hidden',
+    marginHorizontal : 20
   },
   labelStyles: {
     marginBottom: 8,
     color: "#ff611d",
   },
+  inputIcon : {
+    width : 30,
+    height : 50,
+    marginLeft : 24,
+    justifyContent : "center",
+    alignItems : "center",
+    // backgroundColor : "violet"
+  },
   basicInputStyle: {
-    marginBottom: 20,
-    backgroundColor: "#f5f5f5",
-    paddingLeft: 20,
-    borderRadius: 4,
+    color : '#d9d9d9',
+    width : '100%',
+    // marginBottom: 20,
+    paddingLeft: 10,
     height: 50,
   },
   inputFocused: {
@@ -62,4 +82,4 @@ let styles = StyleSheet.create({
     // borderColor: "#6e6e72",
   },
 });
-export default CustomInput;
+export default CustomSearchInput;

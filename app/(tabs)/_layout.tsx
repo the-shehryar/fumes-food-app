@@ -11,6 +11,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: "#050505",
+        headerShown : false
       }}
     >
       <Tabs.Screen
@@ -31,7 +32,7 @@ export default function TabLayout() {
       name="search"
         options={{
           title: "Search",
-          headerShown: true,
+          // headerShown: true,
           tabBarIcon: ({ color, size, focused }) => {
             return focused ? (
               <Octicons name="search" size={24} color={color} />

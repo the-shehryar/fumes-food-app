@@ -1,4 +1,4 @@
-const dummyData = {
+const seedbaleData = {
     categories: [
         { name: "Burgers", description: "Juicy grilled burgers" },
         { name: "Pizzas", description: "Oven-baked cheesy pizzas" },
@@ -222,4 +222,4 @@ const dummyData = {
     ],
 };
 
-export default dummyData;
+export default seedbaleData;
