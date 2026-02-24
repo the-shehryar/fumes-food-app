@@ -9,6 +9,14 @@ interface CustomInputProps {
     secureTextEntry? : boolean;
     keyboardType? : "default" | 'email-address' | 'numeric' | 'phone-pad'
 }  
+interface CustomSearchInputProps {
+    icon : boolean,
+    placeholder? : string;
+    value?: string;
+    onChangeText? : (text:string) => void;
+    label? : string;
+    keyboardType? : "default" | 'email-address' | 'numeric' | 'phone-pad'
+}  
 
 interface CustomButtonProps {
     value? : string

@@ -1,6 +1,6 @@
 import { ID } from "react-native-appwrite";
 import { appwriteConfig, databases, storage } from "./appwrite";
-import dummyData from "./data";
+import seedableData from "./data";
 
 interface Category {
   name: string;
@@ -25,16 +25,17 @@ interface MenuItem {
   customizations: string[]; // list of customization names
 }
 
-interface DummyData {
+interface LocalMenusData {
   categories: Category[];
   customizations: Customization[];
   menu: MenuItem[];
 }
 
-// ensure dummyData has correct shape
-const data = dummyData as DummyData;
+// ensure local data has correct shape
+const data = seedableData as LocalMenusData;
 
 async function clearAll(tableId: string): Promise<void> {
+    console.log('Clearing data')
   const list = await databases.listRows({
     databaseId: appwriteConfig.databaseId,
     tableId,
@@ -52,6 +53,7 @@ async function clearAll(tableId: string): Promise<void> {
 }
 
 async function clearStorage(): Promise<void> {
+    console.log('store cleared as well')
   const list = await storage.listFiles({
     bucketId: appwriteConfig.bucketId,
   });
@@ -66,6 +68,8 @@ async function clearStorage(): Promise<void> {
   );
 }
 
+//? Upload image to Storage 
+
 async function uploadImageToStorage(imageUrl: string) {
   const response = await fetch(imageUrl);
   const blob = await response.blob();
@@ -77,14 +81,53 @@ async function uploadImageToStorage(imageUrl: string) {
     uri: imageUrl,
   };
 
-  const file = await storage.createFile(
-    appwriteConfig.bucketId,
-    ID.unique(),
-    fileObj,
-  );
+  const file = await storage.createFile({
+    bucketId: appwriteConfig.bucketId,
+    fileId: ID.unique(),
+    file : fileObj,
+  });
 
   return storage.getFileViewURL(appwriteConfig.bucketId, file.$id);
 }
+
+
+
+
+// async function uploadImageToStorage2(imageUrl: string) {
+//     const destination = new Directory(Paths.document, 'imagesUrl2')
+//     if (!destination.exists){
+//         console.log('en el if');
+//         destination.create()
+//     } else {
+//         console.log('en el else');
+//         console.log('destination',destination);
+//     }
+//     const blob = await File.downloadFileAsync(imageUrl, destination)
+//     destination.delete()
+//     console.log('blob', blob)
+//     console.log('blob.uri', blob.uri)
+    
+//     const fileObj = {
+//         name: imageUrl.split("/").pop() || `file-${Date.now()}.jpg`,
+//         type: blob.type,
+//         size: blob.size,
+//         uri: imageUrl,
+//     };
+
+//     const file = await storage.createFile(
+//         appwriteConfig.bucketId,
+//         ID.unique(),
+//         fileObj
+//     );
+
+//     return storage.getFileViewURL(appwriteConfig.bucketId, file.$id);
+// } 
+
+
+
+
+
+
 
 async function seed(): Promise<void> {
   // 1. Clear all
@@ -101,12 +144,15 @@ async function seed(): Promise<void> {
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.categoriesCollectionId,
       rowId: ID.unique(),
-      data: { cat },
+      data: { 
+        name : cat.name,
+        description : cat.description
+       },
     });
     categoryMap[cat.name] = doc.$id;
   }
 
-  // 3. Create Customizations
+//   3. Create Customizations
   const customizationMap: Record<string, string> = {};
   for (const cus of data.customizations) {
     const doc = await databases.createRow({
@@ -119,14 +165,15 @@ async function seed(): Promise<void> {
         type: cus.type,
       },
     });
+    console.log(doc.name)
     customizationMap[cus.name] = doc.$id;
   }
 
   // 4. Create Menu Items
   const menuMap: Record<string, string> = {};
   for (const item of data.menu) {
-    const uploadedImage = await uploadImageToStorage(item.image_url);
-
+    // const uploadedImage = await uploadImageToStorage(item.image_url);
+    // console.log(uploadedImage)
     const doc = await databases.createRow({
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.menuCollectionId,
@@ -134,7 +181,7 @@ async function seed(): Promise<void> {
       data: {
         name: item.name,
         description: item.description,
-        image_url: uploadedImage,
+        // image_url: uploadedImage,
         price: item.price,
         rating: item.rating,
         calories: item.calories,
@@ -142,7 +189,7 @@ async function seed(): Promise<void> {
         categories: categoryMap[item.category_name],
       },
     });
-
+    console.log(doc.name)
     menuMap[item.name] = doc.$id;
 
     // 5. Create menu_customizations

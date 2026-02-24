@@ -26,8 +26,9 @@ Sentry.init({
   // spotlight: __DEV__,
 });
 
+// let isAuthenticated = true
 export default Sentry.wrap(function RootLayout() {
-  const {isLoading, user, isAuthenticated, fetchAuthenticatedUser} = useAuthStore()
+  const {isLoading, user, isAuthenticated,fetchAuthenticatedUser} = useAuthStore()
   useEffect(() => {
     fetchAuthenticatedUser()
     console.log(`user from layout ${user}`)
