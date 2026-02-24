@@ -1,8 +1,15 @@
 import { CategoriesLocal, images, Offers } from "@/constants";
+import { getMenu } from "@/libs/appwrite";
+import useAppwrite from "@/libs/useAppwrite";
+import useAuthStore from "@/stores/auth.store";
 import { OfferStructure } from "@/types/offerStructure.type";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { Fragment, useEffect, useState } from "react";
+import AddButton from '@/assets/images/Product-Add-Btn.svg'
+import SubstractBtn from '@/assets/images/Product-Subtract-Btn.svg'
+
+
 import {
   FlatList,
   Image,
@@ -12,23 +19,26 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Button
 } from "react-native";
-import * as Sentry from '@sentry/react-native'
 import { SafeAreaView } from "react-native-safe-area-context";
-import useAuthStore from "@/stores/auth.store";
 
 export default function Index() {
   let [offers, setOffers] = useState<OfferStructure[]>([]);
   let backupOffer = [];
+  let { data, loading, error, refetch } = useAppwrite({
+    fn: getMenu,
+    params: {
+      category: "",
+      query: "",
+      limit: 10,
+    },
+    skip: false,
+  });
 
-
-
-  let {user} = useAuthStore()
-  
+  let { user } = useAuthStore();
 
   useEffect(() => {
-    console.log("user - lo", JSON.stringify(user, null, 2))
+    console.log("user - lo", JSON.stringify(user, null, 2));
     // fetchOffers();
   }, []);
 
@@ -122,7 +132,7 @@ export default function Index() {
           </View>
         </View>
 
-        <View
+        {/* <View
           style={{
             width: "100%",
             marginTop: 40,
@@ -135,14 +145,15 @@ export default function Index() {
           <Text style={{ fontSize: 24, fontWeight: "900" }}>
             Popular Offers
           </Text>
-        </View>
-        <FlatList
+        </View> */}
+        {/* <FlatList
           style={styles.mainView}
           data={Offers}
           horizontal
+          showsHorizontalScrollIndicator={false}
           renderItem={({ item, index }) => {
             return (
-              <View>
+              <View style={styles.fragmentStyles}>
                 <Pressable style={[styles.offerContainer]}>
                   {({ pressed }) => (
                     <Fragment>
@@ -161,21 +172,25 @@ export default function Index() {
                           style={styles.button}
                           onPress={() => console.log(user)}
                         >
-                          <Text style={{fontSize : 10, marginHorizontal :  4, color : '#fff'}}>Order Now</Text>
-                          <Feather name="arrow-right" color={'#fff'} size={8}/>
+                          <Text
+                            style={{
+                              fontSize: 10,
+                              marginHorizontal: 4,
+                              color: "#fff",
+                            }}
+                          >
+                            Order Now
+                          </Text>
+                          <Feather name="arrow-right" color={"#fff"} size={8} />
                         </TouchableOpacity>
-                        {/* <Text style={styles.offerPromotion}>Enjoy 50% Off</Text> */}
                       </View>
                     </Fragment>
                   )}
                 </Pressable>
-
-                {/* <View style={styles.background}></View> */}
               </View>
             );
           }}
-        ></FlatList>
-
+        ></FlatList> */}
 
         {/*  This flat list will render circular filters */}
 
@@ -183,9 +198,10 @@ export default function Index() {
           style={circularFilter.cirularFilerMain}
           data={CategoriesLocal}
           horizontal
+          showsHorizontalScrollIndicator={false}
           renderItem={({ item, index }) => {
             return (
-              <View style={circularFilter.circularBtnWrapper} >
+              <View style={circularFilter.circularBtnWrapper}>
                 <Pressable style={[circularFilter.circularBtn]}>
                   {({ pressed }) => (
                     <Fragment>
@@ -201,12 +217,55 @@ export default function Index() {
                 </Pressable>
                 <Text style={circularFilter.btnText}>{item.name}</Text>
 
-                {/* <View style={styles.background}></View> */}
               </View>
             );
           }}
-        ></FlatList>
-        
+        />
+
+        <FlatList
+          numColumns={2}
+          columnWrapperStyle={cardListStyles.columnWrapper}
+          keyExtractor={(item) => item.$id}
+          style={cardListStyles.mainFlatListWrapper}
+          data={data}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={cardListStyles.cardWrapper}>
+              <View style={cardListStyles.cardImageWrapper}>
+                <Image
+                  style={cardListStyles.cardImage}
+                  resizeMode="cover"
+                  source={images.sandwichOffer}
+                />
+              </View>
+              <View style={cardListStyles.cardContentWrapper}>
+                <Text
+                  numberOfLines={2}
+                  ellipsizeMode="tail"
+                  style={cardListStyles.cardName}
+                >
+                  {item.name}
+                </Text>
+                <View style={cardListStyles.ctaBlock}>
+                  <View style={cardListStyles.priceBlock}>
+                    <Text style={cardListStyles.priceHead}>STARTING AT</Text>
+                    <Text style={cardListStyles.priceText}>${item.price}</Text>
+                  </View>
+                  <View style={cardListStyles.buttonsWrapper}>
+                    <TouchableOpacity style={cardListStyles.button}>
+                      <SubstractBtn width={28} height={28} />
+                    </TouchableOpacity>
+                    <View style={cardListStyles.itemCountWrapper}>
+                      <Text style={cardListStyles.itemCount}>4</Text>
+                    </View>
+                    <TouchableOpacity style={cardListStyles.button}>
+                      <AddButton width={28} height={28} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -220,7 +279,9 @@ let styles = StyleSheet.create({
     flexDirection: "row",
     // backgroundColor: "violet",
   },
-  fragmentStyles: {},
+  fragmentStyles: {
+    marginBottom: 100,
+  },
   slideIndicator: {
     width: "16%",
     height: "100%",
@@ -291,8 +352,9 @@ let styles = StyleSheet.create({
   },
   mainView: {
     width: "100%",
-    height: 200,
+    height: 220,
     marginTop: 24,
+    // marginBottom : 100,
     overflowX: "hidden",
     paddingHorizontal: 30,
     backgroundColor: "#FFF",
@@ -304,7 +366,7 @@ let styles = StyleSheet.create({
     height: 180,
     marginBottom: 10,
     backgroundColor: "#ffffff",
-    shadowColor: "#000000",
+    shadowColor: "#00000060",
     shadowOpacity: 100,
     shadowRadius: 40,
     paddingLeft: 24,
@@ -314,7 +376,7 @@ let styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     shadowOffset: { width: 0, height: 2 },
-    elevation: 50,
+    elevation: 25,
   },
   imageWrapper: {
     width: 140,
@@ -359,8 +421,8 @@ let styles = StyleSheet.create({
     color: "#6e6e72",
     marginVertical: 1,
   },
-  offerPromotion : {
-    fontSize : 4
+  offerPromotion: {
+    fontSize: 4,
   },
 
   container: {
@@ -370,14 +432,14 @@ let styles = StyleSheet.create({
     backgroundColor: "#030303",
   },
   button: {
-    width : 160,
-    height : 40,
+    width: 160,
+    height: 40,
     backgroundColor: "#FF611D",
     padding: 5,
     borderRadius: 5,
-    justifyContent : 'center',
-    alignItems : "center",
-    flexDirection :"row"
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
     // marginBottom : 4
   },
   background: {
@@ -395,36 +457,131 @@ let popularSectionStyles = StyleSheet.create({
     fontSize: 24,
   },
 });
-
+let cardListStyles = StyleSheet.create({
+  mainFlatListWrapper: {
+    width: "100%",
+    height: "auto",
+    paddingHorizontal: 20,
+    overflowX: "hidden",
+    marginTop: 20,
+  },
+  columnWrapper: {
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  cardWrapper: {
+    width: "48%",
+    height: 260,
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    marginVertical: 8,
+    elevation: 10,
+    overflow: "hidden",
+  },
+  cardName: {
+    fontSize: 12,
+    fontWeight: 600,
+    marginVertical: 4,
+    minHeight: 20,
+    height: 30,
+  },
+  cardImageWrapper: {
+    width: "100%",
+    height: 160,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cardImage: {
+    width: "100%",
+    height: "110%",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  cardContentWrapper: {
+    width: "100%",
+    height: 100,
+    paddingHorizontal: 10,
+  },
+  ctaBlock: {
+    width: "100%",
+    height: 40,
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    flexDirection: "row",
+    marginTop: 8,
+  },
+  priceBlock: {
+    width: "44%",
+    height: "100%",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+  },
+  priceHead: {
+    fontSize: 8,
+  },
+  priceText: {
+    fontWeight: 600,
+    fontSize: 20,
+  },
+  buttonsWrapper: { 
+    width : '56%',
+    paddingLeft : 8,
+    height : '100%',
+    flexDirection  : 'row',
+    justifyContent : "center",
+    alignItems  : "center"
+  },
+  button : {
+    width : 'auto',
+    height :  "auto",
+    marginHorizontal : 8,
+    // backgroundColor: "#10cf90",
+  },
+  itemCountWrapper : {
+    maxWidth : 24,
+    height  : 24,
+    justifyContent : 'center',
+    alignItems : "center",
+    // backgroundColor  : "red",   
+},
+itemCount : { 
+  fontSize  : 16,
+  fontWeight  : 600
+}
+});
 
 let circularFilter = StyleSheet.create({
-  cirularFilerMain : {
-    width : 'auto',
-    height : 'auto',
-    paddingTop : 20,
+  cirularFilerMain: {
+    width: "auto",
+    height: "auto",
+    paddingTop: 20,
+    paddingLeft : 20,
+    marginBottom  : 40
   },
-  btnText : {
-    fontSize : 10, 
-    marginTop : 8,
+  btnText: {
+    fontSize: 10,
+    marginTop: 8,
   },
-  circularBtn : {
-    width : '100%',
-    height : 70,
-    borderRadius : "50%",
-    elevation : 4,
-    overflow : "hidden",
+  circularBtn: {
+    width: "100%",
+    height: 70,
+    borderRadius: "50%",
+    elevation: 4,
+    overflow: "hidden",
   },
-  circularBtnWrapper : {
-    width : 70,
+  circularBtnWrapper: {
+    width: 70,
 
     // backgroundColor : "red",
-    justifyContent : "center",
-    alignItems : "center",
-    marginHorizontal : 8
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 8,
   },
-  imageStyles : {
-    width : 'auto',
-    height : "100%"
-  }
-
-})
+  imageStyles: {
+    width: "auto",
+    height: "100%",
+  },
+});

@@ -57,3 +57,8 @@ export interface User extends Models.Row {
     $updatedAt : any,
     $createdAt : any
 }
+
+interface GetMenuParams {
+    category: string;
+    query: string;
+}

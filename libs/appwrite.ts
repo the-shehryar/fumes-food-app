@@ -8,7 +8,7 @@ Accounts is for users, Client is for Conncetion, TablesDB is the actual database
 DATABASE_ID is the unqiue id of database in use
 */
 
-import { CreateUserParams, SignInParams, User } from "@/type";
+import { CreateUserParams, GetMenuParams, SignInParams, User } from "@/type";
 import { Alert, Platform, ToastAndroid } from "react-native";
 import {
   Account,
@@ -131,3 +131,42 @@ export const showToast = (message: string) => {
     Alert.alert(message);
   }
 };
+
+export let getMenu1 = async () => {
+  const menu = await databases.listRows({ databaseId: DATABASE_ID, tableId: "menu" });
+  return menu.rows;
+}
+
+
+export const getMenu = async ({ category, query }: GetMenuParams) => {
+    try {
+        const queries: string[] = [];
+
+        if(category) queries.push(Query.equal('categories', category));
+        if(query) queries.push(Query.search('name', query));
+
+        const menus = await databases.listRows({ 
+            databaseId: DATABASE_ID,
+            tableId: appwriteConfig.menuCollectionId,
+            queries,
+           }
+        )
+
+        return menus.rows;
+    } catch (e) {
+        throw new Error(e as string);
+    }
+}
+
+export const getCategories = async () => {
+    try {
+        const categories = await databases.listRows({ 
+            databaseId: DATABASE_ID,
+            tableId: appwriteConfig.categoriesCollectionId,
+      })
+
+        return categories.rows;
+    } catch (e) {
+        throw new Error(e as string);
+    }
+}

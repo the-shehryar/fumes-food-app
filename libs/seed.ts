@@ -126,9 +126,6 @@ async function uploadImageToStorage(imageUrl: string) {
 
 
 
-
-
-
 async function seed(): Promise<void> {
   // 1. Clear all
   await clearAll(appwriteConfig.categoriesCollectionId);
