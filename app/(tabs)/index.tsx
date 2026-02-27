@@ -15,6 +15,7 @@ import {
   Image,
   Pressable,
   ScrollView,
+  SectionList,
   StyleSheet,
   Text,
   TouchableOpacity,

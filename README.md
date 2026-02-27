@@ -51,7 +51,12 @@ Join our community of developers creating universal apps.
 
 ## Bugs I couldn't fix so far
 
-- Seeding is can't be completed since Network request failed
+- Seeding is can't be completed since Network request failed ✅
+
+
+
+## UI pending
+- searching indication
 
 ## UI I made
 

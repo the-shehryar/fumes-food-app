@@ -1,11 +1,17 @@
 import LocationIcon from "@/assets/images/majesticons_map-marker.svg";
+import AddButton from "@/assets/images/Product-Add-Btn.svg";
+import SubstractBtn from "@/assets/images/Product-Subtract-Btn.svg";
+import { images } from "@/constants";
 import { getCategories, getMenu } from "@/libs/appwrite";
 import seed from "@/libs/seed";
 import useAppwrite from "@/libs/useAppwrite";
+import { Category } from "@/type";
 import { useLocalSearchParams } from "expo-router/build/hooks";
 import { useEffect } from "react";
 import {
+  ActivityIndicator,
   FlatList,
+  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -13,13 +19,23 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import CustomSearchInput from "../components/CustomIconInput";
+import Filter from "../components/Filter";
+import SearchBar from "../components/SearchBar";
+import useSearchStore from "@/stores/search.store";
 
 export default function SearchScreen() {
+  //? You're using the `useLocalSearchParams` hook to access the search parameters from the URL.
+
+
+  const {isSearching, setIsSearching} = useSearchStore()
+
   let { category, query } = useLocalSearchParams<{
     category: string;
     query?: string;
   }>();
+
+  //? Then, you're using the `useAppwrite` hook to fetch the menu items based on the category and query parameters. The `getMenu` function is called with the appropriate parameters, and the results are stored in the `data` variable. You also have a `refetch` function that can be used to manually trigger a new fetch when the category or query parameters change.
+
   let { data, refetch, loading, error } = useAppwrite({
     fn: getMenu,
     params: {
@@ -37,10 +53,14 @@ export default function SearchScreen() {
   });
 
   useEffect(() => {
+    console.log(`category or query changed ${category} ${query}`);
     if (category !== undefined && query !== undefined) {
       refetch({ category, query, limit: 10 }).catch((error) =>
         console.log(error),
+      ).finally(() => 
+        setIsSearching(false)
       );
+      console.log(`refetching with category ${category} and query ${query}`);
     }
   }, [category, query]);
 
@@ -63,28 +83,66 @@ export default function SearchScreen() {
           </TouchableOpacity>
         </Pressable>
       </View>
-      <CustomSearchInput
-        icon
-        label="Search"
-        placeholder="Want something cheezzy??"
-      />
+
+      <SearchBar />
 
       {/* Categories Flatlist */}
 
+      <Filter
+        categories={categories ? (categories as unknown as Category[]) : []}
+      />
+      <View style={searchPageStyles.container}>
+        {isSearching ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        ''
+      )}
+      </View>
+
       <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
+        numColumns={2}
+        columnWrapperStyle={cardListStyles.columnWrapper}
         keyExtractor={(item) => item.$id}
-        style={styles.mainFlatListWrapper}
-        data={categories}
+        style={cardListStyles.mainFlatListWrapper}
+        data={data}
         renderItem={({ item }) => (
-          <View style={styles.categoriesBtn}>
-            <Text>{item.name}</Text>
-          </View>
+          <TouchableOpacity style={cardListStyles.cardWrapper}>
+            <View style={cardListStyles.cardImageWrapper}>
+              <Image
+                style={cardListStyles.cardImage}
+                resizeMode="cover"
+                source={images.sandwichOffer}
+              />
+            </View>
+            <View style={cardListStyles.cardContentWrapper}>
+              <Text
+                numberOfLines={2}
+                ellipsizeMode="tail"
+                style={cardListStyles.cardName}
+              >
+                {item.name}
+              </Text>
+              <View style={cardListStyles.ctaBlock}>
+                <View style={cardListStyles.priceBlock}>
+                  <Text style={cardListStyles.priceHead}>STARTING AT</Text>
+                  <Text style={cardListStyles.priceText}>${item.price}</Text>
+                </View>
+                <View style={cardListStyles.buttonsWrapper}>
+                  <TouchableOpacity style={cardListStyles.button}>
+                    <SubstractBtn width={28} height={28} />
+                  </TouchableOpacity>
+                  <View style={cardListStyles.itemCountWrapper}>
+                    <Text style={cardListStyles.itemCount}>4</Text>
+                  </View>
+                  <TouchableOpacity style={cardListStyles.button}>
+                    <AddButton width={28} height={28} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </TouchableOpacity>
         )}
       />
-
-     
     </SafeAreaView>
   );
 }
@@ -107,7 +165,7 @@ const styles = StyleSheet.create({
     height: 100,
     justifyContent: "center",
     alignItems: "flex-start",
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
   },
   locationHeaderText: {
     fontSize: 12,
@@ -133,6 +191,9 @@ const styles = StyleSheet.create({
   },
 
   mainCardWrapper: {},
+});
+
+let cardListStyles = StyleSheet.create({
   mainFlatListWrapper: {
     width: "100%",
     height: "auto",
@@ -140,13 +201,100 @@ const styles = StyleSheet.create({
     overflowX: "hidden",
     marginTop: 20,
   },
-  categoriesBtn: {
-    width: 100,
-    height: 40,
-    backgroundColor: "#d9d9d9",
-    borderRadius: 4,
+  columnWrapper: {
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  cardWrapper: {
+    width: "48%",
+    height: 260,
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    marginVertical: 8,
+    elevation: 10,
+    overflow: "hidden",
+  },
+  cardName: {
+    fontSize: 12,
+    fontWeight: 600,
+    marginVertical: 4,
+    minHeight: 20,
+    height: 30,
+  },
+  cardImageWrapper: {
+    width: "100%",
+    height: 160,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 10,
+  },
+  cardImage: {
+    width: "100%",
+    height: "110%",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  cardContentWrapper: {
+    width: "100%",
+    height: 100,
+    paddingHorizontal: 10,
+  },
+  ctaBlock: {
+    width: "100%",
+    height: 40,
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    flexDirection: "row",
+    marginTop: 8,
+  },
+  priceBlock: {
+    width: "44%",
+    height: "100%",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+  },
+  priceHead: {
+    fontSize: 8,
+  },
+  priceText: {
+    fontWeight: 600,
+    fontSize: 20,
+  },
+  buttonsWrapper: {
+    width: "56%",
+    paddingLeft: 8,
+    height: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  button: {
+    width: "auto",
+    height: "auto",
+    marginHorizontal: 8,
+    // backgroundColor: "#10cf90",
+  },
+  itemCountWrapper: {
+    maxWidth: 24,
+    height: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    // backgroundColor  : "red",
+  },
+  itemCount: {
+    fontSize: 16,
+    fontWeight: 600,
+  },
+});
+
+let searchPageStyles = StyleSheet.create({
+  container: {
+    width: "100%",
+    height: 'auto',
+    justifyContent: "center",
+    alignItems: "center",
+    // backgroundColor: "red",
   },
 });

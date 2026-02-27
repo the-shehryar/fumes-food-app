@@ -15,6 +15,8 @@ interface CustomSearchInputProps {
     value?: string;
     onChangeText? : (text:string) => void;
     label? : string;
+    onSubmitEditing? : () => void;
+    returnKeyType? : string;
     keyboardType? : "default" | 'email-address' | 'numeric' | 'phone-pad'
 }  
 
@@ -56,6 +58,10 @@ export interface User extends Models.Row {
     $id : any,
     $updatedAt : any,
     $createdAt : any
+}
+export interface Category extends Models.Row {
+    name: string;
+    description: string;
 }
 
 interface GetMenuParams {
