@@ -5,7 +5,8 @@ import { Models } from "react-native-appwrite";
 // import "global.css"
 import * as Sentry from '@sentry/react-native';
 import useAuthStore from "@/stores/auth.store";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {GestureHandlerRootView } from "react-native-gesture-handler";
+import { GestureDetectorProvider } from "react-native-screens/gesture-handler";
 
 
 Sentry.init({
@@ -28,7 +29,7 @@ Sentry.init({
 });
 
 // let isAuthenticated = true
-export default Sentry.wrap(function RootLayout() {
+ export default Sentry.wrap(function RootLayout() {
   const {isLoading, user, isAuthenticated,fetchAuthenticatedUser} = useAuthStore()
   useEffect(() => {
     fetchAuthenticatedUser()
@@ -36,8 +37,7 @@ export default Sentry.wrap(function RootLayout() {
   }, []);
 
   return (     
-      <GestureHandlerRootView style={{ flex: 1 }}>
-      {!isAuthenticated ? (
+      !isAuthenticated ? (
         <Stack>
           <Stack.Screen name="(auth)"></Stack.Screen>
         </Stack>
@@ -48,7 +48,6 @@ export default Sentry.wrap(function RootLayout() {
             options={{ headerShown: false }}
           ></Stack.Screen>
         </Stack>
-      )}
-      </GestureHandlerRootView>
+      )
   );
 });

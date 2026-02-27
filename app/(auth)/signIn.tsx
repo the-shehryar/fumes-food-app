@@ -84,7 +84,7 @@ export default function SignIn() {
           />
           <View style={styles.checkBoxWrapper}>
             {/* Add a checkbox here */}
-            <Text style={styles.checkBoxText}>Remember Me</Text>
+            <Text style={styles.checkBoxText}>Forgot Password</Text>
           </View>
           <View style={styles.CtaBtnWrapper}>
             <CustomButton
