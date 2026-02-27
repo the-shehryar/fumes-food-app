@@ -8,6 +8,7 @@ const Filter = ({ categories }: { categories: Category[] }) => {
   const [active, setActive] = useState(searchParams.category || "all");
 
   const handlePress = (id: string, query?: string) => {
+    console.log(`pressed category ${id} with query ${query}`);
     setActive(id);
     if (id === "all") router.setParams({ category: "" });
     else {
