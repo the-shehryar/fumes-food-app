@@ -39,7 +39,9 @@ Sentry.init({
   return (     
       !isAuthenticated ? (
         <Stack>
-          <Stack.Screen name="(auth)"></Stack.Screen>
+          <Stack.Screen name="(auth)"
+          options={{headerShown : false}}
+          ></Stack.Screen>
         </Stack>
       ) : (
         <Stack>

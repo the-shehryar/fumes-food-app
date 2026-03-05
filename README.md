@@ -52,12 +52,24 @@ Join our community of developers creating universal apps.
 ## Bugs I couldn't fix so far
 
 - Seeding is can't be completed since Network request failed ✅
+- After Search if the search input is empty it does not fetch anything
 
 
 
 ## UI pending
-- searching indication
+- searching indication - ✅ 
 
 ## UI I made
-
+- added Menu Card
 - added search bar UI
+- added Cart Item Card
+- 
+
+
+
+
+Functionality that is apart from mission success / final product for v1..
+- Swipe down to refresh and also let user know about it
+- swipe to delete from cart
+- localize first response from fetch
+- 

@@ -1,0 +1,59 @@
+ {/* <View
+          style={{
+            width: "100%",
+            marginTop: 40,
+            paddingHorizontal: 30,
+            height: 30,
+            justifyContent: "center",
+            alignItems: "flex-start",
+          }}
+        >
+          <Text style={{ fontSize: 24, fontWeight: "900" }}>
+            Popular Offers
+          </Text>
+        </View> */}
+        {/* <FlatList
+          style={styles.mainView}
+          data={Offers}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item, index }) => {
+            return (
+              <View style={styles.fragmentStyles}>
+                <Pressable style={[styles.offerContainer]}>
+                  {({ pressed }) => (
+                    <Fragment>
+                      <View style={styles.imageWrapper}>
+                        <Image
+                          source={item.image}
+                          style={styles.imageStyles}
+                          resizeMode="contain"
+                        />
+                      </View>
+                      <View style={styles.detailsWrapper}>
+                        <Text style={styles.offerTag}>{item.tag}</Text>
+                        <Text style={styles.offerText}>{item.name}</Text>
+                        <Text style={styles.miniDesc}>{item.description}</Text>
+                        <TouchableOpacity
+                          style={styles.button}
+                          onPress={() => console.log(user)}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 10,
+                              marginHorizontal: 4,
+                              color: "#fff",
+                            }}
+                          >
+                            Order Now
+                          </Text>
+                          <Feather name="arrow-right" color={"#fff"} size={8} />
+                        </TouchableOpacity>
+                      </View>
+                    </Fragment>
+                  )}
+                </Pressable>
+              </View>
+            );
+          }}
+        ></FlatList> */}

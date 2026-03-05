@@ -9,6 +9,7 @@ import {
 import Feather from "@expo/vector-icons/Feather";
 import { CustomButtonProps } from "@/type";
 function CustomButton({
+  size,
   onPressTouch,
   title,
   icon,
