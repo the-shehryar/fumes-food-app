@@ -1,5 +1,5 @@
 import { CategoriesLocal, images, Offers } from "@/constants";
-import { getMenu } from "@/libs/appwrite";
+import { getMenu, getTopRatedMenu } from "@/libs/appwrite";
 import useAppwrite from "@/libs/useAppwrite";
 import useAuthStore from "@/stores/auth.store";
 import { OfferStructure } from "@/types/offerStructure.type";
@@ -27,11 +27,11 @@ export default function Index() {
   let [offers, setOffers] = useState<OfferStructure[]>([]);
   let backupOffer = [];
   let { data, loading, error, refetch } = useAppwrite({
-    fn: getMenu,
+    fn: getTopRatedMenu,
     params: {
       category: "",
       query: "",
-      limit: 10,
+      limit: 6,
     },
     skip: false,
   });
@@ -77,7 +77,8 @@ export default function Index() {
   return (
     <SafeAreaView style={{ backgroundColor: "#fff" }}>
       <ScrollView>
-        <View style={styles.customTopBarWrapper}></View>
+        {/* <View style={styles.customTopBarWrapper}></View> */}
+
         <View style={styles.heroImageWrapper}>
           <Image
             style={styles.dryStyles}
@@ -133,66 +134,7 @@ export default function Index() {
           </View>
         </View>
 
-        {/* <View
-          style={{
-            width: "100%",
-            marginTop: 40,
-            paddingHorizontal: 30,
-            height: 30,
-            justifyContent: "center",
-            alignItems: "flex-start",
-          }}
-        >
-          <Text style={{ fontSize: 24, fontWeight: "900" }}>
-            Popular Offers
-          </Text>
-        </View> */}
-        {/* <FlatList
-          style={styles.mainView}
-          data={Offers}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item, index }) => {
-            return (
-              <View style={styles.fragmentStyles}>
-                <Pressable style={[styles.offerContainer]}>
-                  {({ pressed }) => (
-                    <Fragment>
-                      <View style={styles.imageWrapper}>
-                        <Image
-                          source={item.image}
-                          style={styles.imageStyles}
-                          resizeMode="contain"
-                        />
-                      </View>
-                      <View style={styles.detailsWrapper}>
-                        <Text style={styles.offerTag}>{item.tag}</Text>
-                        <Text style={styles.offerText}>{item.name}</Text>
-                        <Text style={styles.miniDesc}>{item.description}</Text>
-                        <TouchableOpacity
-                          style={styles.button}
-                          onPress={() => console.log(user)}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 10,
-                              marginHorizontal: 4,
-                              color: "#fff",
-                            }}
-                          >
-                            Order Now
-                          </Text>
-                          <Feather name="arrow-right" color={"#fff"} size={8} />
-                        </TouchableOpacity>
-                      </View>
-                    </Fragment>
-                  )}
-                </Pressable>
-              </View>
-            );
-          }}
-        ></FlatList> */}
-
+       
         {/*  This flat list will render circular filters */}
 
         <FlatList
@@ -223,7 +165,9 @@ export default function Index() {
           }}
         />
 
-        <FlatList
+       
+      </ScrollView>
+       <FlatList
           numColumns={2}
           columnWrapperStyle={cardListStyles.columnWrapper}
           keyExtractor={(item) => item.$id}
@@ -267,7 +211,6 @@ export default function Index() {
             </TouchableOpacity>
           )}
         />
-      </ScrollView>
     </SafeAreaView>
   );
 }
