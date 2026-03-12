@@ -84,6 +84,7 @@ interface MenuItem extends Models.Row {
   protein: number;
   category_name: string;
   $id: any;
+  customizations? : string[]
   $updatedAt: any;
   $createdAt: any;
 }

@@ -70,7 +70,7 @@ export default function TabLayout() {
       name="profile"
         options={{
           title: "Profile",
-          headerShown: true,
+          headerShown: false,
           tabBarIcon: ({ color, size, focused }) => {
             return focused ? (
               <Octicons name="person" size={24} color={color} />

@@ -1,7 +1,7 @@
 import LocationIcon from "@/assets/images/majesticons_map-marker.svg";
 
 import { images } from "@/constants";
-import { getCategories, getMenu } from "@/libs/appwrite";
+import { getCategories, getMenu, getMenuWithCustomizations } from "@/libs/appwrite";
 import seed from "@/libs/seed";
 import useAppwrite from "@/libs/useAppwrite";
 import { Category, MenuItem } from "@/type";
@@ -37,7 +37,7 @@ export default function SearchScreen() {
   //? Then, you're using the `useAppwrite` hook to fetch the menu items based on the category and query parameters. The `getMenu` function is called with the appropriate parameters, and the results are stored in the `data` variable. You also have a `refetch` function that can be used to manually trigger a new fetch when the category or query parameters change.
 
   let { data, refetch, loading, error } = useAppwrite({
-    fn: getMenu,
+    fn: getMenuWithCustomizations,
     params: {
       category: category ? category : "",
       query: query ? query : "",
@@ -45,7 +45,7 @@ export default function SearchScreen() {
     },
     skip: false,
   });
-  console.log(`menu from search screen ${data}`);
+  // console.log(`menu from search screen ${data}`);
 
   let { data: categories } = useAppwrite({
     fn: getCategories,
@@ -61,6 +61,13 @@ export default function SearchScreen() {
         setIsSearching(false)
       );
       console.log(`refetching with category ${category} and query ${query}`);
+
+
+
+
+
+
+
     }
   }, [category, query]);
 
@@ -106,7 +113,7 @@ export default function SearchScreen() {
         style={styles.mainFlatListWrapper}
         data={data}
         renderItem={({ item }) => (
-         <MenuCard item={item as unknown as MenuItem} />
+          <MenuCard item={item as unknown as MenuItem} />
         )}
       />
     </SafeAreaView>
@@ -126,7 +133,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   seedBtn: {
-    display: "none",
+    // display: "none",
     justifyContent: "center",
     alignItems: "center",
     width: 220,

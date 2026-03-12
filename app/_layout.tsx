@@ -49,6 +49,10 @@ Sentry.init({
             name="(tabs)"
             options={{ headerShown: false }}
           ></Stack.Screen>
+          <Stack.Screen
+            name="products/[id]"
+            options={{ headerShown: false }}
+          ></Stack.Screen>
         </Stack>
       )
   );

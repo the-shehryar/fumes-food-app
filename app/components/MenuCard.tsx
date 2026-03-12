@@ -2,64 +2,69 @@ import AddButton from "@/assets/images/Product-Add-Btn.svg";
 import SubstractBtn from "@/assets/images/Product-Subtract-Btn.svg";
 import { images } from "@/constants/index";
 import { useCartStore } from "@/stores/cart.store";
-import {MenuItem, CartCustomization} from "@/type";
-import React, { use } from "react";
-import { Image, Text, TouchableOpacity, View, StyleSheet } from "react-native";
+import useSearchStore from "@/stores/search.store";
+import { MenuItem } from "@/type";
+import { Link, router } from "expo-router";
+import React from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const MenuCard = ({item}: {
-  item: MenuItem;
-}) => {
-
-  let { addItem}  = useCartStore();
+const MenuCard = ({ item }: { item: MenuItem }) => {
+  let { addItem } = useCartStore();
+  let { setCurrentProduct } = useSearchStore();
 
   const handleAddToCart = () => {
     addItem({
       id: item.$id,
       name: item.name,
-      description : item.description,
+      description: item.description,
       image_url: images.sandwichOffer, // You can replace this with the actual image URL from the item if available
       price: item.price,
-      size : 'regular',
-      customizations: [], // You can add default customizations if needed
+      size: "regular",
+      customizations: [] // You can add default customizations if needed
     });
-  }
+  };
 
   return (
-    <TouchableOpacity style={cardListStyles.cardWrapper}>
-      <View style={cardListStyles.cardImageWrapper}>
-        <Image
-          style={cardListStyles.cardImage}
-          resizeMode="cover"
-          source={images.sandwichOffer}
-        />
-      </View>
-      <View style={cardListStyles.cardContentWrapper}>
-        <Text
-          numberOfLines={2}
-          ellipsizeMode="tail"
-          style={cardListStyles.cardName}
-        >
-          {item.name}
-        </Text>
-        <View style={cardListStyles.ctaBlock}>
-          <View style={cardListStyles.priceBlock}>
-            <Text style={cardListStyles.priceHead}>STARTING AT</Text>
-            <Text style={cardListStyles.priceText}>${item.price}</Text>
-          </View>
-          <View style={cardListStyles.buttonsWrapper}>
-            <TouchableOpacity style={cardListStyles.button}>
-              <SubstractBtn width={28} height={28} />
-            </TouchableOpacity>
-            <View style={cardListStyles.itemCountWrapper}>
-              <Text style={cardListStyles.itemCount}>1</Text>
+    <Link href={{pathname : "/products/[id]", params : {id : item.$id}}} push asChild>
+      <TouchableOpacity style={cardListStyles.cardWrapper}>
+        <View style={cardListStyles.cardImageWrapper}>
+          <Image
+            style={cardListStyles.cardImage}
+            resizeMode="cover"
+            source={images.sandwichOffer}
+          />
+        </View>
+        <View style={cardListStyles.cardContentWrapper}>
+          <Text
+            numberOfLines={2}
+            ellipsizeMode="tail"
+            style={cardListStyles.cardName}
+          >
+            {item.name}
+          </Text>
+          <View style={cardListStyles.ctaBlock}>
+            <View style={cardListStyles.priceBlock}>
+              <Text style={cardListStyles.priceHead}>STARTING AT</Text>
+              <Text style={cardListStyles.priceText}>${item.price}</Text>
             </View>
-            <TouchableOpacity onPress={handleAddToCart} style={cardListStyles.button}>
-              <AddButton width={28} height={28} />
-            </TouchableOpacity>
+            <View style={cardListStyles.buttonsWrapper}>
+              <TouchableOpacity style={cardListStyles.button}>
+                <SubstractBtn width={28} height={28} />
+              </TouchableOpacity>
+              <View style={cardListStyles.itemCountWrapper}>
+                <Text style={cardListStyles.itemCount}>1</Text>
+              </View>
+              <TouchableOpacity
+                onPress={handleAddToCart}
+                style={cardListStyles.button}
+              >
+                <AddButton width={28} height={28} />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+      </Link>
   );
 };
 

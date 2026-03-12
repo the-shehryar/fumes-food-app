@@ -1,31 +1,29 @@
-import { CategoriesLocal, images, Offers } from "@/constants";
-import { getMenu, getTopRatedMenu } from "@/libs/appwrite";
+import AddButton from "@/assets/images/Product-Add-Btn.svg";
+import SubstractBtn from "@/assets/images/Product-Subtract-Btn.svg";
+import { CategoriesLocal, images } from "@/constants";
+import { getMenuWithCustomizations, getTopRatedMenu } from "@/libs/appwrite";
 import useAppwrite from "@/libs/useAppwrite";
 import useAuthStore from "@/stores/auth.store";
 import { OfferStructure } from "@/types/offerStructure.type";
-import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { Fragment, useEffect, useState } from "react";
-import AddButton from '@/assets/images/Product-Add-Btn.svg'
-import SubstractBtn from '@/assets/images/Product-Subtract-Btn.svg'
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
   FlatList,
   Image,
   Pressable,
   ScrollView,
-  SectionList,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { storeData } from "@/libs/asyncStorage";
 
 export default function Index() {
-  let [offers, setOffers] = useState<OfferStructure[]>([]);
-  let backupOffer = [];
+  // let []
   let { data, loading, error, refetch } = useAppwrite({
     fn: getTopRatedMenu,
     params: {
@@ -36,12 +34,28 @@ export default function Index() {
     skip: false,
   });
 
+  let { data: menus, loading: loadingMenus } = useAppwrite({
+    fn: getMenuWithCustomizations,
+    params: {
+      category: "",
+      query: "",
+    },
+    skip: false,
+  });
+
   let { user } = useAuthStore();
 
   useEffect(() => {
+    if(!loadingMenus){
+      try {
+        let menusInString = JSON.stringify(menus)
+        storeData(menusInString)
+      } catch (error) {
+        console.log(error)
+      }
+    }
     console.log("user - lo", JSON.stringify(user, null, 2));
-    // fetchOffers();
-  }, []);
+  }, [loadingMenus]);
 
   // let fetchOffers = async () => {
   //   // First we try to connect to appwrite.
@@ -134,7 +148,6 @@ export default function Index() {
           </View>
         </View>
 
-       
         {/*  This flat list will render circular filters */}
 
         <FlatList
@@ -159,58 +172,55 @@ export default function Index() {
                   )}
                 </Pressable>
                 <Text style={circularFilter.btnText}>{item.name}</Text>
-
               </View>
             );
           }}
         />
-
-       
       </ScrollView>
-       <FlatList
-          numColumns={2}
-          columnWrapperStyle={cardListStyles.columnWrapper}
-          keyExtractor={(item) => item.$id}
-          style={cardListStyles.mainFlatListWrapper}
-          data={data}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={cardListStyles.cardWrapper}>
-              <View style={cardListStyles.cardImageWrapper}>
-                <Image
-                  style={cardListStyles.cardImage}
-                  resizeMode="cover"
-                  source={images.sandwichOffer}
-                />
-              </View>
-              <View style={cardListStyles.cardContentWrapper}>
-                <Text
-                  numberOfLines={2}
-                  ellipsizeMode="tail"
-                  style={cardListStyles.cardName}
-                >
-                  {item.name}
-                </Text>
-                <View style={cardListStyles.ctaBlock}>
-                  <View style={cardListStyles.priceBlock}>
-                    <Text style={cardListStyles.priceHead}>STARTING AT</Text>
-                    <Text style={cardListStyles.priceText}>${item.price}</Text>
+      <FlatList
+        numColumns={2}
+        columnWrapperStyle={cardListStyles.columnWrapper}
+        keyExtractor={(item) => item.$id}
+        style={cardListStyles.mainFlatListWrapper}
+        data={data}
+        renderItem={({ item }) => (
+          <TouchableOpacity style={cardListStyles.cardWrapper}>
+            <View style={cardListStyles.cardImageWrapper}>
+              <Image
+                style={cardListStyles.cardImage}
+                resizeMode="cover"
+                source={images.sandwichOffer}
+              />
+            </View>
+            <View style={cardListStyles.cardContentWrapper}>
+              <Text
+                numberOfLines={2}
+                ellipsizeMode="tail"
+                style={cardListStyles.cardName}
+              >
+                {item.name}
+              </Text>
+              <View style={cardListStyles.ctaBlock}>
+                <View style={cardListStyles.priceBlock}>
+                  <Text style={cardListStyles.priceHead}>STARTING AT</Text>
+                  <Text style={cardListStyles.priceText}>${item.price}</Text>
+                </View>
+                <View style={cardListStyles.buttonsWrapper}>
+                  <TouchableOpacity style={cardListStyles.button}>
+                    <SubstractBtn width={28} height={28} />
+                  </TouchableOpacity>
+                  <View style={cardListStyles.itemCountWrapper}>
+                    <Text style={cardListStyles.itemCount}>4</Text>
                   </View>
-                  <View style={cardListStyles.buttonsWrapper}>
-                    <TouchableOpacity style={cardListStyles.button}>
-                      <SubstractBtn width={28} height={28} />
-                    </TouchableOpacity>
-                    <View style={cardListStyles.itemCountWrapper}>
-                      <Text style={cardListStyles.itemCount}>4</Text>
-                    </View>
-                    <TouchableOpacity style={cardListStyles.button}>
-                      <AddButton width={28} height={28} />
-                    </TouchableOpacity>
-                  </View>
+                  <TouchableOpacity style={cardListStyles.button}>
+                    <AddButton width={28} height={28} />
+                  </TouchableOpacity>
                 </View>
               </View>
-            </TouchableOpacity>
-          )}
-        />
+            </View>
+          </TouchableOpacity>
+        )}
+      />
     </SafeAreaView>
   );
 }
@@ -470,31 +480,31 @@ let cardListStyles = StyleSheet.create({
     fontWeight: 600,
     fontSize: 20,
   },
-  buttonsWrapper: { 
-    width : '56%',
-    paddingLeft : 8,
-    height : '100%',
-    flexDirection  : 'row',
-    justifyContent : "center",
-    alignItems  : "center"
+  buttonsWrapper: {
+    width: "56%",
+    paddingLeft: 8,
+    height: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  button : {
-    width : 'auto',
-    height :  "auto",
-    marginHorizontal : 8,
+  button: {
+    width: "auto",
+    height: "auto",
+    marginHorizontal: 8,
     // backgroundColor: "#10cf90",
   },
-  itemCountWrapper : {
-    maxWidth : 24,
-    height  : 24,
-    justifyContent : 'center',
-    alignItems : "center",
-    // backgroundColor  : "red",   
-},
-itemCount : { 
-  fontSize  : 16,
-  fontWeight  : 600
-}
+  itemCountWrapper: {
+    maxWidth: 24,
+    height: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    // backgroundColor  : "red",
+  },
+  itemCount: {
+    fontSize: 16,
+    fontWeight: 600,
+  },
 });
 
 let circularFilter = StyleSheet.create({
@@ -502,8 +512,8 @@ let circularFilter = StyleSheet.create({
     width: "auto",
     height: "auto",
     paddingTop: 20,
-    paddingLeft : 20,
-    marginBottom  : 40
+    paddingLeft: 20,
+    marginBottom: 40,
   },
   btnText: {
     fontSize: 10,
