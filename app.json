@@ -47,6 +47,13 @@
           "project": "react-native-fumes",
           "organization": "sherriz"
         }
+      ],
+       [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "We use your location to show nearby restaurants.",
+          "locationWhenInUsePermission": "We use your location to show nearby restaurants."
+        }
       ]
     ],
     "experiments": {

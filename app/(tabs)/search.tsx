@@ -1,16 +1,17 @@
 import LocationIcon from "@/assets/images/majesticons_map-marker.svg";
 
-import { images } from "@/constants";
-import { getCategories, getMenu, getMenuWithCustomizations } from "@/libs/appwrite";
+import { getCategories, getMenuWithCustomizations } from "@/libs/appwrite";
+import { getStoredData } from "@/libs/asyncStorage";
 import seed from "@/libs/seed";
 import useAppwrite from "@/libs/useAppwrite";
+import useMenusState from "@/stores/menus.store";
+import useSearchStore from "@/stores/search.store";
 import { Category, MenuItem } from "@/type";
 import { useLocalSearchParams } from "expo-router/build/hooks";
 import { useEffect } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -19,15 +20,14 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Filter from "../components/Filter";
-import SearchBar from "../components/SearchBar";
-import useSearchStore from "@/stores/search.store";
 import MenuCard from "../components/MenuCard";
+import SearchBar from "../components/SearchBar";
+import useLocationStore from "@/stores/location.store";
 
 export default function SearchScreen() {
   //? You're using the `useLocalSearchParams` hook to access the search parameters from the URL.
 
-
-  const {isSearching, setIsSearching} = useSearchStore()
+  const { isSearching, setIsSearching } = useSearchStore();
 
   let { category, query } = useLocalSearchParams<{
     category: string;
@@ -36,15 +36,21 @@ export default function SearchScreen() {
 
   //? Then, you're using the `useAppwrite` hook to fetch the menu items based on the category and query parameters. The `getMenu` function is called with the appropriate parameters, and the results are stored in the `data` variable. You also have a `refetch` function that can be used to manually trigger a new fetch when the category or query parameters change.
 
+  let { isLocalized, menus, setMenus } = useMenusState();
+
   let { data, refetch, loading, error } = useAppwrite({
     fn: getMenuWithCustomizations,
     params: {
       category: category ? category : "",
       query: query ? query : "",
-      limit: 10,
+      // limit: 10,
     },
     skip: false,
   });
+
+  if (isLocalized && category === undefined && query === undefined) {
+    fetchLocalData("mainMenu");
+  }
   // console.log(`menu from search screen ${data}`);
 
   let { data: categories } = useAppwrite({
@@ -52,22 +58,33 @@ export default function SearchScreen() {
     skip: false,
   });
 
+  async function fetchLocalData(value: string) {
+    let parsedData = await getStoredData(value);
+    setMenus(parsedData);
+  }
+  async function searchLocally(category: string, query : string) {
+    let newItems = menus?.filter((item) => {
+      let target = item.name.toLowerCase();
+      return target.includes(query.toLowerCase())
+    });
+
+    setIsSearching(false)
+  }
+
+  let {address} = useLocationStore()
+
   useEffect(() => {
-    console.log(`category or query changed ${category} ${query}`);
+    //? Make refetch once local Storage is empty
+    //* searchLocalStorage functions from asyncStorage
     if (category !== undefined && query !== undefined) {
-      refetch({ category, query, limit: 10 }).catch((error) =>
-        console.log(error),
-      ).finally(() => 
-        setIsSearching(false)
-      );
+      //? User is in search mode
+        refetch({ category, query })
+          .catch((error) => console.log(error))
+          .finally(() => {
+            setIsSearching(false);
+          });
+
       console.log(`refetching with category ${category} and query ${query}`);
-
-
-
-
-
-
-
     }
   }, [category, query]);
 
@@ -86,7 +103,7 @@ export default function SearchScreen() {
             <LocationIcon width={24} height={24} />
           </View>
           <TouchableOpacity style={styles.locationPressable}>
-            <Text style={styles.locationText}>Rawalpindi, Pakistan</Text>
+            <Text style={styles.locationText}>{address}</Text>
           </TouchableOpacity>
         </Pressable>
       </View>
@@ -99,23 +116,20 @@ export default function SearchScreen() {
         categories={categories ? (categories as unknown as Category[]) : []}
       />
       <View style={searchPageStyles.container}>
-        {isSearching ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        ''
-      )}
+        {isSearching ? <ActivityIndicator size="large" color="#0000ff" /> : ""}
       </View>
 
-      <FlatList
-        numColumns={2}
-        columnWrapperStyle={styles.columnWrapper}
-        keyExtractor={(item) => item.$id}
-        style={styles.mainFlatListWrapper}
-        data={data}
-        renderItem={({ item }) => (
-          <MenuCard item={item as unknown as MenuItem} />
-        )}
-      />
+        <FlatList
+          numColumns={2}
+          columnWrapperStyle={styles.columnWrapper}
+          keyExtractor={(item) => item.$id}
+          style={styles.mainFlatListWrapper}
+          data={data}
+          renderItem={({ item }) => (
+            <MenuCard item={item as unknown as MenuItem} />
+          )}
+        />
+      
     </SafeAreaView>
   );
 }
@@ -126,14 +140,17 @@ const styles = StyleSheet.create({
     height: "auto",
     paddingHorizontal: 20,
     overflowX: "hidden",
-    marginTop: 20,
+    marginTop: 0,
+    marginBottom  : 200,
+    // backgroundColor  : "yellow"
   },
   columnWrapper: {
+    // backgroundColor  : 'red',
     justifyContent: "space-between",
     marginBottom: 20,
   },
   seedBtn: {
-    // display: "none",
+    display: "none",
     justifyContent: "center",
     alignItems: "center",
     width: 220,
@@ -173,11 +190,10 @@ const styles = StyleSheet.create({
   mainCardWrapper: {},
 });
 
-
 let searchPageStyles = StyleSheet.create({
   container: {
     width: "100%",
-    height: 'auto',
+    height: "auto",
     justifyContent: "center",
     alignItems: "center",
     // backgroundColor: "red",

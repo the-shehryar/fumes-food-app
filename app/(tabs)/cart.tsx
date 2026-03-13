@@ -12,7 +12,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import CartItem from "../components/CartItem";
 import CheckoutFormSheet from "../components/CheckoutFormSheet";
 import EmptyCart from "../components/EmptyCart";
-import { Link } from "expo-router";
 
 export default function CartScreen() {
   const {
@@ -47,39 +46,57 @@ export default function CartScreen() {
           backgroundColor: "#fefefe",
         }}
       >
-        {/* <Text>{total} items in cart</Text>
-      <Text>${totalPrice.toFixed(2)} total price</Text> */}
+        {/* 
+          <Text>{total} items in cart</Text>
+          <Text>${totalPrice.toFixed(2)} total price</Text>
+       */}
 
-        <View style={{
-            width : "100%",
-            height : 60,
-            justifyContent : "center",
-            alignItems : 'center',
-            elevation : 5,
-            shadowColor : "#00000069"
+        <View
+          style={{
+            width: "100%",
+            height: 60,
+            justifyContent: "center",
+            alignItems: "center",
+            elevation: 5,
+            shadowColor: "#00000069",
             // backgroundColor : "red"
-        }}>
-          <Text style={{
-            fontWeight : 600,
-            fontSize : 18,
-            marginBottom : 20,
-          }}>Shopping Cart</Text>
+          }}
+        >
+          <Text
+            style={{
+              fontWeight: 600,
+              fontSize: 18,
+              marginBottom: 20,
+            }}
+          >
+            Shopping Cart
+          </Text>
         </View>
 
         {items.length > 0 ? (
           <>
-            <View style={{ width : "100%", height: Dimensions.get("window").height - 560 }}>
+            <View
+              style={{
+                width: "100%",
+                height: Dimensions.get("window").height - 560,
+              }}
+            >
               <FlatList
-                style = {{width : '100%'}}
+                style={{ width: "100%" }}
                 data={items}
-                renderItem={({ item }) => {
-                  return <CartItem item={item} />;
+                renderItem={({ item, index }) => {
+                  return <CartItem item={item} index={index} />;
                 }}
                 keyExtractor={(item) => item.id}
               />
             </View>
             <CheckoutFormSheet />
+
+
+            {/* AI Cart */}
+
           </>
+         
         ) : (
           <EmptyCart />
         )}

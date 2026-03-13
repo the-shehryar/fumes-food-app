@@ -1,6 +1,8 @@
 import { ID, Models } from "react-native-appwrite";
 import { appwriteConfig, databases, storage } from "./appwrite";
 import seedableData from "./data";
+import {ImageManipulator, SaveFormat, manipulateAsync} from 'expo-image-manipulator'
+
 
 interface Category {
   name: string;
@@ -30,7 +32,7 @@ interface MenuItem extends Models.Row {
   name: string;
   description: string;
   price: number;
-  image_url?: string;
+  image_url: string;
   rating: number;
   calories: number;
   protein: number;
@@ -81,54 +83,49 @@ async function clearStorage(): Promise<void> {
   );
 }
 //? Upload image to Storage
-async function uploadImageToStorage(imageUrl: string) {
-  const response = await fetch(imageUrl);
-  const blob = await response.blob();
 
-  const fileObj = {
-    name: imageUrl.split("/").pop() || `file-${Date.now()}.jpg`,
-    type: blob.type,
-    size: blob.size,
-    uri: imageUrl,
-  };
+async function compressImage(imageUri: string) {
+  const compression = await ImageManipulator.manipulate(imageUri)
+    .resize({ width: 1024 })
+    .renderAsync();
 
-  const file = await storage.createFile({
-    bucketId: appwriteConfig.bucketId,
-    fileId: ID.unique(),
-    file: fileObj,
+  const result = await compression.saveAsync({
+    compress: 0.7,
+    format: SaveFormat.JPEG,
   });
 
-  return storage.getFileViewURL(appwriteConfig.bucketId, file.$id);
+  return result.uri;
 }
-// async function uploadImageToStorage2(imageUrl: string) {
-//     const destination = new Directory(Paths.document, 'imagesUrl2')
-//     if (!destination.exists){
-//         console.log('en el if');
-//         destination.create()
-//     } else {
-//         console.log('en el else');
-//         console.log('destination',destination);
-//     }
-//     const blob = await File.downloadFileAsync(imageUrl, destination)
-//     destination.delete()
-//     console.log('blob', blob)
-//     console.log('blob.uri', blob.uri)
 
-//     const fileObj = {
-//         name: imageUrl.split("/").pop() || `file-${Date.now()}.jpg`,
-//         type: blob.type,
-//         size: blob.size,
-//         uri: imageUrl,
-//     };
+async function uploadImageToStorage(imageUrl: string) {
+  // Compressed Image
+  const compressedUri = await compressImage(imageUrl);
+  // Fetching Compressed Image
+  const response = await fetch(compressedUri);
+  // Creating a blob to upload
+  const blob = await response.blob();
 
-//     const file = await storage.createFile(
-//         appwriteConfig.bucketId,
-//         ID.unique(),
-//         fileObj
-//     );
+  // Creating file name
+  const fileName = imageUrl.split("/").pop() || `file-${Date.now()}.jpg`;
 
-//     return storage.getFileViewURL(appwriteConfig.bucketId, file.$id);
-// }
+  //  file specific structure
+  const file = {
+    name: fileName,
+    type: blob.type || "image/jpeg",
+    size: blob.size,
+    uri: compressedUri,
+  };
+
+  const uploaded = await storage.createFile({
+    bucketId :  appwriteConfig.bucketId,
+    fileId : ID.unique(),
+    file
+  }
+  );
+
+  return storage.getFileViewURL(appwriteConfig.bucketId, uploaded.$id);
+}
+
 
 async function seed(): Promise<void> {
   // 1. Clear all
@@ -164,6 +161,7 @@ async function seed(): Promise<void> {
         name: cus.name,
         price: cus.price,
         type: cus.type,
+        icon : cus.icon
       },
     });
     console.log(doc.name);
@@ -173,8 +171,9 @@ async function seed(): Promise<void> {
   // 4. Create Menu Items
   const menuMap: Record<string, string> = {};
   for (const item of data.menu) {
-    // const uploadedImage = await uploadImageToStorage(item.image_url);
-    // console.log(uploadedImage)
+
+    const uploadedImage = await uploadImageToStorage(item.image_url);
+    console.log(uploadedImage)
     const doc = await databases.createRow({
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.menuCollectionId,
@@ -182,7 +181,7 @@ async function seed(): Promise<void> {
       data: {
         name: item.name,
         description: item.description,
-        // image_url: uploadedImage,
+        image_url: uploadedImage,
         price: item.price,
         rating: item.rating,
         calories: item.calories,

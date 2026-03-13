@@ -344,7 +344,7 @@ export default function ProductScreen() {
           {/* ── Hero Image ── */}
           <View style={styles.heroWrap}>
             <Animated.Image
-              source={{ uri: PRODUCT.image }}
+              source={{ uri: product.image_url }}
               style={[
                 styles.heroImg,
                 { transform: [{ translateY: heroTranslate }] },

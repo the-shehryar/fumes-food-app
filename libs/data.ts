@@ -10,10 +10,10 @@ const seedbaleData = {
 
   customizations: [
     // Sides
-    { icon: "🍟", name: "Loaded Fries", price: 3.49, type: "side" },
+    { icon: "🍟", name: "Fries", price: 3.49, type: "side" },
     { icon: "🥗", name: "Garden Salad", price: 2.99, type: "side" },
-    { icon: "🧅", name: "Onion Rings", price: 2.75, type: "side" },
-    { icon: "🥤", name: "Soft Drink (330ml)", price: 1.5, type: "side" },
+    { icon: "🧅", name: "Onions", price: 2.75, type: "side" },
+    { icon: "🥤", name: "Coke", price: 1.5, type: "side" },
     { icon: "🍦", name: "Vanilla Soft Serve", price: 1.99, type: "side" },
     { icon: "🫙", name: "Coleslaw Cup", price: 1.25, type: "side" },
     { icon: "🧋", name: "Iced Tea", price: 28, type: "side" },
@@ -24,14 +24,15 @@ const seedbaleData = {
     // Toppings
     { icon: "🧀", name: "Extra Cheese", price: 1.25, type: "topping" },
     { icon: "🥩", name: "Extra Meat Patty", price: 5.25, type: "topping" },
-    { icon: "🥑", name: "Avocado Slice", price: 1.75, type: "topping" },
-    { icon: "🥓", name: "Crispy Bacon", price: 2.5, type: "topping" },
-    { icon: "🌶️", name: "Jalapeños", price: 0.75, type: "topping" },
+    { icon: "🥑", name: "Avocado", price: 1.75, type: "topping" },
+    { icon: "🥓", name: "Bacon", price: 2.5, type: "topping" },
+    { icon: "🌶️", name: "Jalapeños", price: 1, type: "topping" },
     { icon: "🍳", name: "Fried Egg", price: 1.0, type: "topping" },
+    { icon: "🍅", name: "Tomatoes", price: 1.0, type: "topping" },
 
-    { icon : "NA", name: "Garlic Bread", price: 40, type: "side" },
+    { icon : "🥖", name: "Garlic Bread", price: 40, type: "side" },
     { icon : "NA", name: "Chicken Nuggets", price: 50, type: "side" },
-    { icon : "NA", name: "Potato Wedges", price: 38, type: "side" },
+    { icon : "🫒", name: "Olives", price: 38, type: "side" },
     { icon : "NA", name: "Mozzarella Sticks", price: 45, type: "side" },
   ],
 
@@ -39,8 +40,7 @@ const seedbaleData = {
     {
       name: "Classic Cheeseburger",
       description: "Beef patty, cheese, lettuce, tomato",
-      image_url:
-        "https://static.vecteezy.com/system/resources/previews/044/844/600/large_2x/homemade-fresh-tasty-burger-with-meat-and-cheese-classic-cheese-burger-and-vegetable-ai-generated-free-png.png",
+      image_url: "https://images.pexels.com/photos/3915915/pexels-photo-3915915.jpeg",
       price: 25.99,
       rating: 4.5,
       calories: 550,
@@ -51,8 +51,7 @@ const seedbaleData = {
     {
       name: "Pepperoni Pizza",
       description: "Loaded with cheese and pepperoni slices",
-      image_url:
-        "https://static.vecteezy.com/system/resources/previews/023/742/417/large_2x/pepperoni-pizza-isolated-illustration-ai-generative-free-png.png",
+      image_url:"https://images.pexels.com/photos/17907810/pexels-photo-17907810.jpeg",
       price: 30.99,
       rating: 4.7,
       calories: 700,
@@ -69,8 +68,7 @@ const seedbaleData = {
     {
       name: "Bean Burrito",
       description: "Stuffed with beans, rice, salsa",
-      image_url:
-        "https://static.vecteezy.com/system/resources/previews/055/133/581/large_2x/deliciously-grilled-burritos-filled-with-beans-corn-and-fresh-vegetables-served-with-lime-wedge-and-cilantro-isolated-on-transparent-background-free-png.png",
+      image_url: "https://images.pexels.com/photos/27365284/pexels-photo-27365284.jpeg",
       price: 20.99,
       rating: 4.2,
       calories: 480,
@@ -81,8 +79,7 @@ const seedbaleData = {
     {
       name: "BBQ Bacon Burger",
       description: "Smoky BBQ sauce, crispy bacon, cheddar",
-      image_url:
-        "https://static.vecteezy.com/system/resources/previews/060/236/245/large_2x/a-large-hamburger-with-cheese-onions-and-lettuce-free-png.png",
+      image_url:"https://images.pexels.com/photos/31450804/pexels-photo-31450804.jpeg",
       price: 27.5,
       rating: 4.8,
       calories: 650,
@@ -93,32 +90,30 @@ const seedbaleData = {
     {
       name: "Chicken Caesar Wrap",
       description: "Grilled chicken, lettuce, Caesar dressing",
-      image_url:
-        "https://static.vecteezy.com/system/resources/previews/048/930/603/large_2x/caesar-wrap-grilled-chicken-isolated-on-transparent-background-free-png.png",
+      image_url: "https://images.pexels.com/photos/9624298/pexels-photo-9624298.jpeg",
       price: 21.5,
       rating: 4.4,
       calories: 490,
       protein: 28,
       category_name: "Wraps",
-      customizations: ["Extra Cheese", "Coke", "Potato Wedges", "Tomatoes"],
+      customizations: ["Extra Cheese", "Coke", "Olives", "Tomatoes"],
     },
     {
       name: "Grilled Veggie Sandwich",
       description: "Roasted veggies, pesto, cheese",
-      image_url:
-        "https://static.vecteezy.com/system/resources/previews/047/832/012/large_2x/grilled-sesame-seed-bread-veggie-sandwich-with-tomato-and-onion-free-png.png",
+      image_url: "https://images.pexels.com/photos/28681955/pexels-photo-28681955.jpeg",
       price: 19.99,
       rating: 4.1,
       calories: 420,
       protein: 19,
       category_name: "Sandwiches",
-      customizations: ["Mushrooms", "Olives", "Mozzarella Sticks", "Iced Tea"],
+      customizations: ["Olives", "Coke", "Iced Tea"],
     },
     {
       name: "Double Patty Burger",
       description: "Two juicy beef patties and cheese",
       image_url:
-        "https://static.vecteezy.com/system/resources/previews/060/359/627/large_2x/double-cheeseburger-with-lettuce-tomatoes-cheese-and-sesame-bun-free-png.png",
+        "https://images.pexels.com/photos/11062006/pexels-photo-11062006.jpeg",
       price: 32.99,
       rating: 4.9,
       calories: 720,
@@ -133,10 +128,10 @@ const seedbaleData = {
       ],
     },
     {
-      name: "Paneer Tikka Wrap",
+      name: "Paneer Tikka Piiza",
       description: "Spicy paneer, mint chutney, veggies",
       image_url:
-        "https://static.vecteezy.com/system/resources/previews/057/913/530/large_2x/delicious-wraps-a-tantalizing-array-of-wraps-filled-with-vibrant-vegetables-succulent-fillings-and-fresh-ingredients-artfully-arranged-for-a-mouthwatering-culinary-experience-free-png.png",
+        "https://images.pexels.com/photos/11974635/pexels-photo-11974635.jpeg",
       price: 23.99,
       rating: 4.6,
       calories: 470,
@@ -145,10 +140,10 @@ const seedbaleData = {
       customizations: ["Jalapeños", "Tomatoes", "Salad", "Fries", "Iced Tea"],
     },
     {
-      name: "Mexican Burrito Bowl",
+      name: "Mexican Taco Tray",
       description: "Rice, beans, corn, guac, salsa",
       image_url:
-        "https://static.vecteezy.com/system/resources/previews/057/466/374/large_2x/healthy-quinoa-bowl-with-avocado-tomato-and-black-beans-ingredients-free-png.png",
+        "https://images.pexels.com/photos/674578/pexels-photo-674578.jpeg",
       price: 26.49,
       rating: 4.7,
       calories: 610,
@@ -157,10 +152,10 @@ const seedbaleData = {
       customizations: ["Avocado", "Sweet Corn", "Salad", "Iced Tea"],
     },
     {
-      name: "Spicy Chicken Sandwich",
+      name: "Spicy Chicken Burger with Yellow Cheese",
       description: "Crispy chicken, spicy sauce, pickles",
       image_url:
-        "https://static.vecteezy.com/system/resources/previews/051/814/008/large_2x/a-grilled-chicken-sandwich-with-lettuce-and-tomatoes-free-png.png",
+        "https://images.pexels.com/photos/8294896/pexels-photo-8294896.jpeg",
       price: 24.99,
       rating: 4.3,
       calories: 540,
@@ -178,7 +173,7 @@ const seedbaleData = {
       name: "Classic Margherita Pizza",
       description: "Tomato, mozzarella, fresh basil",
       image_url:
-        "https://static.vecteezy.com/system/resources/previews/058/700/845/large_2x/free-isolated-on-transparent-background-delicious-pizza-topped-with-fresh-tomatoes-basil-and-melted-cheese-perfect-for-food-free-png.png",
+        "https://images.pexels.com/photos/31450853/pexels-photo-31450853.jpeg",
       price: 26.99,
       rating: 4.1,
       calories: 590,
@@ -187,10 +182,10 @@ const seedbaleData = {
       customizations: ["Extra Cheese", "Olives", "Coke", "Garlic Bread"],
     },
     {
-      name: "Protein Power Bowl",
-      description: "Grilled chicken, quinoa, veggies",
+      name: "Malai Botti Pizza",
+      description: "Mayo chicken, and loads of cheese",
       image_url:
-        "https://static.vecteezy.com/system/resources/previews/056/106/379/large_2x/top-view-salad-with-chicken-avocado-tomatoes-and-lettuce-free-png.png",
+        "https://images.pexels.com/photos/10371465/pexels-photo-10371465.jpeg",
       price: 29.99,
       rating: 4.8,
       calories: 580,
@@ -199,10 +194,10 @@ const seedbaleData = {
       customizations: ["Avocado", "Salad", "Sweet Corn", "Iced Tea"],
     },
     {
-      name: "Paneer Burrito",
-      description: "Paneer cubes, spicy masala, rice, beans",
+      name: "Paneer Momos with Chutney",
+      description: "Paneer cubes, spicy masala, chutney,",
       image_url:
-        "https://static.vecteezy.com/system/resources/previews/056/565/254/large_2x/burrito-with-cauliflower-and-vegetables-free-png.png",
+        "https://images.pexels.com/photos/28445589/pexels-photo-28445589.jpeg",
       price: 24.99,
       rating: 4.2,
       calories: 510,
@@ -214,13 +209,13 @@ const seedbaleData = {
       name: "Chicken Club Sandwich",
       description: "Grilled chicken, lettuce, cheese, tomato",
       image_url:
-        "https://static.vecteezy.com/system/resources/previews/060/364/135/large_2x/a-flavorful-club-sandwich-with-turkey-bacon-and-fresh-vegetables-sliced-and-isolated-on-a-transparent-background-free-png.png",
+        "https://images.pexels.com/photos/29346178/pexels-photo-29346178.jpeg",
       price: 27.49,
       rating: 4.5,
       calories: 610,
       protein: 31,
       category_name: "Sandwiches",
-      customizations: ["Bacon", "Tomatoes", "Mozzarella Sticks", "Iced Tea"],
+      customizations: ["Bacon", "Tomatoes", "Garlic Bread", "Iced Tea"],
     },
   ],
 };

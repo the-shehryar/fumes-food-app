@@ -5,6 +5,7 @@ import { create } from "zustand";
 
 interface CartStore {
     items: CartItemType[];
+    index? : number,
     addItem: (item: Omit<CartItemType, "quantity">) => void;
     removeItem: (id: string, customizations: CartCustomization[]) => void;
     increaseQty: (id: string, customizations: CartCustomization[]) => void;
@@ -28,7 +29,6 @@ function areCustomizationsEqual(
 
 export const useCartStore = create<CartStore>((set, get) => ({
     items: [],
-
     addItem: (item) => {
         console.log('its running')
         const customizations = item.customizations ?? [];

@@ -59,10 +59,12 @@ let styles = StyleSheet.create({
   },
   mainFlatListWrapper: {
     width: "100%",
-    height: 50,
+    height: 60,
     // paddingHorizontal: 20,
     overflowX: "hidden",
     margin: 20,
+    marginBottom : 4,
+    // backgroundColor : 'cyan',
   },
   categoriesBtn: {
     width: 100,
