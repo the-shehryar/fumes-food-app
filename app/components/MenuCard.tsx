@@ -1,37 +1,47 @@
 import AddButton from "@/assets/images/Product-Add-Btn.svg";
 import SubstractBtn from "@/assets/images/Product-Subtract-Btn.svg";
-import { images } from "@/constants/index";
 import { useCartStore } from "@/stores/cart.store";
 import useSearchStore from "@/stores/search.store";
 import { MenuItem } from "@/type";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const MenuCard = ({ item }: { item: MenuItem }) => {
+  // console.log(item.image_url)
   let { addItem } = useCartStore();
   let { setCurrentProduct } = useSearchStore();
 
   const handleAddToCart = () => {
+    
     addItem({
       id: item.$id,
       name: item.name,
       description: item.description,
-      image_url: images.sandwichOffer, // You can replace this with the actual image URL from the item if available
+      image_url: item.image_url, // You can replace this with the actual image URL from the item if available
       price: item.price,
       size: "regular",
-      customizations: [] // You can add default customizations if needed
+      customizations: [], // You can add default customizations if needed
+      rating: item.rating,
+      calories: item.calories,
+      category_name: item.category_name,
     });
   };
 
   return (
-    <Link href={{pathname : "/products/[id]", params : {id : item.$id}}} push asChild>
+    <Link
+      href={{ pathname: "/products/[id]", params: { id: item.$id } }}
+      push
+      asChild
+    >
       <TouchableOpacity style={cardListStyles.cardWrapper}>
         <View style={cardListStyles.cardImageWrapper}>
           <Image
             style={cardListStyles.cardImage}
             resizeMode="cover"
-            source={images.sandwichOffer}
+            source={{ uri: item.image_url }}
+            onLoad={() => console.log("✅ image loaded")}
+            onError={(e) => console.log("❌ image error", e.nativeEvent.error)}
           />
         </View>
         <View style={cardListStyles.cardContentWrapper}>
@@ -64,30 +74,19 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
           </View>
         </View>
       </TouchableOpacity>
-      </Link>
+    </Link>
   );
 };
 
 export default MenuCard;
 
 let cardListStyles = StyleSheet.create({
-  mainFlatListWrapper: {
-    width: "100%",
-    height: "auto",
-    paddingHorizontal: 20,
-    overflowX: "hidden",
-    marginTop: 20,
-  },
-  columnWrapper: {
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
   cardWrapper: {
     width: "48%",
     height: 260,
     backgroundColor: "#fff",
     borderRadius: 16,
-    marginVertical: 8,
+    marginVertical: 2,
     elevation: 10,
     overflow: "hidden",
   },

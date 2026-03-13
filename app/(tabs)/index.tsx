@@ -1,29 +1,28 @@
-import AddButton from "@/assets/images/Product-Add-Btn.svg";
-import SubstractBtn from "@/assets/images/Product-Subtract-Btn.svg";
 import { CategoriesLocal, images } from "@/constants";
 import { getMenuWithCustomizations, getTopRatedMenu } from "@/libs/appwrite";
+import { storeData } from "@/libs/asyncStorage";
 import useAppwrite from "@/libs/useAppwrite";
 import useAuthStore from "@/stores/auth.store";
-import { OfferStructure } from "@/types/offerStructure.type";
+import useMenusState from "@/stores/menus.store";
+import { MenuItem } from "@/type";
 import { LinearGradient } from "expo-linear-gradient";
-import { Fragment, useEffect, useState } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import * as Location from "expo-location";
+import { Fragment, useEffect } from "react";
 import {
   FlatList,
   Image,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { storeData } from "@/libs/asyncStorage";
+import MenuCard from "../components/MenuCard";
+import useLocationStore from "@/stores/location.store";
 
 export default function Index() {
-  // let []
+  let { isLocalized, setIsLocalized } = useMenusState();
+
   let { data, loading, error, refetch } = useAppwrite({
     fn: getTopRatedMenu,
     params: {
@@ -44,181 +43,149 @@ export default function Index() {
   });
 
   let { user } = useAuthStore();
+  let {setAddress} = useLocationStore()
+
+  const HeaderComponent = () => (
+    <>
+      <View style={styles.heroImageWrapper}>
+        <Image
+          style={styles.dryStyles}
+          source={images.burgerBackground}
+          resizeMode="contain"
+        />
+        <Image
+          style={styles.transparentBurgerStyles}
+          source={images.burgerTransparent}
+          resizeMode="contain"
+        />
+      </View>
+      <View style={styles.heroTextWrapper}>
+        <View style={styles.slideIndicator}>
+          <LinearGradient
+            colors={["#FF611D", "#FFA680"]}
+            style={styles.background}
+          >
+            <View style={styles.firstArm}></View>
+          </LinearGradient>
+
+          <View style={styles.indicatorTextWrapper}>
+            <Text style={styles.indicatorTextStyles}>2</Text>
+            <Text style={styles.indicatorTextShadowStyles}></Text>
+          </View>
+
+          <LinearGradient
+            // Background Linear Gradient
+            colors={["#FF611D", "#FFA680"]}
+            style={styles.background}
+          >
+            <View style={styles.secondArm}></View>
+          </LinearGradient>
+        </View>
+
+        <View style={styles.slideText}>
+          <View>
+            <Text style={{ fontSize: 24, fontWeight: "600", color: "#000" }}>
+              A Special Dish with —{" "}
+            </Text>
+            <Text style={{ fontSize: 40, fontWeight: "900", color: "#FF611D" }}>
+              Endless Taste
+            </Text>
+          </View>
+          <View>
+            <Text style={{ fontSize: 12, color: "#6e6e72" }}>
+              Close your eyes on the first bite, and you'll swear you're
+              standing in a sun-drenched Mediterranean kitchen.
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {/*  This flat list will render circular filters */}
+
+      <FlatList
+        style={circularFilter.cirularFilerMain}
+        data={CategoriesLocal}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        renderItem={({ item, index }) => {
+          return (
+            <View style={circularFilter.circularBtnWrapper}>
+              <Pressable style={[circularFilter.circularBtn]}>
+                {({ pressed }) => (
+                  <Fragment>
+                    <View>
+                      <Image
+                        source={item.image}
+                        style={circularFilter.imageStyles}
+                        resizeMode="contain"
+                      />
+                    </View>
+                  </Fragment>
+                )}
+              </Pressable>
+              <Text style={circularFilter.btnText}>{item.name}</Text>
+            </View>
+          );
+        }}
+      />
+    </>
+  );
+
+  async function requestLocationPermission() {
+    
+    
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      console.log("Location permission denied");
+      return;
+    }
+    // ✅ permission granted, get location
+    const location = await Location.getCurrentPositionAsync({});
+
+    const [address] = await Location.reverseGeocodeAsync({
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    });
+    let city = address.city ?? "Unknown City"
+    let country = address.country ?? "Unknown Country"
+    let compiledAddress =  city + ', ' + country
+    console.log(location.mocked)
+    // console.log(compiledAddress);
+    setAddress(compiledAddress)
+  }
 
   useEffect(() => {
-    if(!loadingMenus){
+    //? Location Permission
+    requestLocationPermission()
+
+
+    if (!loadingMenus) {
       try {
-        let menusInString = JSON.stringify(menus)
-        storeData(menusInString)
+        let menusInString = JSON.stringify(menus);
+        //? Localizing
+        storeData(menusInString).catch((error) => console.log(error));
+        setIsLocalized(true);
       } catch (error) {
-        console.log(error)
+        console.log(error);
+        setIsLocalized(false);
       }
     }
-    console.log("user - lo", JSON.stringify(user, null, 2));
+    console.log("user - status", JSON.stringify(user, null, 2));
   }, [loadingMenus]);
-
-  // let fetchOffers = async () => {
-  //   // First we try to connect to appwrite.
-  //   try {
-  //     let offerData = await databases.listRows({
-  //       databaseId: DATABASE_ID,
-  //       tableId: "offers",
-  //       queries: [],
-  //     });
-  //     let testItem = offerData.rows.map((item) => {
-  //       return {
-  //         name: item.name,
-  //         id: item.id,
-  //         price: item.price,
-  //         items: item.items,
-  //       };
-  //     });
-
-  //     //! Here is the problem. can't set the response to desired type
-  //     console.log(testItem);
-  //     backupOffer = testItem;
-  //     console.log("wolfing");
-  //     console.log(backupOffer);
-  //     // setOffers(testItem as unknown as OfferStructure[]);
-  //     // console.log(offerData.rows)
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //     console.log(offers);
-  //   }
-  // };
 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff" }}>
-      <ScrollView>
-        {/* <View style={styles.customTopBarWrapper}></View> */}
+      {/* <View style={styles.customTopBarWrapper}></View> */}
 
-        <View style={styles.heroImageWrapper}>
-          <Image
-            style={styles.dryStyles}
-            source={images.burgerBackground}
-            resizeMode="contain"
-          />
-          <Image
-            style={styles.transparentBurgerStyles}
-            source={images.burgerTransparent}
-            resizeMode="contain"
-          />
-        </View>
-        <View style={styles.heroTextWrapper}>
-          <View style={styles.slideIndicator}>
-            <LinearGradient
-              colors={["#FF611D", "#FFA680"]}
-              style={styles.background}
-            >
-              <View style={styles.firstArm}></View>
-            </LinearGradient>
-
-            <View style={styles.indicatorTextWrapper}>
-              <Text style={styles.indicatorTextStyles}>2</Text>
-              <Text style={styles.indicatorTextShadowStyles}></Text>
-            </View>
-
-            <LinearGradient
-              // Background Linear Gradient
-              colors={["#FF611D", "#FFA680"]}
-              style={styles.background}
-            >
-              <View style={styles.secondArm}></View>
-            </LinearGradient>
-          </View>
-
-          <View style={styles.slideText}>
-            <View>
-              <Text style={{ fontSize: 24, fontWeight: "600", color: "#000" }}>
-                A Special Dish with —{" "}
-              </Text>
-              <Text
-                style={{ fontSize: 40, fontWeight: "900", color: "#FF611D" }}
-              >
-                Endless Taste
-              </Text>
-            </View>
-            <View>
-              <Text style={{ fontSize: 12, color: "#6e6e72" }}>
-                Close your eyes on the first bite, and you'll swear you're
-                standing in a sun-drenched Mediterranean kitchen.
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/*  This flat list will render circular filters */}
-
-        <FlatList
-          style={circularFilter.cirularFilerMain}
-          data={CategoriesLocal}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item, index }) => {
-            return (
-              <View style={circularFilter.circularBtnWrapper}>
-                <Pressable style={[circularFilter.circularBtn]}>
-                  {({ pressed }) => (
-                    <Fragment>
-                      <View>
-                        <Image
-                          source={item.image}
-                          style={circularFilter.imageStyles}
-                          resizeMode="contain"
-                        />
-                      </View>
-                    </Fragment>
-                  )}
-                </Pressable>
-                <Text style={circularFilter.btnText}>{item.name}</Text>
-              </View>
-            );
-          }}
-        />
-      </ScrollView>
       <FlatList
         numColumns={2}
         columnWrapperStyle={cardListStyles.columnWrapper}
         keyExtractor={(item) => item.$id}
         style={cardListStyles.mainFlatListWrapper}
         data={data}
+        ListHeaderComponent={HeaderComponent}
         renderItem={({ item }) => (
-          <TouchableOpacity style={cardListStyles.cardWrapper}>
-            <View style={cardListStyles.cardImageWrapper}>
-              <Image
-                style={cardListStyles.cardImage}
-                resizeMode="cover"
-                source={images.sandwichOffer}
-              />
-            </View>
-            <View style={cardListStyles.cardContentWrapper}>
-              <Text
-                numberOfLines={2}
-                ellipsizeMode="tail"
-                style={cardListStyles.cardName}
-              >
-                {item.name}
-              </Text>
-              <View style={cardListStyles.ctaBlock}>
-                <View style={cardListStyles.priceBlock}>
-                  <Text style={cardListStyles.priceHead}>STARTING AT</Text>
-                  <Text style={cardListStyles.priceText}>${item.price}</Text>
-                </View>
-                <View style={cardListStyles.buttonsWrapper}>
-                  <TouchableOpacity style={cardListStyles.button}>
-                    <SubstractBtn width={28} height={28} />
-                  </TouchableOpacity>
-                  <View style={cardListStyles.itemCountWrapper}>
-                    <Text style={cardListStyles.itemCount}>4</Text>
-                  </View>
-                  <TouchableOpacity style={cardListStyles.button}>
-                    <AddButton width={28} height={28} />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
+          <MenuCard item={item as unknown as MenuItem} />
         )}
       />
     </SafeAreaView>
@@ -415,13 +382,14 @@ let cardListStyles = StyleSheet.create({
   mainFlatListWrapper: {
     width: "100%",
     height: "auto",
-    paddingHorizontal: 20,
+    paddingHorizontal: 0,
     overflowX: "hidden",
     marginTop: 20,
   },
   columnWrapper: {
     justifyContent: "space-between",
     marginBottom: 20,
+    paddingHorizontal: 20,
   },
   cardWrapper: {
     width: "48%",

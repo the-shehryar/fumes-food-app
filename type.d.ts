@@ -78,7 +78,7 @@ interface MenuItem extends Models.Row {
   name: string;
   description: string;
   price: number;
-  image_url?: string;
+  image_url: string;
   rating: number;
   calories: number;
   protein: number;
@@ -93,15 +93,34 @@ interface CartItemType {
   name: string;
   description: string;
   price: number;
+  size : string,
   image_url?: string;
+  rating : number,
+  calories : number,
+  category_name : string,
   quantity: number;
-  size?: "small" | "medium" | "large" | "extra-large" | "half" | "full" | 'regular';
+  size: "small" | "medium" | "large" | "extra-large" | "half" | "full" | 'regular';
   customizations: CartCustomization[];
 }
 
 export interface CartCustomization {
+  icon : string
   id: string;
   name: string;
   price: number;
   type: string;
+}
+
+
+
+interface CartStore {
+    items: CartItemType[];
+    index : number,
+    addItem: (item: Omit<CartItemType, "quantity">) => void;
+    removeItem: (id: string, customizations: CartCustomization[]) => void;
+    increaseQty: (id: string, customizations: CartCustomization[]) => void;
+    decreaseQty: (id: string, customizations: CartCustomization[]) => void;
+    clearCart: () => void;
+    getTotalItems: () => number;
+    getTotalPrice: () => number;
 }

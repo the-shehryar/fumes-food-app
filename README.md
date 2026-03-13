@@ -54,22 +54,35 @@ Join our community of developers creating universal apps.
 - Seeding is can't be completed since Network request failed ✅
 - After Search if the search input is empty it does not fetch anything
 
-
-
 ## UI pending
-- searching indication - ✅ 
 
-## UI I made
+- searching indication - ✅
+
+## Features
+
 - added Menu Card
 - added search bar UI
 - added Cart Item Card
-- 
-
-
+- added animations in cart
+- cart can add item properly again
+- while seeding fixed the error with image upload now we can use Menu Card with images from Appwrite
 
 
 Functionality that is apart from mission success / final product for v1..
+
 - Swipe down to refresh and also let user know about it
 - swipe to delete from cart
 - localize first response from fetch
-- 
+-
+
+
+
+
+
+
+if Localized -> getData from Localstorage -> set it to a variable
+
+Use => react-native-turbo-mock-location-detector
+in dev build testing to detect mock locations
+
+

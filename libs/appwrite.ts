@@ -197,7 +197,7 @@ export const getMenuWithCustomizations = async ({
   query,
 }: GetMenuParams) => {
   try {
-    let queries: string[] = []   //? List of strings 
+    let queries: string[] = []; //? List of strings
 
     if (category) queries.push(Query.equal("categories", category));
     if (query) queries.push(Query.search("name", query));
@@ -205,7 +205,7 @@ export const getMenuWithCustomizations = async ({
     const menuResponse = await databases.listRows({
       databaseId: DATABASE_ID,
       tableId: "menu",
-      queries
+      queries,
     });
 
     const menuItems = menuResponse.rows;
@@ -252,7 +252,7 @@ export const getMenuWithCustomizations = async ({
             };
           }),
         );
-        
+
         return {
           ...menuItem,
           customizations: customizations, // Array of customization objects as per liked structure
@@ -267,84 +267,3 @@ export const getMenuWithCustomizations = async ({
     throw error;
   }
 };
-
-// // ============================================
-// // FUNCTION 2: Add a customization to a menu item
-// // ============================================
-// const addCustomizationToMenu = async (
-//   menuId: string,
-//   customizationId: string,
-// ) => {
-//   try {
-//     await databases.createRow({
-//       databaseId: DATABASE_ID,
-//       tableId: "menu_customizations",
-//       rowId: ID.unique(),
-//       data: {
-//         menu_id: menuId,
-//         customization_id: customizationId,
-//       },
-//     });
-
-//     console.log("Customization added to menu item");
-//   } catch (error) {
-//     console.error("Error adding customization:", error);
-//   }
-// };
-
-// // ============================================
-// // FUNCTION 3: Create new customization
-// // ============================================
-// const createCustomization = async (
-//   name: string,
-//   price: string,
-//   icon: string,
-// ) => {
-//   try {
-//     const response = await databases.createRow({
-//       databaseId: DATABASE_ID,
-//       tableId: "customizations",
-//       rowId: ID.unique(),
-//       data: {
-//         name: name,
-//         price: price,
-//         icon: icon,
-//       },
-//     });
-
-//     return response.$id; // Return the new customization ID
-//   } catch (error) {
-//     console.error("Error creating customization:", error);
-//   }
-// };
-
-// // ============================================
-// // FUNCTION 4: Create new menu item
-// // ============================================
-// const createMenuItem = async (
-//   name: string,
-//   price: string,
-//   customizationIds = [],
-// ) => {
-//   try {
-//     // Create the menu item
-//     const menuItem = await databases.createRow({
-//       databaseId: DATABASE_ID,
-//       tableId: "menu",
-//       rowId: ID.unique(),
-//       data: {
-//         name: name,
-//         price: price,
-//       },
-//     });
-
-//     // Link customizations to this menu item
-//     for (const customizationId of customizationIds) {
-//       await addCustomizationToMenu(menuItem.$id, customizationId);
-//     }
-
-//     return menuItem.$id;
-//   } catch (error) {
-//     console.error("Error creating menu item:", error);
-//   }
-// };
