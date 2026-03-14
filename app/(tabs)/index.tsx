@@ -149,7 +149,7 @@ export default function Index() {
     let city = address.city ?? "Unknown City"
     let country = address.country ?? "Unknown Country"
     let compiledAddress =  city + ', ' + country
-    console.log(location.mocked)
+    // console.log(location.mocked)
     // console.log(compiledAddress);
     setAddress(compiledAddress)
   }
