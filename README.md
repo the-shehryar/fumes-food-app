@@ -1,88 +1,210 @@
-# Welcome to your Expo app 👋
+<div align="center">
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+███████╗██╗   ██╗███╗   ███╗███████╗███████╗
+██╔════╝██║   ██║████╗ ████║██╔════╝██╔════╝
+█████╗  ██║   ██║██╔████╔██║█████╗  ███████╗
+██╔══╝  ██║   ██║██║╚██╔╝██║██╔══╝  ╚════██║
+██║     ╚██████╔╝██║ ╚═╝ ██║███████╗███████║
+╚═╝      ╚═════╝ ╚═╝     ╚═╝╚══════╝╚══════╝
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### *Your Food, Your Way, Delivered Today.*
 
-## Learn more
+<br/>
 
-To learn more about developing your project with Expo, look at the following resources:
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev/)
+[![Expo](https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev/)
+[![Appwrite](https://img.shields.io/badge/Appwrite-FD366E?style=for-the-badge&logo=appwrite&logoColor=white)](https://appwrite.io/)
+[![NativeWind](https://img.shields.io/badge/NativeWind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://www.nativewind.dev/)
+[![Zustand](https://img.shields.io/badge/Zustand-443E38?style=for-the-badge&logo=react&logoColor=white)](https://zustand-demo.pmnd.rs/)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+<br/>
 
-## Join the community
+> **FUMES** is a blazing-fast, mobile-first food delivery app.  
+> Browse menus, customize every bite, and get it delivered — your way, every time.
 
-Join our community of developers creating universal apps.
+<br/>
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
 
-## Bugs I couldn't fix so far
+</div>
 
-- Seeding is can't be completed since Network request failed ✅
-- After Search if the search input is empty it does not fetch anything
+## 🔥 About
 
-## UI pending
+FUMES is a modern food delivery experience built entirely in **TypeScript** with **React Native + Expo**. Backed by **Appwrite** for auth, database, and file storage — FUMES is designed to be fast, offline-ready, and user-first.
 
-- searching indication - ✅
+No bloat. No friction. Just 🔥 food.
 
-## Features
+---
 
-- added Menu Card
-- added search bar UI
-- added Cart Item Card
-- added animations in cart
-- cart can add item properly again
-- while seeding fixed the error with image upload now we can use Menu Card with images from Appwrite
+## ✨ Features
 
+| Feature | Status |
+|--------|--------|
+| 🍔 Browse menu with category filters | ✅ Done |
+| 🔍 Local-first smart search | ✅ Done |
+| 🛒 Cart with item customizations | ✅ Done |
+| 🎞️ Cart animations | ✅ Done |
+| 🖼️ Compressed image uploads to Appwrite | ✅ Done |
+| 📍 Location detection + mock location guard | ✅ Done |
+| 🔐 Secure image loading via JWT | ✅ Done |
+| 🔄 Swipe down to refresh | 🚧 Planned |
+| 🗑️ Swipe to delete from cart | 🚧 Planned |
 
-Functionality that is apart from mission success / final product for v1..
+---
 
-- Swipe down to refresh and also let user know about it
-- swipe to delete from cart
-- localize first response from fetch
--
+## 🛠️ Tech Stack
 
+```
+├── Language        → TypeScript (99.3%)
+├── Framework       → React Native + Expo (File-based routing)
+├── Backend         → Appwrite (Auth · Database · Storage)
+├── Styling         → NativeWind (TailwindCSS for RN)
+├── State           → Zustand
+├── Local Storage   → AsyncStorage
+├── Location        → expo-location
+├── Image           → expo-image-manipulator
+└── Mock Detection  → react-native-turbo-mock-location-detector
+```
 
+---
 
+## 🚀 Getting Started
 
+### Prerequisites
 
+- Node.js `18+`
+- Expo CLI
+- Appwrite Cloud or self-hosted instance
+- Android/iOS device or emulator
 
-if Localized -> getData from Localstorage -> set it to a variable
+### Installation
 
-Use => react-native-turbo-mock-location-detector
-in dev build testing to detect mock locations
+```bash
+# Clone the repo
+git clone https://github.com/the-shehryar/fumes-food-app.git
+cd fumes-food-app
 
+# Install dependencies
+npm install
 
+# Start the development server
+npx expo start
+```
+
+> ⚠️ Some features (mock location detection) require a **dev build** — not Expo Go.
+> ```bash
+> npx expo run:android
+> ```
+
+### Environment Variables
+
+Create a `.env` file in the root (see `.env` already in repo — **do not commit real keys**):
+
+```env
+EXPO_PUBLIC_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+EXPO_PUBLIC_APPWRITE_PROJECT_ID=your_project_id
+EXPO_PUBLIC_APPWRITE_DATABASE_ID=your_database_id
+EXPO_PUBLIC_APPWRITE_BUCKET_ID=your_bucket_id
+```
+
+---
+
+## 📁 Project Structure
+
+```
+fumes-food-app/
+│
+├── app/                  # Expo Router — file-based screens & navigation
+├── assets/
+│   └── images/           # Static images, SVGs, icons
+├── constants/            # App-wide constants, categories, static data
+├── design/               # Design references / mockups
+├── libs/                 # Appwrite client, useAppwrite hook, AsyncStorage utils
+├── stores/               # Zustand global state (auth, menus, cart)
+├── types/                # TypeScript type definitions
+│
+├── app.json              # Expo config
+├── tailwind.config.js    # NativeWind / TailwindCSS config
+├── metro.config.js       # Metro bundler config
+├── babel.config.js       # Babel config
+├── tsconfig.json         # TypeScript config
+└── type.d.ts             # Global type declarations
+```
+
+---
+
+## 🏗️ Architecture Highlights
+
+### 🔄 Local-First Search Strategy
+```
+App Load    →  Fetch menus from Appwrite  →  Save to AsyncStorage
+Search      →  Read AsyncStorage          →  Filter locally (instant ⚡)
+            →  Cache miss?                →  Fallback to Appwrite
+```
+
+### 🖼️ Image Pipeline
+```
+Pick Image  →  Compress (1024px / 0.7 quality)  →  Upload to Appwrite Storage
+```
+
+### 🔐 Secure Image Loading
+```
+Request image  →  Generate JWT  →  Download to device cache  →  Render from local URI
+```
+
+### 📍 Location + Mock Guard
+```
+App opens  →  Request location permission
+           →  Check for mock location (turbo-mock-location-detector)
+           →  Mock detected? Block + Alert
+           →  Real location? Reverse geocode → get city name
+```
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Swipe to delete cart items
+- [ ] Pull-to-refresh on home feed
+- [ ] Order placement flow
+- [ ] Order history screen
+- [ ] Push notifications
+- [ ] v1 production release
+
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome!
+
+```bash
+# Create your feature branch
+git checkout -b feature/amazing-feature
+
+# Commit your changes
+git commit -m "feat: add amazing feature"
+
+# Push to the branch
+git push origin feature/amazing-feature
+
+# Open a Pull Request
+```
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+<div align="center">
+
+**Crafted with 🔥 by [@the-shehryar](https://github.com/the-shehryar)**
+
+*Drop a ⭐ if FUMES made you hungry!*
+
+</div>
