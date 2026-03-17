@@ -1,4 +1,7 @@
+import { account } from "@/libs/appwrite";
+import useAuthStore from "@/stores/auth.store";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import {
   Animated,
@@ -8,6 +11,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -33,6 +37,7 @@ type MenuRowProps = {
   delay?: number;
   isDestructive?: boolean;
   badge?: string;
+  onPress? : ()=>void 
 };
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
@@ -54,6 +59,7 @@ const MenuRow: React.FC<MenuRowProps> = ({
   delay = 0,
   isDestructive = false,
   badge,
+  onPress
 }) => {
   const translateY = useRef(new Animated.Value(14)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -77,7 +83,7 @@ const MenuRow: React.FC<MenuRowProps> = ({
 
   return (
     <Animated.View style={{ opacity, transform: [{ translateY }] }}>
-      <TouchableOpacity activeOpacity={0.7} style={styles.menuRow}>
+      <TouchableOpacity activeOpacity={0.7} style={styles.menuRow} onPress={onPress}>
         <View style={[styles.menuIconWrap, { backgroundColor: iconBg }]}>
           <Ionicons name={icon} size={18} color={iconColor} />
         </View>
@@ -121,6 +127,25 @@ export default function ProfileScreen() {
   const infoAnim = useRef(new Animated.Value(14)).current;
   const infoOpacity = useRef(new Animated.Value(0)).current;
 
+  const {user} = useAuthStore()
+
+  async function handleLogout() {
+    
+    try {
+      let logoutRequest = await account.deleteSession({sessionId : "current"})
+      useAuthStore.getState().setUser(null)
+      router.replace('/(auth)/login')
+      ToastAndroid.showWithGravity('User logged out successfully', ToastAndroid.LONG, 3)
+    } catch (error) {
+      if(error instanceof Error) ToastAndroid.showWithGravity(error.message, ToastAndroid.LONG, 3)
+    }
+    
+    console.log('user needs to go')
+  }
+
+
+
+
   useEffect(() => {
     Animated.parallel([
       Animated.spring(avatarAnim, {
@@ -143,7 +168,7 @@ export default function ProfileScreen() {
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [user]);
 
   return (
     <View style={[styles.root]}>
@@ -356,28 +381,18 @@ export default function ProfileScreen() {
             delay={700}
           />
           <View style={styles.divider} />
-          <MenuRow
-            icon="log-out-outline"
-            label="Log Out"
-            iconBg="#FFF1F2"
-            iconColor="#EF4444"
-            delay={740}
-            isDestructive
-          />
+            <MenuRow
+              icon="log-out-outline"
+              label="Log Out"
+              iconBg="#FFF1F2"
+              iconColor="#EF4444"
+              delay={740}
+              isDestructive
+              onPress={handleLogout}
+            />
         </Section>
       </ScrollView>
 
-      {/* ── Bottom Nav ── */}
-      <View style={[styles.bottomNav, { paddingBottom: insets.bottom + 4 }]}>
-        {(
-          ["home-outline", "search-outline", "cart-outline", "person"] as const
-        ).map((ico, i) => (
-          <TouchableOpacity key={ico} style={styles.navItem}>
-            <Ionicons name={ico} size={22} color={i === 3 ? ORANGE : GRAY} />
-            {i === 3 && <View style={styles.navDot} />}
-          </TouchableOpacity>
-        ))}
-      </View>
     </View>
   );
 }

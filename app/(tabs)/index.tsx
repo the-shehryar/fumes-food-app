@@ -1,9 +1,11 @@
 import { CategoriesLocal, images } from "@/constants";
-import { getMenuWithCustomizations, getTopRatedMenu } from "@/libs/appwrite";
+import { DATABASE_ID, databases, getMenuWithCustomizations, getTopRatedMenu } from "@/libs/appwrite";
 import { storeData } from "@/libs/asyncStorage";
 import useAppwrite from "@/libs/useAppwrite";
 import useAuthStore from "@/stores/auth.store";
+import useLocationStore from "@/stores/location.store";
 import useMenusState from "@/stores/menus.store";
+import usePreferencesStore from "@/stores/preferences.store";
 import { MenuItem } from "@/type";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Location from "expo-location";
@@ -18,7 +20,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MenuCard from "../components/MenuCard";
-import useLocationStore from "@/stores/location.store";
+import { ID } from "react-native-appwrite";
 
 export default function Index() {
   let { isLocalized, setIsLocalized } = useMenusState();
@@ -43,8 +45,8 @@ export default function Index() {
   });
 
   let { user } = useAuthStore();
-  let {setAddress} = useLocationStore()
-
+  let { setAddress } = useLocationStore();
+  let { setUserAddresses, userAddresses } = usePreferencesStore();
   const HeaderComponent = () => (
     <>
       <View style={styles.heroImageWrapper}>
@@ -131,9 +133,13 @@ export default function Index() {
     </>
   );
 
+
+
+
+
+
+  
   async function requestLocationPermission() {
-    
-    
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       console.log("Location permission denied");
@@ -146,18 +152,18 @@ export default function Index() {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
     });
-    let city = address.city ?? "Unknown City"
-    let country = address.country ?? "Unknown Country"
-    let compiledAddress =  city + ', ' + country
-    // console.log(location.mocked)
-    // console.log(compiledAddress);
-    setAddress(compiledAddress)
+    let city = address.city ?? "Unknown City";
+    let country = address.country ?? "Unknown Country";
+    let compiledAddress = city + ", " + country;
+
+    setAddress(compiledAddress);
+    
+
   }
 
   useEffect(() => {
     //? Location Permission
-    requestLocationPermission()
-
+    requestLocationPermission();
 
     if (!loadingMenus) {
       try {

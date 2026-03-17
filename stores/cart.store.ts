@@ -5,7 +5,11 @@ import { create } from "zustand";
 
 interface CartStore {
     items: CartItemType[];
+    deliveryCharges : number,
+    discountValue : number,
+    isCouponApplied : boolean,
     index? : number,
+    setCouponApplied : (value : boolean) => void,
     addItem: (item: Omit<CartItemType, "quantity">) => void;
     removeItem: (id: string, customizations: CartCustomization[]) => void;
     increaseQty: (id: string, customizations: CartCustomization[]) => void;
@@ -29,6 +33,13 @@ function areCustomizationsEqual(
 
 export const useCartStore = create<CartStore>((set, get) => ({
     items: [],
+    discountValue : 0,
+    deliveryCharges : 20,
+    isCouponApplied : false,
+    setCouponApplied : (value)=>{
+        set({isCouponApplied : value})
+
+    },
     addItem: (item) => {
         console.log('its running')
         const customizations = item.customizations ?? [];

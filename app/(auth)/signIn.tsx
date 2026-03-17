@@ -37,7 +37,10 @@ export default function SignIn() {
           )
         : Alert.alert("Error", "Please provide right info");
         //* perfroming Sign In 
-        await signIn({email, password})
+
+        let safeEmail = email.trim()
+        let safePassword = password.trim()
+        await signIn({email : safeEmail, password: safePassword})
         router.replace('/')
     try {
     } catch (error) {

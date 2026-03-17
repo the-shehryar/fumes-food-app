@@ -76,7 +76,7 @@ function handleEmailSignup (){
             onPressTouch={handleEmailLogin}
           />
 
-          <View style={styles.CtaBtnWrapper}>
+          {/* <View style={styles.CtaBtnWrapper}>
             <CustomButton
               color={"#0000009a"}
               leftIcon={false}
@@ -85,9 +85,9 @@ function handleEmailSignup (){
               style="default"
               onPressTouch={handleEmailLogin}
             />
-            </View>
+            </View> */}
             {/* <Button title='Try!' onPress={ () => { Sentry.captureException(new Error('First error')) }}/> */}
-          <View style={styles.CtaBtnWrapper}>
+          {/* <View style={styles.CtaBtnWrapper}>
             <CustomButton
               color={"#0000009a"}
               leftIcon={false}
@@ -96,7 +96,7 @@ function handleEmailSignup (){
               style="default"
               onPressTouch={handleEmailSignup}
             />
-          </View>
+          </View> */}
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

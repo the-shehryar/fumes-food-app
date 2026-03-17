@@ -11,14 +11,14 @@ export default function TabLayout() {
   let [cartNumber, setCartNumber] = useState(0)
 
   useEffect(()=>{
-    let cartValue = getTotalItems()
+    let cartValue = items.length
     setCartNumber(cartValue)
   }, [items]) 
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#050505",
+        tabBarActiveTintColor: "#F97316",
         headerShown : false
       }}
     >
@@ -56,7 +56,7 @@ export default function TabLayout() {
           title: "Cart",
           headerShown: false,
           tabBarBadge : cartNumber,
-          tabBarBadgeStyle : {backgroundColor  : "#ff611d", fontSize : 8, width : 18, height : 18, borderRadius : 20},
+          tabBarBadgeStyle : { display : cartNumber > 0 ? "flex" :"none", backgroundColor  : "#ff611d", fontSize : 8, width : 18, height : 18, borderRadius : 20},
           tabBarIcon: ({ color, size, focused }) => {
             return focused ? (
               <Feather name="shopping-cart" size={24} color={color} />

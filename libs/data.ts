@@ -10,16 +10,16 @@ const seedbaleData = {
 
   customizations: [
     // Sides
-    { icon: "🍟", name: "Fries", price: 3.49, type: "side" },
+    { icon: "🍟", name: "Fries", price: 1.49, type: "side" },
     { icon: "🥗", name: "Garden Salad", price: 2.99, type: "side" },
     { icon: "🧅", name: "Onions", price: 2.75, type: "side" },
     { icon: "🥤", name: "Coke", price: 1.5, type: "side" },
     { icon: "🍦", name: "Vanilla Soft Serve", price: 1.99, type: "side" },
     { icon: "🫙", name: "Coleslaw Cup", price: 1.25, type: "side" },
-    { icon: "🧋", name: "Iced Tea", price: 28, type: "side" },
-    { icon: "🥗", name: "Salad", price: 33, type: "side" },
-    { icon: "🌽", name: "Sweet Corn", price: 25, type: "side" },
-    { icon: "🍰", name: "Choco Lava Cake", price: 42, type: "side" },
+    { icon: "🧋", name: "Iced Tea", price: 4, type: "side" },
+    { icon: "🥗", name: "Salad", price: 5, type: "side" },
+    { icon: "🌽", name: "Sweet Corn", price: 1, type: "side" },
+    { icon: "🍰", name: "Choco Lava Cake", price: 5.5, type: "side" },
 
     // Toppings
     { icon: "🧀", name: "Extra Cheese", price: 1.25, type: "topping" },
@@ -30,10 +30,10 @@ const seedbaleData = {
     { icon: "🍳", name: "Fried Egg", price: 1.0, type: "topping" },
     { icon: "🍅", name: "Tomatoes", price: 1.0, type: "topping" },
 
-    { icon : "🥖", name: "Garlic Bread", price: 40, type: "side" },
-    { icon : "NA", name: "Chicken Nuggets", price: 50, type: "side" },
-    { icon : "🫒", name: "Olives", price: 38, type: "side" },
-    { icon : "NA", name: "Mozzarella Sticks", price: 45, type: "side" },
+    { icon : "🥖", name: "Garlic Bread", price: 1.2, type: "side" },
+    { icon : "NA", name: "Chicken Nuggets", price: 3, type: "side" },
+    { icon : "🫒", name: "Olives", price: 2.4, type: "side" },
+    { icon : "NA", name: "Mozzarella Sticks", price: 1.5, type: "side" },
   ],
 
   menu: [

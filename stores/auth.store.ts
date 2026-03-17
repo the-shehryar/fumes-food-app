@@ -44,7 +44,7 @@ const useAuthStore = create<AuthState>((set) => ({
       console.log('cant set the user')
       console.log(error)
       set({ isLoading: false, user: null })
-      showToast('Please Try Signup if no account')
+      showToast('Please Try Again, Might be a network issue.')
     }finally {
       set({isLoading : false})
     }

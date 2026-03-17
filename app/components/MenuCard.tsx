@@ -4,29 +4,53 @@ import { useCartStore } from "@/stores/cart.store";
 import useSearchStore from "@/stores/search.store";
 import { MenuItem } from "@/type";
 import { Link } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const MenuCard = ({ item }: { item: MenuItem }) => {
   // console.log(item.image_url)
-  let { addItem } = useCartStore();
+  let { items, addItem, removeItem, increaseQty, decreaseQty } = useCartStore();
   let { setCurrentProduct } = useSearchStore();
-
+  let [cartExistanceCheck, setCartExistanceCheck] = useState<boolean>(false);
+  let [cartQuantity, setCartQuantity] = useState<number>(0)
   const handleAddToCart = () => {
+    console.log(item.customizations);
     
-    addItem({
-      id: item.$id,
-      name: item.name,
-      description: item.description,
-      image_url: item.image_url, // You can replace this with the actual image URL from the item if available
-      price: item.price,
-      size: "regular",
-      customizations: [], // You can add default customizations if needed
-      rating: item.rating,
-      calories: item.calories,
-      category_name: item.category_name,
-    });
+    setCartExistanceCheck(true);
+
+    let isAlreadyInCart = items.find(cartItem => cartItem.id === item.$id )
+    
+    if(isAlreadyInCart){
+      increaseQty(item.$id, [])
+      setCartQuantity(isAlreadyInCart.quantity + 1)
+    }else {
+      addItem({
+        id: item.$id,
+        name: item.name,
+        description: item.description,
+        image_url: item.image_url, // You can replace this with the actual image URL from the item if available
+        price: item.price,
+        size: "regular",
+        customizations: [], //  No default customizations since it is directly from menucard although user will be able to change things in cart
+        rating: item.rating,
+        calories: item.calories,
+        category_name: item.category_name,
+      });
+      setCartQuantity(1)
+    }
   };
+  const handleRemoveFromCart =  async ()=>{
+    
+    let isAlreadyInCart = items.find(cartItem => cartItem.id === item.$id )
+    if(isAlreadyInCart!== undefined && isAlreadyInCart?.quantity === 1) {
+      setCartExistanceCheck(false)
+      removeItem(item.$id, [])
+      setCartQuantity(0)
+    }else if(isAlreadyInCart!== undefined && isAlreadyInCart?.quantity > 1){  
+      decreaseQty(item.$id, [])
+      setCartQuantity(isAlreadyInCart.quantity - 1)
+    }
+  }
 
   return (
     <Link
@@ -57,13 +81,22 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
               <Text style={cardListStyles.priceHead}>STARTING AT</Text>
               <Text style={cardListStyles.priceText}>${item.price}</Text>
             </View>
-            <View style={cardListStyles.buttonsWrapper}>
-              <TouchableOpacity style={cardListStyles.button}>
-                <SubstractBtn width={28} height={28} />
-              </TouchableOpacity>
-              <View style={cardListStyles.itemCountWrapper}>
-                <Text style={cardListStyles.itemCount}>1</Text>
-              </View>
+            <View style={[cardListStyles.buttonsWrapper, !cartExistanceCheck ? cardListStyles.buttonToRight : cardListStyles.buttonCentered]}>
+              {cartExistanceCheck ? (
+                <>
+                  <TouchableOpacity onPress={handleRemoveFromCart} style={cardListStyles.button}>
+                    <SubstractBtn width={28} height={28} />
+                  </TouchableOpacity>
+                  <View style={cardListStyles.itemCountWrapper}>
+                    <Text style={cardListStyles.itemCount}>
+                      {cartQuantity}
+                    </Text>
+                  </View>
+                </>
+              ) : (
+                ""
+              )}
+
               <TouchableOpacity
                 onPress={handleAddToCart}
                 style={cardListStyles.button}
@@ -143,8 +176,15 @@ let cardListStyles = StyleSheet.create({
     paddingLeft: 8,
     height: "100%",
     flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
+  },
+  buttonCentered : {
+    justifyContent: "center",
+    
+  },
+  buttonToRight : {
+    justifyContent: "flex-end",
+
   },
   button: {
     width: "auto",

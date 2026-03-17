@@ -1,8 +1,18 @@
-import { CartCustomization, CartItemType } from "@/type";
-import { useRef, useState,useEffect } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View, Animated, Dimensions } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { useCartStore } from "@/stores/cart.store";
+import { CartCustomization, CartItemType } from "@/type";
+import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Animated,
+  Dimensions,
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 const ORANGE = "#F97316";
 const ORANGE_LIGHT = "#FFF4EE";
 const DARK = "#1A1A1A";
@@ -185,13 +195,16 @@ const CartItem: React.FC<{
   // onCheckToggle?: (id: string) => void;
   // onSizeChange: (id: string, size: string) => void;
 }> = ({ item, index }) => {
-
-
-  let {increaseQty, decreaseQty, removeItem} = useCartStore()
+  let { increaseQty, decreaseQty, removeItem } = useCartStore();
   const [showSizes, setShowSizes] = useState(false);
+  const [itemSize, setItemSize] = useState<string>('regular')
   const slideAnim = useRef(new Animated.Value(30)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const removeAnim = useRef(new Animated.Value(1)).current;
+
+  const [visible, setVisible] = useState<boolean>(false)
+
+
 
   useEffect(() => {
     Animated.parallel([
@@ -210,14 +223,12 @@ const CartItem: React.FC<{
     ]).start();
   }, []);
 
-
-  const handleIncrease = (id: string, customizations : CartCustomization[])=> {
-    increaseQty(item.id, item.customizations)
-  }
-  const handleDecrease = (id: string, customizations : CartCustomization[])=> {
-    decreaseQty(item.id, item.customizations)
-  }
-
+  const handleIncrease = (id: string, customizations: CartCustomization[]) => {
+    increaseQty(item.id, item.customizations);
+  };
+  const handleDecrease = (id: string, customizations: CartCustomization[]) => {
+    decreaseQty(item.id, item.customizations);
+  };
 
   const handleRemove = () => {
     Animated.parallel([
@@ -232,8 +243,30 @@ const CartItem: React.FC<{
         useNativeDriver: true,
       }),
     ]).start(() => removeItem(item.id, item.customizations));
-   
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      // reset values before replaying
+      slideAnim.setValue(50);
+      opacityAnim.setValue(0);
+
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 380,
+          delay: index * 80,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: 380,
+          delay: index * 80,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }, []),
+  );
 
   return (
     <Animated.View
@@ -286,19 +319,39 @@ const CartItem: React.FC<{
           </View>
 
           {/* Size selector */}
-          <TouchableOpacity
-            style={styles.sizeChip}
-            onPress={() => setShowSizes(!showSizes)}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
           >
-            <Text style={styles.sizeChipLabel}>Size : </Text>
-            <Text style={styles.sizeChipValue}>{item.size}</Text>
-            <Ionicons
-              name="chevron-down"
-              size={12}
-              color={ORANGE}
-              style={{ marginLeft: 2 }}
-            />
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.sizeChip}
+              onPress={() => setShowSizes(!showSizes)}
+            >
+              <Text style={styles.sizeChipLabel}>Size : </Text>
+              <Text style={styles.sizeChipValue}>{itemSize.charAt(0).toUpperCase() + itemSize.slice(1)}</Text>
+              <Ionicons
+                name="chevron-down"
+                size={12}
+                color={ORANGE}
+                style={{ marginLeft: 2 }}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.customizationChip}
+              onPress={() => setVisible(!visible)}
+            >
+              <Text style={styles.sizeChipLabel}>Customizations</Text>
+              <Ionicons
+                name="add"
+                size={12}
+                color={ORANGE}
+                style={{ marginLeft: 2 }}
+              />
+            </TouchableOpacity>
+          </View>
 
           {showSizes && (
             <View style={styles.sizesDropdown}>
@@ -307,10 +360,10 @@ const CartItem: React.FC<{
                   key={s}
                   style={[
                     styles.sizeOption,
-                    item.size === s && styles.sizeOptionActive,
+                    itemSize.toLowerCase() === s.toLowerCase() && styles.sizeOptionActive,
                   ]}
                   onPress={() => {
-                    // onSizeChange(item.id, s);
+                    setItemSize(s)
                     setShowSizes(false);
                   }}
                 >
@@ -326,13 +379,35 @@ const CartItem: React.FC<{
               ))}
             </View>
           )}
-
+          {
+            <Modal
+              visible={visible}
+              transparent // ✅ keeps background visible
+              animationType="fade" // "slide" | "fade" | "none"
+              onRequestClose={() => setVisible(false)}
+            >
+              {/* dark overlay */}
+              <View style={styles.overlay}>
+                {/* popup box */}
+                <View style={styles.popup}>
+                  <Text style={styles.title}>Please Add Customizations Here🔥</Text>
+                  <Text style={styles.message}>Your food is on the way.</Text>
+                  <TouchableOpacity
+                    onPress={() => setVisible(false)}
+                    style={styles.btn}
+                  >
+                    <Text style={styles.btnText}>Got it</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+          }
           {/* Qty + Price */}
           <View style={styles.cartItemBottomRow}>
             <View style={styles.qtyRow}>
               <TouchableOpacity
                 style={styles.qtyBtn}
-                // onPress={() => onQtyChange(item.id, -1)}
+                onPress={() => handleDecrease(item.id, item.customizations)}
               >
                 <Text style={styles.qtyBtnText}>-</Text>
               </TouchableOpacity>
@@ -355,7 +430,6 @@ const CartItem: React.FC<{
 };
 
 export default CartItem;
-
 
 const styles = StyleSheet.create({
   cartItemWrap: {
@@ -419,6 +493,16 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     marginBottom: 10,
   },
+  customizationChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "flex-start",
+    backgroundColor: GRAY_LIGHT,
+    borderRadius: 8,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    marginBottom: 10,
+  },
   sizeChipLabel: { fontSize: 12, color: GRAY },
   sizeChipValue: { fontSize: 12, fontWeight: "700", color: ORANGE },
   sizesDropdown: {
@@ -466,4 +550,33 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   cartItemPrice: { fontSize: 17, fontWeight: "800", color: DARK },
+
+
+
+
+// Popup Modal Styles
+
+  overlay: {
+    flex: 1,
+    backgroundColor: "#00000080",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  popup: {
+    width: "80%",
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 24,
+    alignItems: "center",
+    elevation: 10,
+  },
+  title: { fontSize: 18, fontWeight: "bold", marginBottom: 8 },
+  message: { fontSize: 14, color: "#6e6e72", marginBottom: 20 },
+  btn: {
+    backgroundColor: "#FF611D",
+    paddingHorizontal: 32,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  btnText: { color: "#fff", fontWeight: "bold" },
 });

@@ -1,3 +1,8 @@
+import { DATABASE_ID, databases } from "@/libs/appwrite";
+import useAuthStore from "@/stores/auth.store";
+import { useCartStore } from "@/stores/cart.store";
+import usePreferencesStore from "@/stores/preferences.store";
+import { Address, AddressAppwrite } from "@/type";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -9,10 +14,18 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
+import { ID, Query } from "react-native-appwrite";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import NewAddressModal from "../components/NewAddressModal";
+
+import AppleIcon from '@/assets/images/apple-icon.svg'
+import GoogleIcon from '@/assets/images/google-icon.svg'
+import Cash from '@/assets/images/pakistan-rupee-note-color-icon.svg'
+import Card from '@/assets/images/card.svg'
 
 // ─── Design Tokens ────────────────────────────────────────────────────────────
 const ORANGE = "#F97316";
@@ -24,6 +37,9 @@ const WHITE = "#FFFFFF";
 const BORDER = "#F0F0F0";
 const GREEN = "#16A34A";
 const GREEN_LIGHT = "#F0FDF4";
+
+
+
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const ADDRESSES = [
@@ -55,51 +71,31 @@ const PAYMENT_METHODS = [
     id: "cod",
     label: "Cash on Delivery",
     sublabel: "Pay when you receive",
-    icon: "💵",
+    icon: <Cash width={20} height={20} />,
     available: true,
   },
   {
     id: "stripe",
     label: "Credit / Debit Card",
     sublabel: "Visa, Mastercard, Amex",
-    icon: "💳",
+    icon: <Card width={20} height={20} />,
     available: true,
   },
   {
     id: "googlepay",
     label: "Google Pay",
     sublabel: "Fast & secure",
-    icon: "🟢",
+    icon: <GoogleIcon width={20} height={20} />,
     available: true,
   },
   {
     id: "applepay",
     label: "Apple Pay",
     sublabel:
-      Platform.OS === "ios" ? "Touch / Face ID" : "Not available on Android",
-    icon: "🍎",
+      Platform.OS === "ios" ? "Touch / Face ID" : "Touch / Face ID",
+    icon: <AppleIcon width={20} height={20} />,
     available: Platform.OS === "ios",
-  },
-];
-
-const ORDER_ITEMS = [
-  {
-    id: "1",
-    name: "Smash Beef Burger",
-    restaurant: "The Good Burger Joint",
-    qty: 2,
-    price: 17.99,
-    image:
-      "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=120&q=80",
-  },
-  {
-    id: "2",
-    name: "Malai Botti Pizza",
-    restaurant: "Classico Pakistani Restaurant",
-    qty: 1,
-    price: 25.99,
-    image:
-      "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=120&q=80",
+    // available : true
   },
 ];
 
@@ -153,15 +149,25 @@ const SectionHeader: React.FC<{
 export default function CheckoutScreen() {
   const insets = useSafeAreaInsets();
   const [selectedAddress, setSelectedAddress] = useState("1");
+  const [addressModal, setAddressModal] = useState(false);
+  const [fetchingAddress, setFetchingAddresses] = useState<boolean>(false);
+
   const [selectedPayment, setSelectedPayment] = useState("cod");
   const [coupon, setCoupon] = useState("NEWFUMES");
-  const [couponApplied, setCouponApplied] = useState(true);
+  const [couponApplied, setCouponApplied] = useState(false);
   const [orderSummaryOpen, setOrderSummaryOpen] = useState(false);
 
-  const subtotal = ORDER_ITEMS.reduce((s, i) => s + i.price * i.qty, 0);
-  const delivery = 6.22;
+  let { userAddresses, setUserAddresses } = usePreferencesStore();
+  let { user } = useAuthStore();
+  let { items: itemsInCart, deliveryCharges } = useCartStore();
+
+  const subtotal = itemsInCart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
   const discount = couponApplied ? 4.0 : 0;
-  const total = subtotal + delivery - discount;
+
+  const total = subtotal + deliveryCharges - discount;
 
   const summaryAnim = useRef(new Animated.Value(0)).current;
 
@@ -174,8 +180,100 @@ export default function CheckoutScreen() {
     setOrderSummaryOpen(!orderSummaryOpen);
   };
 
+  async function creatNewAddress(address: Address) {
+    // Also add address creation limit - liek one user can only have 5 addresses at max
+    let uniqueId = ID.unique();
+    try {
+      let addressTable = await databases.createRow({
+        databaseId: DATABASE_ID,
+        tableId: "addresses",
+        rowId: uniqueId,
+        data: address,
+      });
+
+      if (addressTable) {
+        ToastAndroid.show("Address Added Successfully", ToastAndroid.LONG);
+        let alteredAddress = {
+          ...address,
+          $id: uniqueId,
+          $createdAt: Date.now().toLocaleString(),
+          $updatedAt: Date.now().toLocaleString(),
+        };
+        setUserAddresses(alteredAddress as AddressAppwrite);
+        //? Add subscription event to reRender but for now add a state
+      }
+    } catch (error) {
+      if (error instanceof Error)
+        ToastAndroid.show(error.message, ToastAndroid.LONG);
+    }
+  }
+
+  function handleNewAddress() {
+    setAddressModal(true);
+  }
+
+  async function fetchUserAddress(targetUser: string) {
+    try {
+      let savedAddresses = await databases.listRows({
+        databaseId: DATABASE_ID,
+        tableId: "addresses",
+        queries: [Query.equal("userId", targetUser), Query.orderDesc("$createdAt")],
+      });
+      savedAddresses.rows.map((item) => {
+
+        setUserAddresses(item as unknown as AddressAppwrite);
+      });
+      setFetchingAddresses(false);
+      return savedAddresses.rows;
+    } catch (error) {
+      if (error instanceof Error)
+        ToastAndroid.show(error.message, ToastAndroid.LONG);
+    }
+  }
+
+  useEffect(() => {
+    if (userAddresses !== undefined && userAddresses.length > 0) {
+      setSelectedAddress(userAddresses[0].$id);
+    } else {
+      // Fetch Address,
+      fetchUserAddress(user?.$id);
+      setFetchingAddresses(true);
+    }
+  }, [userAddresses]);
+
   return (
     <View style={styles.root}>
+      {/* Add Address Modal */}
+      {/* <Modal
+        visible={addressModal}
+        transparent // ✅ keeps background visible
+        animationType="fade" // "slide" | "fade" | "none"
+        onRequestClose={() => setAddressModal(false)}
+      >
+      
+        <View style={styles.overlay}>
+
+          <View style={styles.popup}>
+            <Text style={styles.title}>Please Add Customizations Here🔥</Text>
+            <Text style={styles.message}>Your food is on the way.</Text>
+            <TouchableOpacity
+              onPress={() => setAddressModal(false)}
+              style={styles.btn}
+            >
+              <Text style={styles.btnText}>Got it</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal> */}
+
+      <NewAddressModal
+        visible={addressModal}
+        onClose={() => setAddressModal(false)}
+        onSave={(newAddress) => {
+          creatNewAddress(newAddress);
+        }}
+      />
+
       <StatusBar barStyle="dark-content" backgroundColor={WHITE} />
 
       {/* ── Top Bar ── */}
@@ -205,7 +303,8 @@ export default function CheckoutScreen() {
               <View style={styles.orderSummaryLeft}>
                 <View style={styles.orderBubble}>
                   <Text style={styles.orderBubbleText}>
-                    {ORDER_ITEMS.reduce((s, i) => s + i.qty, 0)}
+                    {/* How many items in total */}
+                    {itemsInCart.reduce((sum, item) => sum + item.quantity, 0)}
                   </Text>
                 </View>
                 <Text style={styles.orderSummaryLabel}>Order Summary</Text>
@@ -247,11 +346,11 @@ export default function CheckoutScreen() {
               }}
             >
               <View style={styles.orderItemsContainer}>
-                {ORDER_ITEMS.map((item, idx) => (
+                {itemsInCart.map((item, idx) => (
                   <View key={item.id}>
                     <View style={styles.orderItem}>
                       <Image
-                        source={{ uri: item.image }}
+                        source={{ uri: item.image_url }}
                         style={styles.orderItemImg}
                       />
                       <View style={{ flex: 1, marginLeft: 12 }}>
@@ -259,17 +358,19 @@ export default function CheckoutScreen() {
                           {item.name}
                         </Text>
                         <Text style={styles.orderItemRest} numberOfLines={1}>
-                          {item.restaurant}
+                          {/* {item.restaurant} */}
                         </Text>
                       </View>
                       <View style={{ alignItems: "flex-end" }}>
                         <Text style={styles.orderItemPrice}>
-                          ${(item.price * item.qty).toFixed(2)}
+                          ${(item.price * item.quantity).toFixed(2)}
                         </Text>
-                        <Text style={styles.orderItemQty}>x{item.qty}</Text>
+                        <Text style={styles.orderItemQty}>
+                          x{item.quantity}
+                        </Text>
                       </View>
                     </View>
-                    {idx < ORDER_ITEMS.length - 1 && (
+                    {idx < itemsInCart.length - 1 && (
                       <View style={styles.divider} />
                     )}
                   </View>
@@ -282,59 +383,76 @@ export default function CheckoutScreen() {
         {/* ── Delivery Address ── */}
         <FadeIn delay={180}>
           <View style={styles.px}>
-            <SectionHeader title="Delivery Address" action="+ Add New" />
+            <SectionHeader title="Delivery Address" />
             <View style={styles.card}>
-              {ADDRESSES.map((addr, idx) => (
-                <View key={addr.id}>
-                  <TouchableOpacity
-                    style={styles.addressRow}
-                    activeOpacity={0.75}
-                    onPress={() => setSelectedAddress(addr.id)}
-                  >
-                    <View
-                      style={[
-                        styles.addressIconWrap,
-                        selectedAddress === addr.id && {
-                          backgroundColor: ORANGE_LIGHT,
-                        },
-                      ]}
-                    >
-                      <Ionicons
-                        name={addr.icon as any}
-                        size={18}
-                        color={selectedAddress === addr.id ? ORANGE : GRAY}
-                      />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <View style={styles.addressTagRow}>
-                        <Text style={styles.addressTag}>{addr.tag}</Text>
-                        {selectedAddress === addr.id && (
-                          <View style={styles.defaultBadge}>
-                            <Text style={styles.defaultBadgeText}>
-                              Delivering here
-                            </Text>
+              {userAddresses.length > 0
+                ? userAddresses.map((addr, idx) => (
+                    <View key={idx}>
+                      <TouchableOpacity
+                        style={styles.addressRow}
+                        activeOpacity={0.75}
+                        onPress={() => setSelectedAddress(addr.$id)}
+                      >
+                        <View
+                          style={[
+                            styles.addressIconWrap,
+                            selectedAddress === addr.$id && {
+                              backgroundColor: ORANGE_LIGHT,
+                            },
+                          ]}
+                        >
+                          <Ionicons
+                            name={addr.icon as any}
+                            size={18}
+                            color={selectedAddress === addr.$id ? ORANGE : GRAY}
+                          />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <View style={styles.addressTagRow}>
+                            <Text style={styles.addressTag}>{addr.tag}</Text>
+                            {selectedAddress === addr.$id && (
+                              <View style={styles.defaultBadge}>
+                                <Text style={styles.defaultBadgeText}>
+                                  Delivering here
+                                </Text>
+                              </View>
+                            )}
                           </View>
-                        )}
-                      </View>
-                      <Text style={styles.addressLine}>{addr.address}</Text>
-                      <Text style={styles.addressCity}>{addr.city}</Text>
-                    </View>
-                    <View
-                      style={[
-                        styles.radioOuter,
-                        selectedAddress === addr.id && { borderColor: ORANGE },
-                      ]}
-                    >
-                      {selectedAddress === addr.id && (
-                        <View style={styles.radioInner} />
+                          <Text style={styles.addressLine}>{addr.address}</Text>
+                          <Text style={styles.addressCity}>{addr.city}</Text>
+                        </View>
+                        <View
+                          style={[
+                            styles.radioOuter,
+                            selectedAddress === addr.$id && {
+                              borderColor: ORANGE,
+                            },
+                          ]}
+                        >
+                          {selectedAddress === addr.$id && (
+                            <View style={styles.radioInner} />
+                          )}
+                        </View>
+                      </TouchableOpacity>
+                      {idx < ADDRESSES.length - 1 && (
+                        <View style={styles.divider} />
                       )}
                     </View>
-                  </TouchableOpacity>
-                  {idx < ADDRESSES.length - 1 && (
-                    <View style={styles.divider} />
-                  )}
-                </View>
-              ))}
+                  ))
+                : ""}
+
+              <TouchableOpacity
+                onPress={handleNewAddress}
+                style={styles.addNewAddress}
+              >
+                <Ionicons
+                  name="add-circle-outline"
+                  size={20}
+                  color={ORANGE}
+                  style={{ marginRight: 8 }}
+                />
+                <Text style={styles.addAddressText}>Add New Address</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </FadeIn>
@@ -344,37 +462,37 @@ export default function CheckoutScreen() {
           <View style={styles.px}>
             <SectionHeader title="Payment Method" />
             <View style={styles.card}>
-              {PAYMENT_METHODS.map((pm, idx) => (
-                <View key={pm.id}>
+              {PAYMENT_METHODS.map((paymentMethod, idx) => (
+                <View key={paymentMethod.id}>
                   <TouchableOpacity
                     style={[
                       styles.paymentRow,
-                      !pm.available && { opacity: 0.4 },
+                      !paymentMethod.available && { opacity: 0.4 },
                     ]}
-                    activeOpacity={pm.available ? 0.75 : 1}
-                    onPress={() => pm.available && setSelectedPayment(pm.id)}
+                    activeOpacity={paymentMethod.available ? 0.75 : 1}
+                    onPress={() => paymentMethod.available && setSelectedPayment(paymentMethod.id)}
                   >
                     <View
                       style={[
                         styles.paymentIconWrap,
-                        selectedPayment === pm.id &&
-                          pm.available && { backgroundColor: ORANGE_LIGHT },
+                        selectedPayment === paymentMethod.id &&
+                          paymentMethod.available && { backgroundColor: ORANGE_LIGHT },
                       ]}
                     >
-                      <Text style={styles.paymentEmoji}>{pm.icon}</Text>
+                      <Text style={styles.paymentEmoji}>{paymentMethod.icon}</Text>
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.paymentLabel}>{pm.label}</Text>
-                      <Text style={styles.paymentSublabel}>{pm.sublabel}</Text>
+                      <Text style={styles.paymentLabel}>{paymentMethod.label}</Text>
+                      <Text style={styles.paymentSublabel}>{paymentMethod.sublabel}</Text>
                     </View>
                     <View
                       style={[
                         styles.radioOuter,
-                        selectedPayment === pm.id &&
-                          pm.available && { borderColor: ORANGE },
+                        selectedPayment === paymentMethod.id &&
+                          paymentMethod.available && { borderColor: ORANGE },
                       ]}
                     >
-                      {selectedPayment === pm.id && pm.available && (
+                      {selectedPayment === paymentMethod.id && paymentMethod.available && (
                         <View style={styles.radioInner} />
                       )}
                     </View>
@@ -436,7 +554,7 @@ export default function CheckoutScreen() {
         </FadeIn>
 
         {/* ── Coupon ── */}
-        <FadeIn delay={360}>
+        {/* <FadeIn delay={360}>
           <View style={styles.px}>
             <SectionHeader title="Promo Code" />
             <View style={styles.couponRow}>
@@ -480,7 +598,7 @@ export default function CheckoutScreen() {
               </TouchableOpacity>
             </View>
           </View>
-        </FadeIn>
+        </FadeIn> */}
 
         {/* ── Price Breakdown ── */}
         <FadeIn delay={440}>
@@ -494,7 +612,9 @@ export default function CheckoutScreen() {
               <View style={styles.priceDivider} />
               <View style={styles.priceRow}>
                 <Text style={styles.priceLabel}>Delivery Charges</Text>
-                <Text style={styles.priceValue}>${delivery.toFixed(2)}</Text>
+                <Text style={styles.priceValue}>
+                  ${deliveryCharges.toFixed(2)}
+                </Text>
               </View>
               {couponApplied && (
                 <>
@@ -824,4 +944,42 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: 0.3,
   },
+
+  // Modal Styles
+  overlay: {
+    flex: 1,
+    backgroundColor: "#00000080",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  popup: {
+    width: "80%",
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 24,
+    alignItems: "center",
+    elevation: 10,
+  },
+  title: { fontSize: 18, fontWeight: "bold", marginBottom: 8 },
+  message: { fontSize: 14, color: "#6e6e72", marginBottom: 20 },
+  btn: {
+    backgroundColor: "#FF611D",
+    paddingHorizontal: 32,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  btnText: { color: "#fff", fontWeight: "bold" },
+
+  addNewAddress: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1.5,
+    borderColor: ORANGE,
+    borderStyle: "dashed",
+    borderRadius: 14,
+    paddingVertical: 13,
+    margin: 20,
+  },
+  addAddressText: { fontSize: 14, fontWeight: "700", color: ORANGE },
 });

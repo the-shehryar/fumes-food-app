@@ -53,6 +53,10 @@ Sentry.init({
             name="products/[id]"
             options={{ headerShown: false }}
           ></Stack.Screen>
+          <Stack.Screen
+            name="checkout/index"
+            options={{ headerShown: false }}
+          ></Stack.Screen>
         </Stack>
       )
   );
