@@ -1,3 +1,4 @@
+import { CustomButtonProps } from "@/types/type";
 import React from "react";
 import {
   ActivityIndicator,
@@ -6,8 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Feather from "@expo/vector-icons/Feather";
-import { CustomButtonProps } from "@/type";
 function CustomButton({
   size,
   onPressTouch,
@@ -34,14 +33,29 @@ function CustomButton({
     //   </View>
     // </TouchableOpacity>
 
-      <TouchableOpacity style={[style === 'big-filled' ? styles.oauthBtnStyles :  styles.customBtnStyles, {backgroundColor : color}]} onPress={onPressTouch}>
+    <TouchableOpacity
+      style={[
+        style === "big-filled" ? styles.oauthBtnStyles : styles.customBtnStyles,
+        { backgroundColor: color },
+      ]}
+      onPress={onPressTouch}
+    >
       <View>
         {isLoading ? (
           <ActivityIndicator size={"small"} color={"white"} />
         ) : (
-          <View style={[style === 'big-filled' ? styles.oauthBtnWrapper : ""]}>
-            {leftIcon ? icon : (<></>)}
-            <Text style={[style === 'big-filled' ? styles.oauthBtnText : styles.customBtnText, {color : textStyle}]}>{title}</Text>
+          <View style={[style === "big-filled" ? styles.oauthBtnWrapper : ""]}>
+            {leftIcon ? icon : <></>}
+            <Text
+              style={[
+                style === "big-filled"
+                  ? styles.oauthBtnText
+                  : styles.customBtnText,
+                { color: textStyle },
+              ]}
+            >
+              {title}
+            </Text>
           </View>
         )}
       </View>
@@ -55,37 +69,37 @@ let styles = StyleSheet.create({
   customBtnStyles: {
     width: 140,
     height: 45,
-    justifyContent : "center",
-    alignItems : "center",
-    borderRadius : 4,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
   },
-  customBtnText : {
-        color : '#fff',
-    fontWeight : 'bold',
-    fontSize : 16
+  customBtnText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
-  oauthBtnText : {
-        color : '#fff',
-    fontWeight : 'bold',
-    fontSize : 14
+  oauthBtnText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
   },
-  oauthBtnStyles : {
-    width: 'auto',
-    marginLeft : 20,
-    marginRight : 20,
-    marginBottom : 20,
+  oauthBtnStyles: {
+    width: "auto",
+    marginLeft: 20,
+    marginRight: 20,
+    marginBottom: 20,
     height: 50,
-    justifyContent : "center",
-    alignItems : "center",
-    borderRadius : 4,
-  }, 
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
+  },
   oauthBtnWrapper: {
     width: "100%",
-    height : '100%',
+    height: "100%",
     flexDirection: "row",
-    alignItems : "center",
+    alignItems: "center",
   },
-  btnAuthIcon : {
-    marginHorizontal : 8
-  }
+  btnAuthIcon: {
+    marginHorizontal: 8,
+  },
 });

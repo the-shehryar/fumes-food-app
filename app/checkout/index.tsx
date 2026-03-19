@@ -2,7 +2,7 @@ import { DATABASE_ID, databases } from "@/libs/appwrite";
 import useAuthStore from "@/stores/auth.store";
 import { useCartStore } from "@/stores/cart.store";
 import usePreferencesStore from "@/stores/preferences.store";
-import { Address, AddressAppwrite } from "@/type";
+import { Address, AddressAppwrite } from "@/types/type";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -22,10 +22,10 @@ import { ID, Query } from "react-native-appwrite";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import NewAddressModal from "../components/NewAddressModal";
 
-import AppleIcon from '@/assets/images/apple-icon.svg'
-import GoogleIcon from '@/assets/images/google-icon.svg'
-import Cash from '@/assets/images/pakistan-rupee-note-color-icon.svg'
-import Card from '@/assets/images/card.svg'
+import AppleIcon from "@/assets/images/apple-icon.svg";
+import Card from "@/assets/images/card.svg";
+import GoogleIcon from "@/assets/images/google-icon.svg";
+import Cash from "@/assets/images/pakistan-rupee-note-color-icon.svg";
 
 // ─── Design Tokens ────────────────────────────────────────────────────────────
 const ORANGE = "#F97316";
@@ -37,9 +37,6 @@ const WHITE = "#FFFFFF";
 const BORDER = "#F0F0F0";
 const GREEN = "#16A34A";
 const GREEN_LIGHT = "#F0FDF4";
-
-
-
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const ADDRESSES = [
@@ -91,8 +88,7 @@ const PAYMENT_METHODS = [
   {
     id: "applepay",
     label: "Apple Pay",
-    sublabel:
-      Platform.OS === "ios" ? "Touch / Face ID" : "Touch / Face ID",
+    sublabel: Platform.OS === "ios" ? "Touch / Face ID" : "Touch / Face ID",
     icon: <AppleIcon width={20} height={20} />,
     available: Platform.OS === "ios",
     // available : true
@@ -217,10 +213,12 @@ export default function CheckoutScreen() {
       let savedAddresses = await databases.listRows({
         databaseId: DATABASE_ID,
         tableId: "addresses",
-        queries: [Query.equal("userId", targetUser), Query.orderDesc("$createdAt")],
+        queries: [
+          Query.equal("userId", targetUser),
+          Query.orderDesc("$createdAt"),
+        ],
       });
       savedAddresses.rows.map((item) => {
-
         setUserAddresses(item as unknown as AddressAppwrite);
       });
       setFetchingAddresses(false);
@@ -470,20 +468,31 @@ export default function CheckoutScreen() {
                       !paymentMethod.available && { opacity: 0.4 },
                     ]}
                     activeOpacity={paymentMethod.available ? 0.75 : 1}
-                    onPress={() => paymentMethod.available && setSelectedPayment(paymentMethod.id)}
+                    onPress={() =>
+                      paymentMethod.available &&
+                      setSelectedPayment(paymentMethod.id)
+                    }
                   >
                     <View
                       style={[
                         styles.paymentIconWrap,
                         selectedPayment === paymentMethod.id &&
-                          paymentMethod.available && { backgroundColor: ORANGE_LIGHT },
+                          paymentMethod.available && {
+                            backgroundColor: ORANGE_LIGHT,
+                          },
                       ]}
                     >
-                      <Text style={styles.paymentEmoji}>{paymentMethod.icon}</Text>
+                      <Text style={styles.paymentEmoji}>
+                        {paymentMethod.icon}
+                      </Text>
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.paymentLabel}>{paymentMethod.label}</Text>
-                      <Text style={styles.paymentSublabel}>{paymentMethod.sublabel}</Text>
+                      <Text style={styles.paymentLabel}>
+                        {paymentMethod.label}
+                      </Text>
+                      <Text style={styles.paymentSublabel}>
+                        {paymentMethod.sublabel}
+                      </Text>
                     </View>
                     <View
                       style={[
@@ -492,9 +501,10 @@ export default function CheckoutScreen() {
                           paymentMethod.available && { borderColor: ORANGE },
                       ]}
                     >
-                      {selectedPayment === paymentMethod.id && paymentMethod.available && (
-                        <View style={styles.radioInner} />
-                      )}
+                      {selectedPayment === paymentMethod.id &&
+                        paymentMethod.available && (
+                          <View style={styles.radioInner} />
+                        )}
                     </View>
                   </TouchableOpacity>
                   {idx < PAYMENT_METHODS.length - 1 && (

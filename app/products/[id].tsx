@@ -1,7 +1,7 @@
 import Stars from "@/app/components/Stars";
 import { DATABASE_ID, databases } from "@/libs/appwrite";
 import { getStoredData } from "@/libs/asyncStorage";
-import { CartCustomization, MenuItem } from "@/type";
+import { CartCustomization, MenuItem } from "@/types/type";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
@@ -51,7 +51,6 @@ const PRODUCT = {
 };
 
 const TOPPINGS = [
-
   { id: "t1", icon: "🧀", label: "Extra Cheese", price: 1.25 },
   { id: "t2", icon: "🥩", label: "Extra Meat Patty", price: 5.25 },
   { id: "t3", icon: "🥑", label: "Avocado Slice", price: 1.75 },
@@ -170,24 +169,17 @@ export default function ProductScreen() {
 
   const likeScale = useRef(new Animated.Value(1)).current;
 
-
-  async function defineCustomizations (item : CartCustomization[]){
-    if(item){
-      let toppings = item.filter(customization => customization.type === 'topping')
-      console.log('after mess')
-      console.log(toppings)
+  async function defineCustomizations(item: CartCustomization[]) {
+    if (item) {
+      let toppings = item.filter(
+        (customization) => customization.type === "topping",
+      );
+      console.log("after mess");
+      console.log(toppings);
     }
   }
 
-
   const allExtras = [...TOPPINGS, ...SIDES];
-
-
-
-
-
-
-
 
   //? filters through the selected extra (state) then sums the price of the filtered array (containing checked items)
 
@@ -201,7 +193,7 @@ export default function ProductScreen() {
   const toggleExtra = (id: string) => {
     // If it exists remove if not add
     setCheckedExtras((prev) => ({ ...prev, [id]: !prev[id] }));
-    console.log(checkedExtras)
+    console.log(checkedExtras);
   };
 
   //*  Like animation I don't really like it, by default like is false
@@ -310,36 +302,39 @@ export default function ProductScreen() {
         //   defineCustomizations(foundItem?.customizations as CartCustomization[])
         // }
 
-
         if (foundItem) {
-        // Fetch full customization documents separately
-        const customizationIds = foundItem.customizations.map((c: any) => c.id);
+          // Fetch full customization documents separately
+          const customizationIds = foundItem.customizations.map(
+            (c: any) => c.id,
+          );
 
-        const fullCustomizations = await Promise.all(
-          customizationIds.map((cId: string) =>
-            databases.getRow({databaseId : DATABASE_ID, tableId :  'customizations', rowId : cId})
-          )
-        );
+          const fullCustomizations = await Promise.all(
+            customizationIds.map((cId: string) =>
+              databases.getRow({
+                databaseId: DATABASE_ID,
+                tableId: "customizations",
+                rowId: cId,
+              }),
+            ),
+          );
 
-        console.log(fullCustomizations); // will have type field ✅
-        // defineCustomizations(fullCustomizations as CartCustomization[]);
-        setProduct(foundItem as MenuItem);
-      }
+          console.log(fullCustomizations); // will have type field ✅
+          // defineCustomizations(fullCustomizations as CartCustomization[]);
+          setProduct(foundItem as MenuItem);
+        }
       }
     } catch (error) {
       setProduct(null);
     }
   };
 
-
-  async function placeOrder (){
-    console.log(checkedExtras)
+  async function placeOrder() {
+    console.log(checkedExtras);
   }
-
 
   useEffect(() => {
     fetchItemData();
-    console.log(checkedExtras)
+    console.log(checkedExtras);
   }, [product, id]);
 
   return (
@@ -677,7 +672,11 @@ export default function ProductScreen() {
           </View>
 
           {/* Place order */}
-          <TouchableOpacity style={styles.placeOrderBtn} onPress={placeOrder} activeOpacity={0.88}>
+          <TouchableOpacity
+            style={styles.placeOrderBtn}
+            onPress={placeOrder}
+            activeOpacity={0.88}
+          >
             <Text style={styles.placeOrderText}>
               Place Order — ${orderTotal}
             </Text>
@@ -740,7 +739,7 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   heroImg: {
-    width  : 'auto',
+    width: "auto",
     height: HERO_HEIGHT + 0,
     resizeMode: "cover",
     marginTop: 0,

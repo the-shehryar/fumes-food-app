@@ -1,19 +1,18 @@
 import useAuthStore from "@/stores/auth.store";
-import { Address } from "@/type";
+import { Address } from "@/types/type";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
   Modal,
-  View,
+  Platform,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
+  View,
 } from "react-native";
-
 
 const ORANGE = "#F97316";
 const ORANGE_LIGHT = "#FFF4EE";
@@ -25,11 +24,10 @@ const BORDER = "#F0F0F0";
 const GREEN = "#16A34A";
 const GREEN_LIGHT = "#F0FDF4";
 
-
 const TAGS = [
-  { label: "Home", icon: 'home' },
-  { label: "Work", icon: 'briefcase'},
-  { label: "Other", icon: 'loaction-sharp' },
+  { label: "Home", icon: "home" },
+  { label: "Work", icon: "briefcase" },
+  { label: "Other", icon: "loaction-sharp" },
 ];
 
 interface AddAddressModalProps {
@@ -48,26 +46,22 @@ export default function NewAddressModal({
   const [city, setCity] = useState("");
   const [detecting, setDetecting] = useState(false);
 
-  const {user} = useAuthStore()
+  const { user } = useAuthStore();
 
-
-  const handleDetectLocation = async () => {
-
-  };
+  const handleDetectLocation = async () => {};
 
   const handleSave = () => {
     if (!street.trim() || !city.trim()) return;
 
-    if(user) {
+    if (user) {
       const newAddress: Address = {
-        userId : user?.$id,
+        userId: user?.$id,
         tag: selectedTag.label,
         icon: selectedTag.icon,
         address: street.trim(),
         city: city.trim(),
-        
       };
-  
+
       onSave(newAddress);
     }
     handleClose();

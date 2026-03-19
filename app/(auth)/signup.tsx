@@ -23,14 +23,13 @@ import {
   upperCaseCheckRegex,
 } from "@/constants";
 import { createUser } from "@/libs/appwrite";
-import { SignUpForm } from "@/type";
-import Feather from "@expo/vector-icons/Feather";
 import useAuthStore from "@/stores/auth.store";
-
+import { SignUpForm } from "@/types/type";
+import Feather from "@expo/vector-icons/Feather";
 
 export default function SignUp() {
-  let {user} = useAuthStore() 
-  let [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  let { user } = useAuthStore();
+  let [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   let [signUpForm, setSignUpForm] = useState<SignUpForm>({
     name: "",
     email: "",
@@ -40,7 +39,7 @@ export default function SignUp() {
 
   const submitSignUp = async () => {
     console.log(`${email} + ${password} + ${name}`);
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
       !email || !password
         ? Platform.OS === "android"
@@ -49,24 +48,23 @@ export default function SignUp() {
               ToastAndroid.TOP,
             )
           : Alert.alert("Error", "Please provide right info")
-        : ''
-        if(email && password){
-          await createUser({ name, email, password });
-          ToastAndroid.show("User Registered Scuccessfully", ToastAndroid.SHORT)
-          console.log(user)
-          router.replace('/')
-        }
-    } catch (error:any) {
-      let errorString = new Error(error as string)
-      console.log(errorString)
+        : "";
+      if (email && password) {
+        await createUser({ name, email, password });
+        ToastAndroid.show("User Registered Scuccessfully", ToastAndroid.SHORT);
+        console.log(user);
+        router.replace("/");
+      }
+    } catch (error: any) {
+      let errorString = new Error(error as string);
+      console.log(errorString);
       Platform.OS === "android"
         ? ToastAndroid.show(`${errorString}`, ToastAndroid.TOP)
         : Alert.alert("Error", error.message);
 
       throw new Error(error as string);
-    }
-    finally {
-      setIsSubmitting(false)
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

@@ -8,7 +8,7 @@ type LocationState = {
 }
  
 const useLocationStore = create<LocationState>((set) => ({
-    address : "Lahore, Pakistan",
+    address : "Tap here for location",
     mocked : false,
     setMocked  : (value) => set({mocked : value}),
     setAddress : (value) => set({address : value})

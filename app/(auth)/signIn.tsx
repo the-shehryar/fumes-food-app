@@ -1,6 +1,8 @@
 import Logo from "@/assets/images/applogo.svg";
 import GoogleIcon from "@/assets/images/google-icon.svg";
-import { SignInForm } from "@/type";
+import { signIn } from "@/libs/appwrite";
+import useAuthStore from "@/stores/auth.store";
+import { SignInForm } from "@/types/type";
 import { Link, router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -17,41 +19,38 @@ import {
 } from "react-native";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
-import { signIn } from "@/libs/appwrite";
-import useAuthStore from "@/stores/auth.store";
 
 export default function SignIn() {
   let [form, setForm] = useState<SignInForm>({ email: "", password: "" });
   //* Destructuring from state
   let { email, password } = form;
   let [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  let {fetchAuthenticatedUser} = useAuthStore()
+  let { fetchAuthenticatedUser } = useAuthStore();
 
   const signInUser = async () => {
     if (!email || !password)
-    // showing toast message to inform user
+      // showing toast message to inform user
       Platform.OS === "android"
         ? ToastAndroid.show(
             "Please provide all the required information",
             ToastAndroid.TOP,
           )
         : Alert.alert("Error", "Please provide right info");
-        //* perfroming Sign In 
+    //* perfroming Sign In
 
-        let safeEmail = email.trim()
-        let safePassword = password.trim()
-        await signIn({email : safeEmail, password: safePassword})
-        router.replace('/')
+    let safeEmail = email.trim();
+    let safePassword = password.trim();
+    await signIn({ email: safeEmail, password: safePassword });
+    router.replace("/");
     try {
     } catch (error) {
       throw new Error(error as string);
     }
   };
 
-
-  useEffect(()=> {
-    fetchAuthenticatedUser()
-  }, [])
+  useEffect(() => {
+    fetchAuthenticatedUser();
+  }, []);
 
   return (
     <KeyboardAvoidingView

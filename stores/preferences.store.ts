@@ -1,7 +1,5 @@
-import { AddressAppwrite } from "@/type";
+import { AddressAppwrite } from "@/types/type";
 import { create } from "zustand";
-
-
 
 type PreferencesState = {
   userAddresses: AddressAppwrite[];
@@ -10,7 +8,8 @@ type PreferencesState = {
 
 const usePreferencesStore = create<PreferencesState>((set) => ({
   userAddresses: [],
-  setUserAddresses: (value: AddressAppwrite) => set((prev) => ({ userAddresses: [...prev.userAddresses, value]}))
+  setUserAddresses: (value: AddressAppwrite) =>
+    set((prev) => ({ userAddresses: [...prev.userAddresses, value] })),
 }));
 
 export default usePreferencesStore;

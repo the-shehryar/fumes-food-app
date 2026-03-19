@@ -1,12 +1,12 @@
 import { CategoriesLocal, images } from "@/constants";
-import { DATABASE_ID, databases, getMenuWithCustomizations, getTopRatedMenu } from "@/libs/appwrite";
+import { getMenuWithCustomizations, getTopRatedMenu } from "@/libs/appwrite";
 import { storeData } from "@/libs/asyncStorage";
 import useAppwrite from "@/libs/useAppwrite";
 import useAuthStore from "@/stores/auth.store";
 import useLocationStore from "@/stores/location.store";
 import useMenusState from "@/stores/menus.store";
 import usePreferencesStore from "@/stores/preferences.store";
-import { MenuItem } from "@/type";
+import { MenuItem } from "@/types/type";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Location from "expo-location";
 import { Fragment, useEffect } from "react";
@@ -20,7 +20,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MenuCard from "../components/MenuCard";
-import { ID } from "react-native-appwrite";
 
 export default function Index() {
   let { isLocalized, setIsLocalized } = useMenusState();
@@ -133,12 +132,6 @@ export default function Index() {
     </>
   );
 
-
-
-
-
-
-  
   async function requestLocationPermission() {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
@@ -157,8 +150,6 @@ export default function Index() {
     let compiledAddress = city + ", " + country;
 
     setAddress(compiledAddress);
-    
-
   }
 
   useEffect(() => {

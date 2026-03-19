@@ -14,7 +14,7 @@ import {
   GetTopRatedMenuParams,
   SignInParams,
   User,
-} from "@/type";
+} from "@/types/type";
 import { Alert, Platform, ToastAndroid } from "react-native";
 import {
   Account,
@@ -197,10 +197,11 @@ export const getMenuWithCustomizations = async ({
   query,
 }: GetMenuParams) => {
   try {
+    
     let queries: string[] = []; //? List of strings
 
-    if (category) queries.push(Query.equal("categories", category));
-    if (query) queries.push(Query.search("name", query));
+    if (category && category !== '') queries.push(Query.equal("categories", category));
+    if (query && query !== '') queries.push(Query.search("name", query));
     // STEP 1: Fetch all menu items
     const menuResponse = await databases.listRows({
       databaseId: DATABASE_ID,
@@ -253,6 +254,7 @@ export const getMenuWithCustomizations = async ({
           }),
         );
 
+        console.log('menu is being fetched')
         return {
           ...menuItem,
           customizations: customizations, // Array of customization objects as per liked structure

@@ -4,9 +4,10 @@ import { getCategories, getMenuWithCustomizations } from "@/libs/appwrite";
 import { getStoredData } from "@/libs/asyncStorage";
 import seed from "@/libs/seed";
 import useAppwrite from "@/libs/useAppwrite";
+import useLocationStore from "@/stores/location.store";
 import useMenusState from "@/stores/menus.store";
 import useSearchStore from "@/stores/search.store";
-import { Category, MenuItem } from "@/type";
+import { Category, MenuItem } from "@/types/type";
 import { useLocalSearchParams } from "expo-router/build/hooks";
 import { useEffect } from "react";
 import {
@@ -22,7 +23,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Filter from "../components/Filter";
 import MenuCard from "../components/MenuCard";
 import SearchBar from "../components/SearchBar";
-import useLocationStore from "@/stores/location.store";
 
 export default function SearchScreen() {
   //? You're using the `useLocalSearchParams` hook to access the search parameters from the URL.
@@ -62,30 +62,35 @@ export default function SearchScreen() {
     let parsedData = await getStoredData(value);
     setMenus(parsedData);
   }
-  async function searchLocally(category: string, query : string) {
+  async function searchLocally(category: string, query: string) {
     let newItems = menus?.filter((item) => {
       let target = item.name.toLowerCase();
-      return target.includes(query.toLowerCase())
+      return target.includes(query.toLowerCase());
     });
 
-    setIsSearching(false)
+    setIsSearching(false);
   }
 
-  let {address} = useLocationStore()
+  let { address } = useLocationStore();
 
   useEffect(() => {
     //? Make refetch once local Storage is empty
     //* searchLocalStorage functions from asyncStorage
-    if (category !== undefined && query !== undefined) {
+    //* What if i add two useEffect one that always fires the second on can fire only on changes like menu and i can add search / refetch over cache or network there - i need to think it through
+    // if (category !== undefined && query !== undefined) {
       //? User is in search mode
-        refetch({ category, query })
-          .catch((error) => console.log(error))
-          .finally(() => {
-            setIsSearching(false);
-          });
-
-      console.log(`refetching with category ${category} and query ${query}`);
-    }
+      let safeCategory = category ? category : ""
+      let safeQuery = query? query : ""
+      refetch({ category  : safeCategory, query : safeQuery })
+        .catch((error) => console.log(error))
+        .finally(() => {
+          setIsSearching(false);
+        });
+        if(query === ''){
+          console.log('right now query is dead empty')
+        }
+      console.log(`refetching with category ${category === ''} and query ${typeof(query)}`);
+    // }
   }, [category, query]);
 
   return (
@@ -119,17 +124,16 @@ export default function SearchScreen() {
         {isSearching ? <ActivityIndicator size="large" color="#0000ff" /> : ""}
       </View>
 
-        <FlatList
-          numColumns={2}
-          columnWrapperStyle={styles.columnWrapper}
-          keyExtractor={(item) => item.$id}
-          style={styles.mainFlatListWrapper}
-          data={data}
-          renderItem={({ item }) => (
-            <MenuCard item={item as unknown as MenuItem} />
-          )}
-        />
-      
+      <FlatList
+        numColumns={2}
+        columnWrapperStyle={styles.columnWrapper}
+        keyExtractor={(item) => item.$id}
+        style={styles.mainFlatListWrapper}
+        data={data}
+        renderItem={({ item }) => (
+          <MenuCard item={item as unknown as MenuItem} />
+        )}
+      />
     </SafeAreaView>
   );
 }
@@ -141,7 +145,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     overflowX: "hidden",
     marginTop: 0,
-    marginBottom  : 200,
+    marginBottom: 200,
     // backgroundColor  : "yellow"
   },
   columnWrapper: {

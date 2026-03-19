@@ -1,4 +1,4 @@
-import { Category } from "@/type";
+import { Category } from "@/types/type";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity } from "react-native";
@@ -63,7 +63,7 @@ let styles = StyleSheet.create({
     // paddingHorizontal: 20,
     overflowX: "hidden",
     margin: 20,
-    marginBottom : 4,
+    marginBottom: 4,
     // backgroundColor : 'cyan',
   },
   categoriesBtn: {

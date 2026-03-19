@@ -10,18 +10,21 @@ const SearchBar = () => {
     category?: string;
   }>();
   const [query, setQuery] = useState(searchParams.query || "");
-  const {setIsSearching } = useSearchStore();
+  const { setIsSearching } = useSearchStore();
 
-  const debounceSearch = useDebouncedCallback((text: string) => {
-    router.setParams({ category: searchParams.category || "", query: text });
-  }, 500);
+ const debounceSearch = useDebouncedCallback((text: string) => {
+  router.setParams({ 
+    category: searchParams.category || "", 
+    query: text  
+  });
+  if (!text) setIsSearching(false); 
+}, 500);
 
-  const handleSearch = (text?: string) => {
-    if (text) {
-      setIsSearching(true);
-      setQuery(text);
-      debounceSearch(text);
-    }
+
+  const handleSearch = (text: string) => {
+    setQuery(text);
+    debounceSearch(text);
+    if (text) setIsSearching(true);
   };
 
   // console.log(`filter data ${JSON.stringify(filterData)}`);
@@ -32,6 +35,7 @@ const SearchBar = () => {
       placeholder="Want something cheezzy??"
       //   onSubmitEditing={handleSearch}
       onChangeText={handleSearch}
+      value={query}
       returnKeyType="search"
     />
   );

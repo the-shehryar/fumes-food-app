@@ -1,5 +1,5 @@
 import { useCartStore } from "@/stores/cart.store";
-import { CartCustomization, CartItemType } from "@/type";
+import { CartCustomization, CartItemType } from "@/types/type";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -197,14 +197,12 @@ const CartItem: React.FC<{
 }> = ({ item, index }) => {
   let { increaseQty, decreaseQty, removeItem } = useCartStore();
   const [showSizes, setShowSizes] = useState(false);
-  const [itemSize, setItemSize] = useState<string>('regular')
+  const [itemSize, setItemSize] = useState<string>("regular");
   const slideAnim = useRef(new Animated.Value(30)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const removeAnim = useRef(new Animated.Value(1)).current;
 
-  const [visible, setVisible] = useState<boolean>(false)
-
-
+  const [visible, setVisible] = useState<boolean>(false);
 
   useEffect(() => {
     Animated.parallel([
@@ -331,7 +329,9 @@ const CartItem: React.FC<{
               onPress={() => setShowSizes(!showSizes)}
             >
               <Text style={styles.sizeChipLabel}>Size : </Text>
-              <Text style={styles.sizeChipValue}>{itemSize.charAt(0).toUpperCase() + itemSize.slice(1)}</Text>
+              <Text style={styles.sizeChipValue}>
+                {itemSize.charAt(0).toUpperCase() + itemSize.slice(1)}
+              </Text>
               <Ionicons
                 name="chevron-down"
                 size={12}
@@ -360,10 +360,11 @@ const CartItem: React.FC<{
                   key={s}
                   style={[
                     styles.sizeOption,
-                    itemSize.toLowerCase() === s.toLowerCase() && styles.sizeOptionActive,
+                    itemSize.toLowerCase() === s.toLowerCase() &&
+                      styles.sizeOptionActive,
                   ]}
                   onPress={() => {
-                    setItemSize(s)
+                    setItemSize(s);
                     setShowSizes(false);
                   }}
                 >
@@ -390,7 +391,9 @@ const CartItem: React.FC<{
               <View style={styles.overlay}>
                 {/* popup box */}
                 <View style={styles.popup}>
-                  <Text style={styles.title}>Please Add Customizations Here🔥</Text>
+                  <Text style={styles.title}>
+                    Please Add Customizations Here🔥
+                  </Text>
                   <Text style={styles.message}>Your food is on the way.</Text>
                   <TouchableOpacity
                     onPress={() => setVisible(false)}
@@ -551,10 +554,7 @@ const styles = StyleSheet.create({
   },
   cartItemPrice: { fontSize: 17, fontWeight: "800", color: DARK },
 
-
-
-
-// Popup Modal Styles
+  // Popup Modal Styles
 
   overlay: {
     flex: 1,

@@ -1,4 +1,4 @@
-import { MenuItem } from "@/type";
+import { MenuItem } from "@/types/type";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export let storeData = async (data: string) => {

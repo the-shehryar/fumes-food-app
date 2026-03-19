@@ -1,5 +1,5 @@
 import { getCurrentUser, showToast } from "@/libs/appwrite";
-import { User } from "@/type";
+import { User } from "@/types/type";
 import { create } from "zustand";
 
 type AuthState = {
@@ -33,23 +33,22 @@ const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true });
     try {
       let userState = await getCurrentUser();
-      console.log('working from authStore')
-      console.log(userState)
+      console.log("working from authStore");
+      console.log(userState);
       userState
         ? set({ isAuthenticated: true, user: userState as User })
         : set({ isAuthenticated: false, user: null });
 
-        console.log(`logger ${userState}`)
+      console.log(`logger ${userState}`);
     } catch (error) {
-      console.log('cant set the user')
-      console.log(error)
-      set({ isLoading: false, user: null })
-      showToast('Please Try Again, Might be a network issue.')
-    }finally {
-      set({isLoading : false})
+      console.log("cant set the user");
+      console.log(error);
+      set({ isLoading: false, user: null });
+      showToast("Please Try Again, Might be a network issue.");
+    } finally {
+      set({ isLoading: false });
     }
   },
 }));
-
 
 export default useAuthStore;

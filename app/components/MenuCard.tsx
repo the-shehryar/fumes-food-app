@@ -2,7 +2,7 @@ import AddButton from "@/assets/images/Product-Add-Btn.svg";
 import SubstractBtn from "@/assets/images/Product-Subtract-Btn.svg";
 import { useCartStore } from "@/stores/cart.store";
 import useSearchStore from "@/stores/search.store";
-import { MenuItem } from "@/type";
+import { MenuItem } from "@/types/type";
 import { Link } from "expo-router";
 import React, { useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -12,18 +12,18 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
   let { items, addItem, removeItem, increaseQty, decreaseQty } = useCartStore();
   let { setCurrentProduct } = useSearchStore();
   let [cartExistanceCheck, setCartExistanceCheck] = useState<boolean>(false);
-  let [cartQuantity, setCartQuantity] = useState<number>(0)
+  let [cartQuantity, setCartQuantity] = useState<number>(0);
   const handleAddToCart = () => {
     console.log(item.customizations);
-    
+
     setCartExistanceCheck(true);
 
-    let isAlreadyInCart = items.find(cartItem => cartItem.id === item.$id )
-    
-    if(isAlreadyInCart){
-      increaseQty(item.$id, [])
-      setCartQuantity(isAlreadyInCart.quantity + 1)
-    }else {
+    let isAlreadyInCart = items.find((cartItem) => cartItem.id === item.$id);
+
+    if (isAlreadyInCart) {
+      increaseQty(item.$id, []);
+      setCartQuantity(isAlreadyInCart.quantity + 1);
+    } else {
       addItem({
         id: item.$id,
         name: item.name,
@@ -36,21 +36,20 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
         calories: item.calories,
         category_name: item.category_name,
       });
-      setCartQuantity(1)
+      setCartQuantity(1);
     }
   };
-  const handleRemoveFromCart =  async ()=>{
-    
-    let isAlreadyInCart = items.find(cartItem => cartItem.id === item.$id )
-    if(isAlreadyInCart!== undefined && isAlreadyInCart?.quantity === 1) {
-      setCartExistanceCheck(false)
-      removeItem(item.$id, [])
-      setCartQuantity(0)
-    }else if(isAlreadyInCart!== undefined && isAlreadyInCart?.quantity > 1){  
-      decreaseQty(item.$id, [])
-      setCartQuantity(isAlreadyInCart.quantity - 1)
+  const handleRemoveFromCart = async () => {
+    let isAlreadyInCart = items.find((cartItem) => cartItem.id === item.$id);
+    if (isAlreadyInCart !== undefined && isAlreadyInCart?.quantity === 1) {
+      setCartExistanceCheck(false);
+      removeItem(item.$id, []);
+      setCartQuantity(0);
+    } else if (isAlreadyInCart !== undefined && isAlreadyInCart?.quantity > 1) {
+      decreaseQty(item.$id, []);
+      setCartQuantity(isAlreadyInCart.quantity - 1);
     }
-  }
+  };
 
   return (
     <Link
@@ -81,16 +80,24 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
               <Text style={cardListStyles.priceHead}>STARTING AT</Text>
               <Text style={cardListStyles.priceText}>${item.price}</Text>
             </View>
-            <View style={[cardListStyles.buttonsWrapper, !cartExistanceCheck ? cardListStyles.buttonToRight : cardListStyles.buttonCentered]}>
+            <View
+              style={[
+                cardListStyles.buttonsWrapper,
+                !cartExistanceCheck
+                  ? cardListStyles.buttonToRight
+                  : cardListStyles.buttonCentered,
+              ]}
+            >
               {cartExistanceCheck ? (
                 <>
-                  <TouchableOpacity onPress={handleRemoveFromCart} style={cardListStyles.button}>
+                  <TouchableOpacity
+                    onPress={handleRemoveFromCart}
+                    style={cardListStyles.button}
+                  >
                     <SubstractBtn width={28} height={28} />
                   </TouchableOpacity>
                   <View style={cardListStyles.itemCountWrapper}>
-                    <Text style={cardListStyles.itemCount}>
-                      {cartQuantity}
-                    </Text>
+                    <Text style={cardListStyles.itemCount}>{cartQuantity}</Text>
                   </View>
                 </>
               ) : (
@@ -178,13 +185,11 @@ let cardListStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  buttonCentered : {
+  buttonCentered: {
     justifyContent: "center",
-    
   },
-  buttonToRight : {
+  buttonToRight: {
     justifyContent: "flex-end",
-
   },
   button: {
     width: "auto",
