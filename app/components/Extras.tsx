@@ -211,7 +211,7 @@ export default Extras;
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: WHITE },
   // Extras
-  extrasSection: { width : "90%", marginBottom: 24 },
+  extrasSection: { width : "100%", marginBottom: 24 },
   extrasTitleRow: {
     flexDirection: "row",
     alignItems: "center",

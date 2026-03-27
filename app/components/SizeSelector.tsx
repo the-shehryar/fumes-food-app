@@ -15,7 +15,7 @@ const BORDER = "#E5E7EB";
 const WHITE = "#FFFFFF";
 
 type SizeSelectorProps = {
-  sizes: ItemSize[] | [{ name: "medium" }, { name: "small" }];
+  sizes?: ItemSize[] | [{ name: "medium" }, { name: "small" }];
   selected: string;
   onSelect: (size: string) => void;
   label?: boolean;
@@ -27,16 +27,32 @@ export default function SizeSelector({
   onSelect,
   label = true,
 }: SizeSelectorProps) {
-    console.log(sizes)
+  let hardCodedSizes = [
+    {
+      name: "small",
+    },
+    {
+      name: "medium",
+    },
+    {
+      name: "large",
+    },
+    {
+      name: "extra-large",
+    },
+    {
+      name: "half",
+    },
+  ];
   return (
     <View style={styles.wrapper}>
-      {label && <Text style={styles.label}>Size</Text>}
+      {label && <Text style={styles.label}>Sizes</Text>}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.row}
       >
-        {sizes.map((size) => {
+        {hardCodedSizes.map((size) => {
           const isActive = selected === size.name;
           return (
             <TouchableOpacity

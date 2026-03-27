@@ -581,7 +581,7 @@ const styles = StyleSheet.create({
     width: "90%",
     backgroundColor: "#fff",
     borderRadius: 16,
-    // padding: 24,
+    padding: 20,
     alignItems: "center",
     elevation: 10,
   },

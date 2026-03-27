@@ -556,7 +556,6 @@ export default function ProductScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: WHITE },
 
-  // Floating header
   floatingHeader: {
     position: "absolute",
     top: 0,
@@ -595,7 +594,7 @@ const styles = StyleSheet.create({
   },
   iconCenter: { alignItems: "center", justifyContent: "center" },
 
-  // Hero
+
   heroWrap: {
     width,
     height: HERO_HEIGHT,
@@ -643,7 +642,6 @@ const styles = StyleSheet.create({
   },
   heroTagText: { color: WHITE, fontSize: 11, fontWeight: "600" },
 
-  // Sheet
   sheet: {
     backgroundColor: WHITE,
     borderTopLeftRadius: 28,
@@ -653,7 +651,6 @@ const styles = StyleSheet.create({
     paddingTop: 24,
   },
 
-  // Title
   titleRow: { flexDirection: "row", alignItems: "flex-start", marginBottom: 8 },
   productName: {
     flex: 1,
@@ -735,7 +732,7 @@ const styles = StyleSheet.create({
   descToggle: { fontSize: 13, fontWeight: "700", color: ORANGE, marginTop: 6 },
 
   // Extras
-  extrasSection: { marginBottom: 24 },
+  extrasSection: { width : "90%", marginBottom: 24 },
   extrasTitleRow: {
     flexDirection: "row",
     alignItems: "center",
