@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Extras from "./Extras";
 const ORANGE = "#F97316";
 const ORANGE_LIGHT = "#FFF4EE";
 const DARK = "#1A1A1A";
@@ -27,7 +28,15 @@ const RED_LIGHT = "#FFF1F2";
 
 const { width } = Dimensions.get("window");
 
-const SIZES = ["S", "M", "Regular", "L", "XL"];
+const SIZES = [
+  "small",
+  "medium",
+  "regular",
+  "large",
+  "extra-large",
+  "half",
+  "full",
+];
 
 //* Older Approach
 // export default function CartItem({ item }: { item: CartItemType }) {
@@ -193,16 +202,25 @@ const CartItem: React.FC<{
   index: number;
   // onRemove: (id: string) => void;
   // onCheckToggle?: (id: string) => void;
-  // onSizeChange: (id: string, size: string) => void;
+  // onSizeChange: (id: string, size: string) => void;rrr
 }> = ({ item, index }) => {
-  let { increaseQty, decreaseQty, removeItem } = useCartStore();
+  let { items, increaseQty, decreaseQty, removeItem } = useCartStore();
   const [showSizes, setShowSizes] = useState(false);
   const [itemSize, setItemSize] = useState<string>("regular");
   const slideAnim = useRef(new Animated.Value(30)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const removeAnim = useRef(new Animated.Value(1)).current;
-
   const [visible, setVisible] = useState<boolean>(false);
+
+  function handleCustomizationPopup(item: CartItemType) {
+    if (item.customizations) {
+      console.log(item.customizations);
+    } else {
+      console.log("no custi");
+    }
+    console.log("calling from popup");
+    setVisible(!visible);
+  }
 
   useEffect(() => {
     Animated.parallel([
@@ -263,7 +281,7 @@ const CartItem: React.FC<{
           useNativeDriver: true,
         }),
       ]).start();
-    }, []),
+    }, [item.customizations]),
   );
 
   return (
@@ -285,7 +303,7 @@ const CartItem: React.FC<{
       ]}
     >
       <View style={styles.cartItem}>
-        {/* Checkbox */}
+        {/*  */}
         <TouchableOpacity
           style={styles.checkbox}
           // onPress={() => onCheckToggle(item.id)}
@@ -341,7 +359,7 @@ const CartItem: React.FC<{
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.customizationChip}
-              onPress={() => setVisible(!visible)}
+              onPress={() => handleCustomizationPopup(item)}
             >
               <Text style={styles.sizeChipLabel}>Customizations</Text>
               <Ionicons
@@ -355,7 +373,7 @@ const CartItem: React.FC<{
 
           {showSizes && (
             <View style={styles.sizesDropdown}>
-              {SIZES.map((s) => (
+              {SIZES.map((s, index) => (
                 <TouchableOpacity
                   key={s}
                   style={[
@@ -383,23 +401,20 @@ const CartItem: React.FC<{
           {
             <Modal
               visible={visible}
-              transparent // ✅ keeps background visible
-              animationType="fade" // "slide" | "fade" | "none"
-              onRequestClose={() => setVisible(false)}
+              transparent
+              animationType="fade"
+              onRequestClose={() => {
+                setVisible(false);
+              }}
             >
-              {/* dark overlay */}
               <View style={styles.overlay}>
-                {/* popup box */}
                 <View style={styles.popup}>
-                  <Text style={styles.title}>
-                    Please Add Customizations Here🔥
-                  </Text>
-                  <Text style={styles.message}>Your food is on the way.</Text>
+                  <Extras items={item.customizations} />
                   <TouchableOpacity
                     onPress={() => setVisible(false)}
                     style={styles.btn}
                   >
-                    <Text style={styles.btnText}>Got it</Text>
+                    <Text style={styles.btnText}>Save</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -563,10 +578,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   popup: {
-    width: "80%",
+    width: "90%",
     backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 24,
+    // padding: 24,
     alignItems: "center",
     elevation: 10,
   },

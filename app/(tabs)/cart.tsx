@@ -121,7 +121,7 @@ export default function CartScreen() {
                 renderItem={({ item, index }) => {
                   return <CartItem item={item} index={index} />;
                 }}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.uid}
                 ListFooterComponent={
                   <View style={{ marginTop: 20 }}>
                     {/* ── Coupon ── */}

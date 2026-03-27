@@ -31,10 +31,12 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
         image_url: item.image_url, // You can replace this with the actual image URL from the item if available
         price: item.price,
         size: "regular",
-        customizations: [], //  No default customizations since it is directly from menucard although user will be able to change things in cart
+        customizations: item.customizations, 
         rating: item.rating,
+        quantity : 1,
         calories: item.calories,
         category_name: item.category_name,
+        uid : ""
       });
       setCartQuantity(1);
     }

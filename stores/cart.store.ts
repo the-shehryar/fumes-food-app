@@ -1,5 +1,6 @@
 import { CartCustomization, CartItemType } from "@/types/type";
 import { create } from "zustand";
+import * as Crypto from 'expo-crypto'
 
 interface CartStore {
   items: CartItemType[];
@@ -8,7 +9,7 @@ interface CartStore {
   isCouponApplied: boolean;
   index?: number;
   setCouponApplied: (value: boolean) => void;
-  addItem: (item: Omit<CartItemType, "quantity">) => void;
+  addItem: (item : CartItemType) => void;
   removeItem: (id: string, customizations: CartCustomization[]) => void;
   increaseQty: (id: string, customizations: CartCustomization[]) => void;
   decreaseQty: (id: string, customizations: CartCustomization[]) => void;
@@ -17,18 +18,53 @@ interface CartStore {
   getTotalPrice: () => number;
 }
 
+// function areCustomizationsEqual(
+//   a: CartCustomization[] = [],
+//   b: CartCustomization[] = []
+// ): boolean {
+//   // 1. Quick exit: If lengths differ, they aren't the same.
+//   if (a.length !== b.length) return false;
+
+//   // 2. Sort to ensure we are comparing apples to apples.
+//   // Using a standard comparison to avoid locale-specific sorting quirks.
+//   const sortFn = (x: CartCustomization, y: CartCustomization) => 
+//     x.id > y.id ? 1 : x.id < y.id ? -1 : 0;
+
+//   const aSorted = [...a].sort(sortFn);
+//   const bSorted = [...b].sort(sortFn);
+
+//   // 3. Compare both the ID and the Checked status.
+//   return aSorted.every((item, idx) => {
+//     const match = bSorted[idx];
+//     return item.id === match.id && item.checked === match.checked;
+//   });
+// }
+
+
 function areCustomizationsEqual(
   a: CartCustomization[] = [],
-  b: CartCustomization[] = [],
+  b: CartCustomization[] = []
 ): boolean {
+  // 1. Length check is the fastest way to find a mismatch
   if (a.length !== b.length) return false;
+  
+  // 2. Sort both arrays by ID to ensure order doesn't matter.
+  // We create a shallow copy ([...a]) to avoid mutating the original array.
+  const sortFn = (x: CartCustomization, y: CartCustomization) => 
+    x.id > y.id ? 1 : x.id < y.id ? -1 : 0;
 
-  const aSorted = [...a].sort((x, y) => x.id.localeCompare(y.id));
-  const bSorted = [...b].sort((x, y) => x.id.localeCompare(y.id));
+  const aSorted = [...a].sort(sortFn);
+  const bSorted = [...b].sort(sortFn);
 
-  return aSorted.every((item, idx) => item.id === bSorted[idx].id);
+  // 3. Deep check: Every item must have the same ID AND same checked status
+  return aSorted.every((item, idx) => {
+    const match = bSorted[idx];
+    return (
+      item.id === match.id && 
+      item.checked === match.checked
+    );
+  });
 }
-
 export const useCartStore = create<CartStore>((set, get) => ({
   items: [],
   discountValue: 0,
@@ -38,7 +74,6 @@ export const useCartStore = create<CartStore>((set, get) => ({
     set({ isCouponApplied: value });
   },
   addItem: (item) => {
-    console.log("its running");
     const customizations = item.customizations ?? [];
 
     const existing = get().items.find(
@@ -58,7 +93,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
       });
     } else {
       set({
-        items: [...get().items, { ...item, quantity: 1, customizations }],
+        items: [...get().items, { ...item, quantity: item.quantity, customizations, uid : Crypto.randomUUID()}],
       });
     }
     console.log("Cart Items:", get().items);

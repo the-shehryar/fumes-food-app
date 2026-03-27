@@ -11,6 +11,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import * as Location from "expo-location";
 import { Fragment, useEffect } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   Pressable,
@@ -167,13 +168,13 @@ export default function Index() {
         setIsLocalized(false);
       }
     }
-    console.log("user - status", JSON.stringify(user, null, 2));
-  }, [loadingMenus]);
+    // console.log("user - status", JSON.stringify(user, null, 2));
+  }, [loading]);
 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff" }}>
       {/* <View style={styles.customTopBarWrapper}></View> */}
-
+      
       <FlatList
         numColumns={2}
         columnWrapperStyle={cardListStyles.columnWrapper}
@@ -184,6 +185,7 @@ export default function Index() {
         renderItem={({ item }) => (
           <MenuCard item={item as unknown as MenuItem} />
         )}
+        ListEmptyComponent={<ActivityIndicator size={'large'} color={'#de5151'} />}
       />
     </SafeAreaView>
   );

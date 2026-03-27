@@ -1,10 +1,10 @@
 import Stars from "@/app/components/Stars";
-import { DATABASE_ID, databases } from "@/libs/appwrite";
 import { getStoredData } from "@/libs/asyncStorage";
-import { CartCustomization, MenuItem } from "@/types/type";
+import { useCartStore } from "@/stores/cart.store";
+import { CartCustomization, CartItemType, MenuItem } from "@/types/type";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
@@ -18,9 +18,12 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Extras from "../components/Extras";
 
 const { width, height } = Dimensions.get("window");
 const HERO_HEIGHT = height * 0.44;
+
+import SizeSelector from "@/app/components/SizeSelector";
 
 // ─── Tokens ───────────────────────────────────────────────────────────────────
 
@@ -95,7 +98,7 @@ const RELATED = [
 type ExtraItem = {
   id: string;
   icon: string;
-  label: string;
+  name: string;
   price: number;
   type?: string;
 };
@@ -130,7 +133,7 @@ function ExtraRow({ item, checked, onToggle }: ExtraRowProps) {
         <View style={styles.extraIconWrap}>
           <Text style={styles.extraIcon}>{item.icon}</Text>
         </View>
-        <Text style={styles.extraLabel}>{item.label}</Text>
+        <Text style={styles.extraLabel}>{item.name}</Text>
         <Text style={styles.extraPrice}>${item.price.toFixed(2)}</Text>
 
         <View
@@ -144,11 +147,15 @@ function ExtraRow({ item, checked, onToggle }: ExtraRowProps) {
 }
 
 export default function ProductScreen() {
+  const [selectedSize, setSelectedSize] = useState("medium");
   let [product, setProduct] = useState<MenuItem | null>(null);
   let { id } = useLocalSearchParams();
+  let [toppings, setToppings] = useState<CartCustomization[] | []>([]);
+  let [sides, setSides] = useState<CartCustomization[] | []>([]);
+
   const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
-  const [qty, setQty] = useState(2);
+  const [qty, setQty] = useState(1);
   const [liked, setLiked] = useState(false);
   const [checkedExtras, setCheckedExtras] = useState<Record<string, boolean>>(
     {},
@@ -156,6 +163,8 @@ export default function ProductScreen() {
   const [descExpanded, setDescExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<"toppings" | "sides">("toppings");
   const tabIndicator = useRef(new Animated.Value(0)).current;
+
+  let { addItem } = useCartStore();
 
   const switchTab = (tab: "toppings" | "sides") => {
     setActiveTab(tab);
@@ -169,23 +178,17 @@ export default function ProductScreen() {
 
   const likeScale = useRef(new Animated.Value(1)).current;
 
-  async function defineCustomizations(item: CartCustomization[]) {
-    if (item) {
-      let toppings = item.filter(
-        (customization) => customization.type === "topping",
-      );
-      console.log("after mess");
-      console.log(toppings);
-    }
-  }
-
-  const allExtras = [...TOPPINGS, ...SIDES];
+  // const allExtras = [...TOPPINGS, ...SIDES];
+  const allExtras = product?.customizations || [];
 
   //? filters through the selected extra (state) then sums the price of the filtered array (containing checked items)
 
-  const extrasTotal = allExtras
-    .filter((extra) => checkedExtras[extra.id])
-    .reduce((sum, extra) => sum + extra.price, 0);
+  const extrasTotal =
+    allExtras.length > 0
+      ? allExtras
+          .filter((extra) => checkedExtras[extra.id])
+          .reduce((sum, extra) => sum + extra.price, 0)
+      : 0;
 
   const orderTotal = (PRODUCT.price * qty + extrasTotal).toFixed(2);
 
@@ -236,7 +239,6 @@ export default function ProductScreen() {
     outputRange: [0, 1],
     extrapolate: "clamp",
   });
-
   // Buttons: dark pill → light gray pill
   const btnBg = scrollY.interpolate({
     inputRange: [HERO_HEIGHT - 80, HERO_HEIGHT - 20],
@@ -255,14 +257,16 @@ export default function ProductScreen() {
     extrapolate: "clamp",
   });
 
-  const AnimatedBtn: React.FC<{ name: string; style?: object }> = ({
-    name,
-    style,
-  }) => (
+  const AnimatedBtn: React.FC<{
+    name: string;
+    style?: object;
+    updateFactor?: number;
+    onPress?: () => void;
+  }> = ({ name, style, onPress, updateFactor }) => (
     <Animated.View
       style={[styles.floatingBtn, { backgroundColor: btnBg }, style]}
     >
-      <TouchableOpacity style={styles.floatingBtnInner}>
+      <TouchableOpacity onPress={onPress} style={styles.floatingBtnInner}>
         {/* White icon (visible when transparent) */}
         <Animated.View
           style={[
@@ -292,35 +296,19 @@ export default function ProductScreen() {
       let localProducts = await getStoredData("mainMenu");
       if (localProducts) {
         let foundItem = localProducts.find((item) => item.$id === id);
-        // if (product) {
-        //   if (foundItem?.$id === product?.$id) {
-        //     return;
-        //   }
-        // } else if (product === null) {
-        //   console.log(foundItem)
-        //   setProduct((foundItem as MenuItem) || {});
-        //   defineCustomizations(foundItem?.customizations as CartCustomization[])
-        // }
 
         if (foundItem) {
-          // Fetch full customization documents separately
-          const customizationIds = foundItem.customizations.map(
-            (c: any) => c.id,
-          );
-
-          const fullCustomizations = await Promise.all(
-            customizationIds.map((cId: string) =>
-              databases.getRow({
-                databaseId: DATABASE_ID,
-                tableId: "customizations",
-                rowId: cId,
-              }),
-            ),
-          );
-
-          console.log(fullCustomizations); // will have type field ✅
-          // defineCustomizations(fullCustomizations as CartCustomization[]);
           setProduct(foundItem as MenuItem);
+          const productToppings = foundItem.customizations.filter(
+            (item) => item.type === "topping",
+          );
+          const productSides = foundItem.customizations.filter(
+            (item) => item.type === "side",
+          );
+
+          setToppings(productToppings as unknown as CartCustomization[]);
+          setSides(productSides as unknown as CartCustomization[]);
+        } else {
         }
       }
     } catch (error) {
@@ -328,14 +316,19 @@ export default function ProductScreen() {
     }
   };
 
-  async function placeOrder() {
-    console.log(checkedExtras);
+  async function placeOrder(qty?: number, size?: string) {
+    let item = { ...product };
+    item.quantity = qty || 1;
+    (item as any).size = "large" as any;
+    (item as any).id = (item as any).$id;
+    delete (item as any).$id;
+    addItem(item as unknown as CartItemType);
   }
 
   useEffect(() => {
     fetchItemData();
-    console.log(checkedExtras);
-  }, [product, id]);
+    // console.log(checkedExtras);
+  }, [id]);
 
   return (
     //* if product is not null
@@ -368,7 +361,11 @@ export default function ProductScreen() {
           </Animated.Text>
 
           <View style={{ flexDirection: "row" }}>
-            <AnimatedBtn name="search-outline" style={{ marginRight: 8 }} />
+            <AnimatedBtn
+              name="cart"
+              onPress={() => router.replace("/(tabs)/cart")}
+              style={{ marginRight: 8 }}
+            />
             <AnimatedBtn name="share-social-outline" />
           </View>
         </Animated.View>
@@ -414,7 +411,6 @@ export default function ProductScreen() {
                 </TouchableOpacity>
               </Animated.View>
             </View>
-
             {/* Address no need to add this  */}
             <View style={styles.addressRow}>
               <Ionicons
@@ -425,7 +421,6 @@ export default function ProductScreen() {
               />
               <Text style={styles.addressText}>{PRODUCT.address}</Text>
             </View>
-
             {/* Metadata Row */}
             <View style={styles.metaRow}>
               <View style={styles.metaChip}>
@@ -445,7 +440,6 @@ export default function ProductScreen() {
                 </Text>
               </View>
             </View>
-
             {/* ── Price ── */}
             <View style={styles.priceRow}>
               <View>
@@ -464,7 +458,6 @@ export default function ProductScreen() {
                 <Text style={styles.ratingBadgeText}>4.0 · 134 reviews</Text>
               </View>
             </View>
-
             {/* ── Description ── */}
             <View style={styles.descSection}>
               <Text style={styles.descLabel}>Description</Text>
@@ -480,144 +473,13 @@ export default function ProductScreen() {
                 </Text>
               </TouchableOpacity>
             </View>
-
             {/* ── Extra Ingredients ── */}
-
-            <View style={styles.extrasSection}>
-              {/* Header */}
-              <View style={styles.extrasTitleRow}>
-                <Text style={styles.extrasTitle}>Add extra ingredients</Text>
-                <View style={styles.optionalBadge}>
-                  <Text style={styles.optionalText}>Optional</Text>
-                </View>
-              </View>
-
-              {/* Tab switcher */}
-              <View style={styles.tabBar}>
-                {/* Sliding pill background */}
-                <Animated.View
-                  style={[
-                    styles.tabPill,
-                    {
-                      transform: [
-                        {
-                          translateX: tabIndicator.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [0, (width - 40 - 8) / 2],
-                          }),
-                        },
-                      ],
-                    },
-                  ]}
-                />
-                {/* Simple button that changes appearances once selected/pressed by adding extra CSS class*/}
-                <TouchableOpacity
-                  style={styles.tabBtn}
-                  onPress={() => switchTab("toppings")}
-                  activeOpacity={0.8}
-                >
-                  <Text
-                    style={[
-                      styles.tabLabel,
-                      activeTab === "toppings" && styles.tabLabelActive,
-                    ]}
-                  >
-                    Toppings
-                  </Text>
-                  {/* Adding badge upon selecting topping for an order */}
-                  {Object.keys(checkedExtras).filter(
-                    (id) => id.startsWith("t") && checkedExtras[id],
-                  ).length > 0 && (
-                    <View style={styles.tabBadge}>
-                      <Text style={styles.tabBadgeText}>
-                        {
-                          Object.keys(checkedExtras).filter(
-                            (id) => id.startsWith("t") && checkedExtras[id],
-                          ).length
-                        }
-                      </Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-
-                {/* Simple button that changes appearances once selected/pressed by adding extra CSS class*/}
-                <TouchableOpacity
-                  style={styles.tabBtn}
-                  onPress={() => switchTab("sides")}
-                  activeOpacity={0.8}
-                >
-                  <Text
-                    style={[
-                      styles.tabLabel,
-                      activeTab === "sides" && styles.tabLabelActive,
-                    ]}
-                  >
-                    Sides
-                  </Text>
-                  {/* Adding badge upon selecting sides for an order */}
-                  {Object.keys(checkedExtras).filter(
-                    (id) => id.startsWith("s") && checkedExtras[id],
-                  ).length > 0 && (
-                    <View style={styles.tabBadge}>
-                      <Text style={styles.tabBadgeText}>
-                        {
-                          Object.keys(checkedExtras).filter(
-                            (id) => id.startsWith("s") && checkedExtras[id],
-                          ).length
-                        }
-                      </Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              </View>
-
-              {/* Items list */}
-              <View style={styles.extrasCard}>
-                {(activeTab === "toppings" ? TOPPINGS : SIDES).map(
-                  (extra, index, arr) => (
-                    <View key={extra.id}>
-                      <ExtraRow
-                        item={extra}
-                        checked={!!checkedExtras[extra.id]}
-                        //* !! is advance notation for double checking boolean i know hard to understand but !!undefined if id is not
-                        //* checkedExtras array at initial stage so it will parse like undefined is falsy value so !undefined will be true(not falsy)
-                        //* !undefined is true so !!undefined will be false again if we had only true and false only one ! sign would have worked
-                        onToggle={() => toggleExtra(extra.id)}
-                        //* toggleExtra(extra.id) will add id in checkedExtras array so upon change we can update UI
-                      />
-                      {/* Adding divider for every element except the last one cuz there index will be */}
-                      {/* equal to arr.length - 1 so no rendering of divider */}
-                      {index < arr.length - 1 && (
-                        <View style={styles.extraDivider} />
-                      )}
-                    </View>
-                  ),
-                )}
-              </View>
-
-              {/* Combined selected summary */}
-              {extrasTotal > 0 && (
-                <View style={styles.extrasSummary}>
-                  <Ionicons
-                    name="checkmark-circle"
-                    size={15}
-                    color={GREEN}
-                    style={{ marginRight: 6 }}
-                  />
-                  <Text style={styles.extrasSummaryText}>
-                    {allExtras.filter((e) => checkedExtras[e.id]).length} extra
-                    {allExtras.filter((e) => checkedExtras[e.id]).length > 1
-                      ? "s"
-                      : ""}{" "}
-                    added
-                  </Text>
-                  <Text style={styles.extrasSummaryPrice}>
-                    +${extrasTotal.toFixed(2)}
-                  </Text>
-                </View>
-              )}
-            </View>
-
+            <SizeSelector
+              sizes={product.size !== undefined ? product.size : [{ name: "medium" }, { name: "small" }]}
+              selected={selectedSize}
+              onSelect={setSelectedSize}
+            />
+            <Extras items={product.customizations} />
             {/* ── You May Also Like ── */}
             <View style={styles.relatedSection}>
               <Text style={styles.relatedTitle}>From the Same Restaurant</Text>
@@ -674,7 +536,9 @@ export default function ProductScreen() {
           {/* Place order */}
           <TouchableOpacity
             style={styles.placeOrderBtn}
-            onPress={placeOrder}
+            onPress={() => {
+              placeOrder(qty);
+            }}
             activeOpacity={0.88}
           >
             <Text style={styles.placeOrderText}>

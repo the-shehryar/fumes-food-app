@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export let storeData = async (data: string) => {
   //? Should be stringfied array or object
   try {
+    console.log('tring the localization')
     let localStorage = await AsyncStorage.setItem("mainMenu", data);
     console.log("Data was successfully localized");
   } catch (error) {

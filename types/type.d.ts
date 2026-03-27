@@ -82,9 +82,10 @@ interface MenuItem extends Models.Row {
   rating: number;
   calories: number;
   protein: number;
-  size?: string;
+  size?: ItemSize[] | [{ name: "medium" }, { name: "small" }];
   category_name: string;
   $id: any;
+  quantity?: number;
   customizations: CartCustomization[];
   $updatedAt: any;
   $createdAt: any;
@@ -94,13 +95,18 @@ interface CartItemType {
   name: string;
   description: string;
   price: number;
-  size: string;
   image_url?: string;
   rating: number;
   calories: number;
   category_name: string;
   quantity: number;
-  size:
+  size: string;
+  customizations: CartCustomization[];
+  uid: string;
+}
+
+interface ItemSize {
+  name:
     | "small"
     | "medium"
     | "large"
@@ -108,15 +114,14 @@ interface CartItemType {
     | "half"
     | "full"
     | "regular";
-  customizations: CartCustomization[];
 }
-
 export interface CartCustomization {
   icon: string;
   id: string;
   name: string;
   price: number;
   type: string;
+  checked: boolean;
 }
 
 interface CartStore {
@@ -148,4 +153,15 @@ export interface AddressAppwrite extends Models.Row {
   $id: any;
   $createdAt: any;
   $updatedAt: any;
+}
+
+export interface Order extends Models.Row {
+  userId: string;
+  totalPrice: number;
+  status: "pending" | "preparing" | "delivered" | "cancelled" | "dispatched";
+  address: string;
+  items: string;
+  $id: string;
+  $updatedAt: string;
+  $createdAt: string;
 }

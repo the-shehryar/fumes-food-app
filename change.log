@@ -5,8 +5,44 @@
 
 ### Index Screen
     -> Index Initial Design Implemented
-    -> Horizontal FlatList Added which shows the popular offers (dummy data)
+    -> Horizontal FlatList Added which shows the top menu items (network fetch data)
+    -> Automatically start fetching the main menu for search screen, Will localize the response
+    -> Activity Indicator added so user know whats happening needs a better way.
+
+### Search Screen
+    -> Had loads of bugs fixed it    
 
 ### CustomInput Component
     -> Added labels
     -> Added conditonal rendering for labels
+
+### Cart Functionalies
+    -> Can add customizations in cart
+    -> Better Keys for FlatList in cart
+    -> Multiple entries of same item with different customization is doable
+    -> Add, remove, update quantity and customization in cart
+
+Checkout Screen 
+    -> User Can add new address (database will track)
+    -> User can select payment options
+
+### Custom Product Screen
+    -> Menu Card lead to the screen
+    -> Dynamic Details and routing
+    -> Extra(Customizations) can be added
+    -> Direct Link to cart from screen
+    -> Added like functionality (mentioning just now)
+
+### Profile 
+    -> User can log out.
+
+### Problems 
+Sizes are yet to be aligned properly
+Extras(Customizations) UI in customProduct screen need fixing
+Sizes are yet to be implemented (were not in orignal plan)
+Cart Button Indication or some other indication is current product is added to cart
+No databse tracking for likes, reviews, yet 
+No orders implementations yet next thing now.
+
+### Gotchas
+Always push before adding new packages 

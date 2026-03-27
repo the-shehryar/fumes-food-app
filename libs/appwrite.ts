@@ -181,12 +181,50 @@ export const getTopRatedMenu = async ({
   limit,
 }: GetTopRatedMenuParams) => {
   try {
+    console.log('fetching top rated')
     const menus = await databases.listRows({
       databaseId: DATABASE_ID,
       tableId: appwriteConfig.menuCollectionId,
       queries: [Query.orderDesc("rating"), Query.limit(limit)],
     });
-    return menus.rows;
+
+    const menuWithCustomizations = await Promise.all(
+      menus.rows.map(async (menuItem) => {
+        const menuCustomizationTable = await databases.listRows({
+          databaseId: DATABASE_ID,
+          tableId: "menu_customizations",
+          queries: [Query.equal("menu", menuItem.$id)], // Filter by menu_id
+        });
+
+        const customizations = await Promise.all(
+          menuCustomizationTable.rows.map(async (junction) => {
+            const customization = await databases.getRow({
+              databaseId: DATABASE_ID,
+              tableId: "customizations",
+              rowId: junction.customizations,
+            });
+
+            // Return customization as you please like i want to have icon return a string that i can
+            // recheck in front end to assign either a emoji or SVG icon
+            // I have to seed data again to upload customization attribute
+            return {
+              name: customization.name,
+              id: customization.$id,
+              price: customization.price,
+              icon: customization.icon,
+              type: customization.type,
+              checked : false
+            };
+          }),
+        );
+        return {
+          ...menuItem,
+          customizations: customizations, // Array of customization objects as per liked structure
+        };
+      }),
+    );
+
+    return menuWithCustomizations;
   } catch (e) {
     throw new Error(e as string);
   }
@@ -197,11 +235,11 @@ export const getMenuWithCustomizations = async ({
   query,
 }: GetMenuParams) => {
   try {
-    
     let queries: string[] = []; //? List of strings
 
-    if (category && category !== '') queries.push(Query.equal("categories", category));
-    if (query && query !== '') queries.push(Query.search("name", query));
+    if (category && category !== "")
+      queries.push(Query.equal("categories", category));
+    if (query && query !== "") queries.push(Query.search("name", query));
     // STEP 1: Fetch all menu items
     const menuResponse = await databases.listRows({
       databaseId: DATABASE_ID,
@@ -249,12 +287,12 @@ export const getMenuWithCustomizations = async ({
               name: customization.name,
               id: customization.$id,
               price: customization.price,
-              // icon: customization.icon,
+              icon: customization.icon,
+              type: customization.type,
+              checked : false
             };
           }),
         );
-
-        console.log('menu is being fetched')
         return {
           ...menuItem,
           customizations: customizations, // Array of customization objects as per liked structure

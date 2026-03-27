@@ -43,7 +43,6 @@ export default function SearchScreen() {
     params: {
       category: category ? category : "",
       query: query ? query : "",
-      // limit: 10,
     },
     skip: false,
   });
@@ -79,6 +78,9 @@ export default function SearchScreen() {
     //* What if i add two useEffect one that always fires the second on can fire only on changes like menu and i can add search / refetch over cache or network there - i need to think it through
     // if (category !== undefined && query !== undefined) {
       //? User is in search mode
+
+
+
       let safeCategory = category ? category : ""
       let safeQuery = query? query : ""
       refetch({ category  : safeCategory, query : safeQuery })
@@ -86,11 +88,6 @@ export default function SearchScreen() {
         .finally(() => {
           setIsSearching(false);
         });
-        if(query === ''){
-          console.log('right now query is dead empty')
-        }
-      console.log(`refetching with category ${category === ''} and query ${typeof(query)}`);
-    // }
   }, [category, query]);
 
   return (
