@@ -1,8 +1,7 @@
-import { ID, Models } from "react-native-appwrite";
-import { appwriteConfig, databases, storage } from "./appwrite";
+import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
+import { ID } from "react-native-appwrite";
+import { appwriteConfig, DATABASE_ID, databases, storage } from "./appwrite";
 import seedableData from "./data";
-import {ImageManipulator, SaveFormat, manipulateAsync} from 'expo-image-manipulator'
-
 
 interface Category {
   name: string;
@@ -28,28 +27,47 @@ interface Customization {
 //   customizations: string[]; // list of customization names
 // }
 
-interface MenuItem extends Models.Row {
+// interface MenuItem extends Models.Row {
+//   name: string;
+//   description: string;
+//   price: number;
+//   image_url: string;
+//   rating: number;
+//   calories: number;
+//   protein: number;
+//   category_name: string;
+//   $id: any;
+//   customizations?: string[];
+//   $updatedAt: any;
+//   $createdAt: any;
+// }
+
+interface SeedMenuItem {
   name: string;
   description: string;
-  price: number;
   image_url: string;
+  price: number;
   rating: number;
   calories: number;
   protein: number;
   category_name: string;
-  $id: any;
-  customizations?: string[];
-  $updatedAt: any;
-  $createdAt: any;
+  customizations: string[]; 
+  size: {
+    name: string;
+    price: number;
+    calories: number;
+    protein: number;
+    isDefault: boolean;
+  }[];
 }
+
 interface LocalMenusData {
   categories: Category[];
   customizations: Customization[];
-  menu: MenuItem[];
+  menu: SeedMenuItem[]; // ← use SeedMenuItem not MenuItem
 }
-
 // ensure local data has correct shape
-const data = seedableData as LocalMenusData;
+const data = seedableData as unknown as LocalMenusData;
 async function clearAll(tableId: string): Promise<void> {
   console.log("Clearing data");
   const list = await databases.listRows({
@@ -117,18 +135,17 @@ async function uploadImageToStorage(imageUrl: string) {
   };
 
   const uploaded = await storage.createFile({
-    bucketId :  appwriteConfig.bucketId,
-    fileId : ID.unique(),
-    file
-  }
-  );
+    bucketId: appwriteConfig.bucketId,
+    fileId: ID.unique(),
+    file,
+  });
 
   return storage.getFileViewURL(appwriteConfig.bucketId, uploaded.$id);
 }
 
-
 async function seed(): Promise<void> {
   // 1. Clear all
+  await clearAll(appwriteConfig.menuItemSizesCollectionId);
   await clearAll(appwriteConfig.categoriesCollectionId);
   await clearAll(appwriteConfig.customizationsCollectionId);
   await clearAll(appwriteConfig.menuCollectionId);
@@ -161,7 +178,7 @@ async function seed(): Promise<void> {
         name: cus.name,
         price: cus.price,
         type: cus.type,
-        icon : cus.icon
+        icon: cus.icon,
       },
     });
     console.log(doc.name);
@@ -171,9 +188,8 @@ async function seed(): Promise<void> {
   // 4. Create Menu Items
   const menuMap: Record<string, string> = {};
   for (const item of data.menu) {
-
     const uploadedImage = await uploadImageToStorage(item.image_url);
-    console.log(uploadedImage)
+    console.log(uploadedImage);
     const doc = await databases.createRow({
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.menuCollectionId,
@@ -191,6 +207,35 @@ async function seed(): Promise<void> {
     });
     console.log(doc.name);
     menuMap[item.name] = doc.$id;
+
+    const sizeIds = await Promise.all(
+      item.size.map(async (size) => {
+        const createdSize = await databases.createRow({
+          databaseId: DATABASE_ID,
+          tableId: appwriteConfig.menuItemSizesCollectionId,
+          rowId: ID.unique(),
+          data: {
+            name: size.name,
+            price: size.price,
+            calories: size.calories,
+            protein: size.protein,
+            isDefault: size.isDefault,
+            menuItemId: doc.$id,
+          },
+        });
+        return createdSize.$id;
+      }),
+    );
+
+    // Step 3 — Update menu item with size relationship IDs
+    await databases.updateRow({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.menuCollectionId,
+      rowId: doc.$id,
+      data: {
+        sizes: sizeIds, 
+      },
+    });
 
     // 5. Create menu_customizations
     if (item.customizations)

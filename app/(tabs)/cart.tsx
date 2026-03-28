@@ -19,6 +19,7 @@ import {
 import CartItem from "../components/CartItem";
 import EmptyCart from "../components/EmptyCart";
 import { router } from "expo-router";
+import { Coupon } from "@/types/type";
 
 const ORANGE = "#F97316";
 const ORANGE_LIGHT = "#FFF4EE";
@@ -48,25 +49,20 @@ export default function CartScreen() {
   const insets = useSafeAreaInsets();
   const totalItems = getTotalItems();
   const totalPrice = getTotalPrice();
-  const [coupon, setCoupon] = useState('NEWFUMES');
+  const [coupon, setCoupon] = useState<Coupon>({code : "NEWFUMES", discount : 10});
   const [couponApplied, setCouponApplied] = useState<boolean>(false);
   const [discount, setDiscount] = useState(0)
   let {deliveryCharges} = useCartStore()
 
 
-  let discountApplied = ((totalPrice + deliveryCharges) * 0.10).toFixed(2)
-
-
-  function calculateDiscount () {
-
-  }
+  let discountApplied = couponApplied ? ((totalPrice + deliveryCharges) * coupon.discount /100).toFixed(2) : ""
 
 
   useEffect(() => {
     console.log("Cart Items:", items);
     console.log("Total Items:", totalItems);
-    console.log("Total Price:", totalPrice);
-  }, [items, totalItems, totalPrice]);
+    console.log("Total Price:", getTotalPrice());
+  }, [items, totalItems, totalPrice, couponApplied]);
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -80,10 +76,6 @@ export default function CartScreen() {
           backgroundColor: "#fefefe",
         }}
       >
-        {/* 
-          <Text>{total} items in cart</Text>
-          <Text>${totalPrice.toFixed(2)} total price</Text>
-       */}
 
         <View
           style={{
@@ -93,7 +85,6 @@ export default function CartScreen() {
             alignItems: "center",
             elevation: 5,
             shadowColor: "#00000069",
-            // backgroundColor : "red"
           }}
         >
           <Text
@@ -121,6 +112,7 @@ export default function CartScreen() {
                 renderItem={({ item, index }) => {
                   return <CartItem item={item} index={index} />;
                 }}
+                // Seprate Uids to aviod key conflict of multiple entries of signle items
                 keyExtractor={(item) => item.uid}
                 ListFooterComponent={
                   <View style={{ marginTop: 20 }}>
@@ -134,9 +126,9 @@ export default function CartScreen() {
                           style={{ marginRight: 10 }}
                         />
                         <TextInput
-                          value={coupon}
-                          onChangeText={(t) => {
-                            setCoupon(t);
+                          value={coupon.code}
+                          onChangeText={(text) => {
+                            setCoupon(prev => ({...prev, code : text}));
                             if (couponApplied) setCouponApplied(false);
                           }}
                           placeholder="Promo code"
@@ -150,7 +142,7 @@ export default function CartScreen() {
                             couponApplied && { backgroundColor: GREEN_LIGHT },
                           ]}
                           onPress={() =>
-                            coupon.length > 0 &&
+                            coupon.code.length > 0 &&
                             setCouponApplied(!couponApplied)
                           }
                         >
@@ -221,7 +213,7 @@ export default function CartScreen() {
                             Total Amount
                           </Text>
                           <Text style={styles.billTotalValue}>
-                            ${(totalPrice + deliveryCharges).toFixed(2)}
+                            ${((totalPrice + deliveryCharges) - parseFloat(discountApplied))}
                           </Text>
                         </View>
                       </View>
@@ -248,16 +240,14 @@ export default function CartScreen() {
                 }
               />
             </View>
-            {/* <CheckoutFormSheet /> */}
 
-            {/* ── Sticky Footer ── */}
             <View
               style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}
             >
               <View style={styles.footerInfo}>
                 <Text style={styles.footerLabel}>Total</Text>
                 <Text style={styles.footerTotal}>
-                  ${(totalPrice + deliveryCharges).toFixed(2)}
+                  ${((totalPrice + deliveryCharges) - parseFloat(discountApplied))}
                 </Text>
               </View>
               <TouchableOpacity style={styles.checkoutBtn} onPress={()=> router.push('/checkout')} activeOpacity={0.88}>

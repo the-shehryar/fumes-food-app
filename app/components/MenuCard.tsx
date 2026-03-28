@@ -5,6 +5,7 @@ import useSearchStore from "@/stores/search.store";
 import { MenuItem } from "@/types/type";
 import { Link } from "expo-router";
 import React, { useState } from "react";
+import * as Crypto from 'expo-crypto';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const MenuCard = ({ item }: { item: MenuItem }) => {
@@ -30,13 +31,13 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
         description: item.description,
         image_url: item.image_url, // You can replace this with the actual image URL from the item if available
         price: item.price,
-        size: "regular",
+        size: "small",
         customizations: item.customizations, 
         rating: item.rating,
         quantity : 1,
         calories: item.calories,
         category_name: item.category_name,
-        uid : ""
+        uid : Crypto.randomUUID()
       });
       setCartQuantity(1);
     }

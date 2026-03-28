@@ -186,11 +186,11 @@ export default function ProductScreen() {
   const extrasTotal =
     allExtras.length > 0
       ? allExtras
-          .filter((extra) => checkedExtras[extra.id])
+          .filter((extra) => extra.checked)
           .reduce((sum, extra) => sum + extra.price, 0)
       : 0;
 
-  const orderTotal = (PRODUCT.price * qty + extrasTotal).toFixed(2);
+  const orderTotal = (product ? product.price : 0 * qty + extrasTotal).toFixed(2);
 
   //? Toggle Checkboxes
   const toggleExtra = (id: string) => {
@@ -318,8 +318,9 @@ export default function ProductScreen() {
 
   async function placeOrder(qty?: number, size?: string) {
     let item = { ...product };
+    console.log(item.price)
     item.quantity = qty || 1;
-    (item as any).size = "large" as any;
+    (item as any).size = size || ("large" as any);
     (item as any).id = (item as any).$id;
     delete (item as any).$id;
     addItem(item as unknown as CartItemType);
@@ -412,7 +413,7 @@ export default function ProductScreen() {
               </Animated.View>
             </View>
             {/* Address no need to add this  */}
-            <View style={styles.addressRow}>
+            {/* <View style={styles.addressRow}>
               <Ionicons
                 name="location-outline"
                 size={14}
@@ -420,7 +421,7 @@ export default function ProductScreen() {
                 style={{ marginRight: 4 }}
               />
               <Text style={styles.addressText}>{PRODUCT.address}</Text>
-            </View>
+            </View> */}
             {/* Metadata Row */}
             <View style={styles.metaRow}>
               <View style={styles.metaChip}>
@@ -440,7 +441,7 @@ export default function ProductScreen() {
                 </Text>
               </View>
             </View>
-            {/* ── Price ── */}
+            {/* Price Section */}
             <View style={styles.priceRow}>
               <View>
                 <Text style={styles.priceLabel}>Price</Text>
@@ -458,7 +459,7 @@ export default function ProductScreen() {
                 <Text style={styles.ratingBadgeText}>4.0 · 134 reviews</Text>
               </View>
             </View>
-            {/* ── Description ── */}
+            {/* Product Description */}
             <View style={styles.descSection}>
               <Text style={styles.descLabel}>Description</Text>
               <Text
@@ -475,7 +476,11 @@ export default function ProductScreen() {
             </View>
             {/* ── Extra Ingredients ── */}
             <SizeSelector
-              sizes={product.size !== undefined ? product.size : [{ name: "medium" }, { name: "small" }]}
+              sizes={
+                product.size !== undefined
+                  ? product.size
+                  : [{ name: "medium" }, { name: "small" }]
+              }
               selected={selectedSize}
               onSelect={setSelectedSize}
             />
@@ -537,7 +542,7 @@ export default function ProductScreen() {
           <TouchableOpacity
             style={styles.placeOrderBtn}
             onPress={() => {
-              placeOrder(qty);
+              placeOrder(qty, selectedSize);
             }}
             activeOpacity={0.88}
           >
@@ -593,7 +598,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   iconCenter: { alignItems: "center", justifyContent: "center" },
-
 
   heroWrap: {
     width,
@@ -732,7 +736,7 @@ const styles = StyleSheet.create({
   descToggle: { fontSize: 13, fontWeight: "700", color: ORANGE, marginTop: 6 },
 
   // Extras
-  extrasSection: { width : "90%", marginBottom: 24 },
+  extrasSection: { width: "90%", marginBottom: 24 },
   extrasTitleRow: {
     flexDirection: "row",
     alignItems: "center",

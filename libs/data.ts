@@ -30,20 +30,24 @@ const seedbaleData = {
     { icon: "🍳", name: "Fried Egg", price: 1.0, type: "topping" },
     { icon: "🍅", name: "Tomatoes", price: 1.0, type: "topping" },
 
-    { icon : "🥖", name: "Garlic Bread", price: 1.2, type: "side" },
-    { icon : "NA", name: "Chicken Nuggets", price: 3, type: "side" },
-    { icon : "🫒", name: "Olives", price: 2.4, type: "side" },
-    { icon : "NA", name: "Mozzarella Sticks", price: 1.5, type: "side" },
+    { icon: "🥖", name: "Garlic Bread", price: 1.2, type: "side" },
+    { icon: "NA", name: "Chicken Nuggets", price: 3, type: "side" },
+    { icon: "🫒", name: "Olives", price: 2.4, type: "side" },
+    { icon: "NA", name: "Mozzarella Sticks", price: 1.5, type: "side" },
   ],
 
   menu: [
     {
       name: "Classic Cheeseburger",
       description: "Beef patty, cheese, lettuce, tomato",
-      image_url: "https://images.pexels.com/photos/3915915/pexels-photo-3915915.jpeg",
+      image_url:
+        "https://images.pexels.com/photos/3915915/pexels-photo-3915915.jpeg",
       price: 25.99,
       rating: 4.5,
       calories: 550,
+      size: [
+        { name: "regular", price: 25.99, calories: 550, isDefault: true, protein : 50 },
+      ],
       protein: 25,
       category_name: "Burgers",
       customizations: ["Extra Cheese", "Coke", "Fries", "Onions", "Bacon"],
@@ -51,12 +55,19 @@ const seedbaleData = {
     {
       name: "Pepperoni Pizza",
       description: "Loaded with cheese and pepperoni slices",
-      image_url:"https://images.pexels.com/photos/17907810/pexels-photo-17907810.jpeg",
+      image_url:
+        "https://images.pexels.com/photos/17907810/pexels-photo-17907810.jpeg",
       price: 30.99,
       rating: 4.7,
       calories: 700,
       protein: 30,
       category_name: "Pizzas",
+      size: [
+        { name: "small", price: 25.99, calories: 550, isDefault: true, protein : 50  },
+        { name: "medium", price: 30.99, calories: 850, isDefault: false, protein : 50  },
+        { name: "large", price: 34.99, calories: 1050, isDefault: false, protein : 50  },
+        { name: "extra-large", price: 40.99, calories: 1550, isDefault: false, protein : 50  },
+      ],
       customizations: [
         "Extra Cheese",
         "Jalapeños",
@@ -68,45 +79,65 @@ const seedbaleData = {
     {
       name: "Bean Burrito",
       description: "Stuffed with beans, rice, salsa",
-      image_url: "https://images.pexels.com/photos/27365284/pexels-photo-27365284.jpeg",
+      image_url:
+        "https://images.pexels.com/photos/27365284/pexels-photo-27365284.jpeg",
       price: 20.99,
       rating: 4.2,
       calories: 480,
       protein: 18,
       category_name: "Burritos",
+      size: [
+        { name: "small", price: 20.99, calories: 480, isDefault: true, protein : 50  },
+        { name: "medium", price: 25.99, calories: 850, isDefault: false, protein : 50  },
+        { name: "large", price: 30.99, calories: 1050, isDefault: false, protein : 50  },
+        { name: "extra-large", price: 34.99, calories: 1550, isDefault: false, protein : 50  },
+      ],
       customizations: ["Jalapeños", "Iced Tea", "Fries", "Salad"],
     },
     {
       name: "BBQ Bacon Burger",
       description: "Smoky BBQ sauce, crispy bacon, cheddar",
-      image_url:"https://images.pexels.com/photos/31450804/pexels-photo-31450804.jpeg",
+      image_url:
+        "https://images.pexels.com/photos/31450804/pexels-photo-31450804.jpeg",
       price: 27.5,
       rating: 4.8,
       calories: 650,
       protein: 29,
       category_name: "Burgers",
+      size: [{ name: "regular", price: 27.5, calories: 650, isDefault: true, protein : 50  }],
       customizations: ["Onions", "Fries", "Coke", "Bacon", "Avocado"],
     },
     {
       name: "Chicken Caesar Wrap",
       description: "Grilled chicken, lettuce, Caesar dressing",
-      image_url: "https://images.pexels.com/photos/9624298/pexels-photo-9624298.jpeg",
+      image_url:
+        "https://images.pexels.com/photos/9624298/pexels-photo-9624298.jpeg",
       price: 21.5,
       rating: 4.4,
       calories: 490,
       protein: 28,
       category_name: "Wraps",
+      size: [
+        { name: "small", price: 25.99, calories: 490, isDefault: true, protein : 50  },
+        { name: "medium", price: 30.99, calories: 890, isDefault: false, protein : 50  },
+        { name: "large", price: 34.99, calories: 1190, isDefault: false, protein : 50  },
+      ],
       customizations: ["Extra Cheese", "Coke", "Olives", "Tomatoes"],
     },
     {
       name: "Grilled Veggie Sandwich",
       description: "Roasted veggies, pesto, cheese",
-      image_url: "https://images.pexels.com/photos/28681955/pexels-photo-28681955.jpeg",
+      image_url:
+        "https://images.pexels.com/photos/28681955/pexels-photo-28681955.jpeg",
       price: 19.99,
       rating: 4.1,
       calories: 420,
       protein: 19,
       category_name: "Sandwiches",
+      size: [
+        { name: "regular", price: 25.99, calories: 550, isDefault: true, protein : 50  },
+        { name: "large", price: 34.99, calories: 1050, isDefault: false, protein : 50  },
+      ],
       customizations: ["Olives", "Coke", "Iced Tea"],
     },
     {
@@ -119,6 +150,7 @@ const seedbaleData = {
       calories: 720,
       protein: 35,
       category_name: "Burgers",
+      size: [{ name: "regular", price: 32.99, calories: 720, isDefault: true, protein : 50  }],
       customizations: [
         "Extra Cheese",
         "Onions",
@@ -128,7 +160,7 @@ const seedbaleData = {
       ],
     },
     {
-      name: "Paneer Tikka Piiza",
+      name: "Paneer Tikka Pizza",
       description: "Spicy paneer, mint chutney, veggies",
       image_url:
         "https://images.pexels.com/photos/11974635/pexels-photo-11974635.jpeg",
@@ -137,6 +169,11 @@ const seedbaleData = {
       calories: 470,
       protein: 20,
       category_name: "Wraps",
+      size: [
+        { name: "small", price: 23.99, calories: 490, isDefault: true, protein : 50  },
+        { name: "medium", price: 29.99, calories: 890, isDefault: false, protein : 50  },
+        { name: "large", price: 32.99, calories: 1190, isDefault: false, protein : 50  },
+      ],
       customizations: ["Jalapeños", "Tomatoes", "Salad", "Fries", "Iced Tea"],
     },
     {
@@ -149,6 +186,11 @@ const seedbaleData = {
       calories: 610,
       protein: 24,
       category_name: "Bowls",
+      size: [
+        { name: "small", price: 25.99, calories: 490, isDefault: true, protein : 50  },
+        { name: "medium", price: 30.99, calories: 890, isDefault: false, protein : 50  },
+        { name: "large", price: 34.99, calories: 1190, isDefault: false, protein : 50  },
+      ],
       customizations: ["Avocado", "Sweet Corn", "Salad", "Iced Tea"],
     },
     {
@@ -161,6 +203,7 @@ const seedbaleData = {
       calories: 540,
       protein: 26,
       category_name: "Sandwiches",
+      size: [{ name: "regular", price: 32.99, calories: 720, isDefault: true, protein : 50 }],
       customizations: [
         "Jalapeños",
         "Onions",
@@ -179,6 +222,11 @@ const seedbaleData = {
       calories: 590,
       protein: 21,
       category_name: "Pizzas",
+      size: [
+        { name: "small", price: 25.99, calories: 490, isDefault: true, protein : 50  },
+        { name: "medium", price: 30.99, calories: 890, isDefault: false, protein : 50  },
+        { name: "large", price: 34.99, calories: 1190, isDefault: false, protein : 50  },
+      ],
       customizations: ["Extra Cheese", "Olives", "Coke", "Garlic Bread"],
     },
     {
@@ -191,6 +239,11 @@ const seedbaleData = {
       calories: 580,
       protein: 38,
       category_name: "Bowls",
+      size: [
+        { name: "small", price: 25.99, calories: 490, isDefault: true, protein : 50  },
+        { name: "medium", price: 30.99, calories: 890, isDefault: false, protein : 50  },
+        { name: "large", price: 34.99, calories: 1190, isDefault: false, protein : 50  },
+      ],
       customizations: ["Avocado", "Salad", "Sweet Corn", "Iced Tea"],
     },
     {
@@ -203,6 +256,11 @@ const seedbaleData = {
       calories: 510,
       protein: 22,
       category_name: "Burritos",
+      size: [
+        { name: "small", price: 25.99, calories: 490, isDefault: true, protein : 50  },
+        { name: "medium", price: 30.99, calories: 890, isDefault: false, protein : 50  },
+        { name: "large", price: 34.99, calories: 1190, isDefault: false, protein : 50  },
+      ],
       customizations: ["Jalapeños", "Fries", "Garlic Bread", "Coke"],
     },
     {
@@ -215,6 +273,11 @@ const seedbaleData = {
       calories: 610,
       protein: 31,
       category_name: "Sandwiches",
+      size: [
+        { name: "small", price: 25.99, calories: 490, isDefault: true, protein : 50  },
+        { name: "medium", price: 30.99, calories: 890, isDefault: false, protein : 50  },
+        { name: "large", price: 34.99, calories: 1190, isDefault: false, protein : 50  },
+      ],
       customizations: ["Bacon", "Tomatoes", "Garlic Bread", "Iced Tea"],
     },
   ],

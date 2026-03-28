@@ -113,14 +113,14 @@ function Extras({ items }: { items: CartCustomization[] }) {
             Toppings
           </Text>
           {/* Adding badge upon selecting topping for an order */}
-          {Object.keys(checkedExtras).filter(
-            (id) => id.startsWith("t") && checkedExtras[id],
+          {items.filter(
+            (item) => item.type === 'topping' && checkedExtras[item.id],
           ).length > 0 && (
             <View style={styles.tabBadge}>
               <Text style={styles.tabBadgeText}>
                 {
-                  Object.keys(checkedExtras).filter(
-                    (id) => id.startsWith("t") && checkedExtras[id],
+                  items.filter(
+                    (item) => item.checked && item.type === 'topping' ? item : "",
                   ).length
                 }
               </Text>

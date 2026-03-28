@@ -30,18 +30,23 @@ export default function SizeSelector({
   let hardCodedSizes = [
     {
       name: "small",
+      price : 12
     },
     {
       name: "medium",
+      price : 15
     },
     {
       name: "large",
+      price : 18
     },
     {
       name: "extra-large",
+      price: 21
     },
     {
       name: "half",
+      price : 24
     },
   ];
   return (

@@ -33,13 +33,11 @@ const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true });
     try {
       let userState = await getCurrentUser();
-      console.log("working from authStore");
-      console.log(userState);
       userState
         ? set({ isAuthenticated: true, user: userState as User })
         : set({ isAuthenticated: false, user: null });
 
-      console.log(`logger ${userState}`);
+      console.log(`${userState}`);
     } catch (error) {
       console.log("cant set the user");
       console.log(error);

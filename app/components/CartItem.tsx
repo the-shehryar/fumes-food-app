@@ -28,190 +28,26 @@ const RED_LIGHT = "#FFF1F2";
 
 const { width } = Dimensions.get("window");
 
-const SIZES = [
-  "small",
-  "medium",
-  "regular",
-  "large",
-  "extra-large",
-  "half",
-  "full",
-];
-
-//* Older Approach
-// export default function CartItem({ item }: { item: CartItemType }) {
-//   let { increaseQty, decreaseQty } = useCartStore();
-
-//   const handleIncreaseQty = () => {
-//     increaseQty(
-//       item.id,
-//       [], // You can add default customizations if needed
-//     );
-//   };
-//   const handleDecreaseQty = () => {
-//     decreaseQty(
-//       item.id,
-//       [], // You can add default customizations if needed
-//     );
-//   };
-
-//   return (
-//     <View style={cartItemStyles.wrapper}>
-//       <View style={cartItemStyles.imageWrapper}>
-//         <Image source={images.coffeeOffer} style={cartItemStyles.image} />
-//       </View>
-//       <View style={cartItemStyles.contentWrapper}>
-//         <Text
-//           numberOfLines={2}
-//           ellipsizeMode="tail"
-//           style={cartItemStyles.name}
-//         >
-//           {item.name}
-//         </Text>
-//         {item.size ? (
-//           <View style={cartItemStyles.sizeWrapper}>
-//             <Text style={cartItemStyles.size}>Size :</Text>
-//             <Text style={cartItemStyles.sizeText}>{item.size}</Text>
-//           </View>
-//         ) : (
-//           ""
-//         )}
-//         <View style={cartItemStyles.priceWrapper}>
-//           <View style={quantityStyles.buttonsWrapper}>
-//             <TouchableOpacity
-//               onPress={handleDecreaseQty}
-//               style={quantityStyles.button}
-//             >
-//               <SubstractBtn width={24} height={24} />
-//             </TouchableOpacity>
-//             <View style={quantityStyles.itemCountWrapper}>
-//               <Text style={quantityStyles.itemCount}>{item.quantity}</Text>
-//             </View>
-//             <TouchableOpacity
-//               onPress={handleIncreaseQty}
-//               style={quantityStyles.button}
-//             >
-//               <AddButton width={24} height={24} />
-//             </TouchableOpacity>
-//           </View>
-
-//           <Text style={cartItemStyles.price}>${item.price}</Text>
-//         </View>
-//       </View>
-//     </View>
-//   );
-// }
-
-// const cartItemStyles = StyleSheet.create({
-//   wrapper: {
-//     width: "94%",
-//     flexDirection: "row",
-//     paddingVertical: 10,
-//     paddingBottom: 20,
-//     paddingHorizontal: 4,
-//     borderBottomWidth: 1,
-//     borderBottomColor: "#ccc",
-//     alignItems: "center",
-//     alignSelf: "center",
-//   },
-//   imageWrapper: {
-//     width: 120,
-//     height: 120,
-//     marginRight: 10,
-//     borderRadius: 16,
-//     overflow: "hidden",
-//   },
-//   image: {
-//     width: "100%",
-//     height: "100%",
-//   },
-//   contentWrapper: {
-//     flex: 1,
-//     justifyContent: "space-between",
-//   },
-//   name: {
-//     fontSize: 16,
-//     fontWeight: "bold",
-//   },
-//   price: {
-//     fontSize: 20,
-//     fontWeight: 600,
-//     color: "#3C3A45",
-//   },
-//   quantity: {
-//     fontSize: 14,
-//     color: "#888",
-//   },
-//   sizeWrapper: {
-//     maxWidth: 120,
-//     minWidth: 60,
-//     height: 30,
-//     flexDirection: "row",
-//     alignItems: "center",
-//     // backgroundColor : "green"
-//   },
-//   size: {
-//     fontSize: 14,
-//     color: "#888",
-//   },
-//   sizeText: {
-//     color: "#FF611D",
-//     fontSize: 14,
-//     textTransform: "capitalize",
-//     marginLeft: 4,
-//   },
-//   priceWrapper: {
-//     height: 50,
-//     borderRadius: 8,
-//     paddingRight: 10,
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//   },
-// });
-
-// const quantityStyles = StyleSheet.create({
-//   buttonsWrapper: {
-//     width: "40%",
-//     height: "100%",
-//     flexDirection: "row",
-//     justifyContent: "flex-start",
-//     alignItems: "center",
-//   },
-//   button: {
-//     width: "auto",
-//     height: "auto",
-//     marginHorizontal: 8,
-//     // backgroundColor: "#10cf90",
-//   },
-//   itemCountWrapper: {
-//     maxWidth: 24,
-//     height: 24,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     // backgroundColor  : "red",
-//   },
-//   itemCount: {
-//     fontSize: 16,
-//     fontWeight: 600,
-//   },
-// });
+//? Replace once next seed is performed
+const SIZES = ["small", "medium", "large", "extra-large"];
 
 const CartItem: React.FC<{
   item: CartItemType;
   index: number;
-  // onRemove: (id: string) => void;
-  // onCheckToggle?: (id: string) => void;
-  // onSizeChange: (id: string, size: string) => void;rrr
 }> = ({ item, index }) => {
-  let { items, increaseQty, decreaseQty, removeItem } = useCartStore();
+  let { items, increaseQty,updateCustomizations, decreaseQty, removeItem } = useCartStore();
   const [showSizes, setShowSizes] = useState(false);
-  const [itemSize, setItemSize] = useState<string>("regular");
+  const [itemSize, setItemSize] = useState<string>(item.size);
   const slideAnim = useRef(new Animated.Value(30)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const removeAnim = useRef(new Animated.Value(1)).current;
   const [visible, setVisible] = useState<boolean>(false);
 
+  let extrasTotal =
+    item.customizations?.reduce(
+      (base: number, cus: CartCustomization) => (cus.checked ? base + cus.price : base),
+      0,
+    ) ?? 0;
   function handleCustomizationPopup(item: CartItemType) {
     if (item.customizations) {
       console.log(item.customizations);
@@ -404,6 +240,7 @@ const CartItem: React.FC<{
               transparent
               animationType="fade"
               onRequestClose={() => {
+                console.log("modal done");
                 setVisible(false);
               }}
             >
@@ -411,7 +248,7 @@ const CartItem: React.FC<{
                 <View style={styles.popup}>
                   <Extras items={item.customizations} />
                   <TouchableOpacity
-                    onPress={() => setVisible(false)}
+                    onPress={() => {setVisible(false); updateCustomizations(item.id, item.customizations);}}
                     style={styles.btn}
                   >
                     <Text style={styles.btnText}>Save</Text>
@@ -438,7 +275,7 @@ const CartItem: React.FC<{
               </TouchableOpacity>
             </View>
             <Text style={styles.cartItemPrice}>
-              ${(item.price * item.quantity).toFixed(2)}
+              ${(item.price * item.quantity + extrasTotal).toFixed(2)}
             </Text>
           </View>
         </View>

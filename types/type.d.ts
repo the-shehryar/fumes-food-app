@@ -74,7 +74,7 @@ interface GetTopRatedMenuParams extends GetMenuParams {
   limit: number;
 }
 
-interface MenuItem extends Models.Row {
+export interface MenuItem extends Models.Row {
   name: string;
   description: string;
   price: number;
@@ -106,6 +106,7 @@ interface CartItemType {
 }
 
 interface ItemSize {
+  $id : any,
   name:
     | "small"
     | "medium"
@@ -114,6 +115,11 @@ interface ItemSize {
     | "half"
     | "full"
     | "regular";
+  price: number;
+  isDefault : boolean,
+  calories : number,
+  $createdAt : any,
+  $updatedAt : any
 }
 export interface CartCustomization {
   icon: string;
@@ -124,6 +130,10 @@ export interface CartCustomization {
   checked: boolean;
 }
 
+export interface Coupon {
+  code: string;
+  discount: number;
+}
 interface CartStore {
   items: CartItemType[];
   index: number;

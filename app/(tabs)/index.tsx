@@ -109,6 +109,7 @@ export default function Index() {
         data={CategoriesLocal}
         horizontal
         showsHorizontalScrollIndicator={false}
+        contentContainerStyle = {{paddingLeft : 10, paddingRight : 40}}
         renderItem={({ item, index }) => {
           return (
             <View style={circularFilter.circularBtnWrapper}>
