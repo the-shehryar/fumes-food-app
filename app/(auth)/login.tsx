@@ -16,6 +16,10 @@ import Feather from "@expo/vector-icons/Feather";
 import AppleIcon from '@/assets/images/ic_round-apple.svg'
 import GoogleIcon from '@/assets/images/google-icon.svg'
 import EmailIconWhite from '@/assets/images/ic_outline-email.svg'
+import { OauthLogin } from "@/libs/appwrite";
+import { OAuthProvider } from "react-native-appwrite";
+import useAuthStore from "@/stores/auth.store";
+import { User } from "@/types/type";
 
 
 
@@ -23,6 +27,8 @@ import EmailIconWhite from '@/assets/images/ic_outline-email.svg'
 
 
 export default function SignIn() {
+
+  let {user, setUser, isAuthenticated}  = useAuthStore();
 
 function handleEmailSignup (){
   router.push("/(auth)/signup");
@@ -34,8 +40,17 @@ function handleEmailSignup (){
   function handleAppleLogin() {
     router.push("/(auth)/signIn");
   }
-  function handleGoogleLogin() {
-    router.push("/(auth)/signIn");
+ async function handleGoogleLogin(provider : OAuthProvider) {
+
+    let user = await OauthLogin(provider)
+    console.log(user)
+    if(user !== null){
+      isAuthenticated = true
+      setUser(user as User)
+      router.push("/");
+    }else {
+      console.log('user cant do oauth')
+    }
   }
   return (
     <KeyboardAvoidingView
@@ -62,8 +77,7 @@ function handleEmailSignup (){
             title="Continue with Google"
             textStyle="#000"
             style="big-filled"
-            onPressTouch={handleGoogleLogin}
-            // value="googleAuth"
+            onPressTouch={() => handleGoogleLogin(OAuthProvider.Google) }
           />
           <CustomButton
             color={"#ff611d"}
@@ -72,31 +86,9 @@ function handleEmailSignup (){
             title="Continue with Email"
             textStyle="#fff"
             style="big-filled"
-            // value="emailAuth"
             onPressTouch={handleEmailLogin}
           />
 
-          {/* <View style={styles.CtaBtnWrapper}>
-            <CustomButton
-              color={"#0000009a"}
-              leftIcon={false}
-              textStyle="#fff"
-              title="Sign In"
-              style="default"
-              onPressTouch={handleEmailLogin}
-            />
-            </View> */}
-            {/* <Button title='Try!' onPress={ () => { Sentry.captureException(new Error('First error')) }}/> */}
-          {/* <View style={styles.CtaBtnWrapper}>
-            <CustomButton
-              color={"#0000009a"}
-              leftIcon={false}
-              textStyle="#fff"
-              title="Sign Up"
-              style="default"
-              onPressTouch={handleEmailSignup}
-            />
-          </View> */}
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

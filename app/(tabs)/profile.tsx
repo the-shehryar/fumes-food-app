@@ -2,8 +2,9 @@ import { account } from "@/libs/appwrite";
 import useAuthStore from "@/stores/auth.store";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Animated,
   Image,
   Platform,
@@ -35,9 +36,10 @@ type MenuRowProps = {
   iconBg: string;
   iconColor: string;
   delay?: number;
+  isWorking? : boolean
   isDestructive?: boolean;
   badge?: string;
-  onPress? : ()=>void 
+  onPress?: () => void;
 };
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
@@ -57,9 +59,10 @@ const MenuRow: React.FC<MenuRowProps> = ({
   iconBg,
   iconColor,
   delay = 0,
+  isWorking = false,
   isDestructive = false,
   badge,
-  onPress
+  onPress,
 }) => {
   const translateY = useRef(new Animated.Value(14)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -83,10 +86,15 @@ const MenuRow: React.FC<MenuRowProps> = ({
 
   return (
     <Animated.View style={{ opacity, transform: [{ translateY }] }}>
-      <TouchableOpacity activeOpacity={0.7} style={styles.menuRow} onPress={onPress}>
+      <TouchableOpacity
+        activeOpacity={0.7}
+        style={styles.menuRow}
+        onPress={onPress}
+      >
         <View style={[styles.menuIconWrap, { backgroundColor: iconBg }]}>
           <Ionicons name={icon} size={18} color={iconColor} />
         </View>
+
         <View style={{ flex: 1 }}>
           <Text
             style={[styles.menuLabel, isDestructive && { color: "#EF4444" }]}
@@ -95,6 +103,11 @@ const MenuRow: React.FC<MenuRowProps> = ({
           </Text>
           {sublabel ? (
             <Text style={styles.menuSublabel}>{sublabel}</Text>
+          ) : null}
+        </View>
+        <View style={{ width: 24, alignItems: "center" }}>
+          {isWorking ? (
+            <ActivityIndicator size="small" color={isDestructive ? "#EF4444" : ORANGE} />
           ) : null}
         </View>
         {badge ? (
@@ -127,24 +140,29 @@ export default function ProfileScreen() {
   const infoAnim = useRef(new Animated.Value(14)).current;
   const infoOpacity = useRef(new Animated.Value(0)).current;
 
-  const {user} = useAuthStore()
+  const { user } = useAuthStore();
 
   async function handleLogout() {
-    
     try {
-      let logoutRequest = await account.deleteSession({sessionId : "current"})
-      useAuthStore.getState().setUser(null)
-      router.replace('/(auth)/login')
-      ToastAndroid.showWithGravity('User logged out successfully', ToastAndroid.LONG, 3)
+      let logoutRequest = await account.deleteSession({ sessionId: "current" });
+      useAuthStore.getState().setUser(null);
+      useAuthStore.getState().setIsAuthenticated(false);
+
+      router.replace("/(auth)/login");
+      
+      ToastAndroid.showWithGravity(
+        "User logged out successfully",
+        ToastAndroid.LONG,
+        ToastAndroid.BOTTOM,
+      );
+
     } catch (error) {
-      if(error instanceof Error) ToastAndroid.showWithGravity(error.message, ToastAndroid.LONG, 3)
+      if (error instanceof Error)
+        ToastAndroid.showWithGravity(error.message, ToastAndroid.LONG, 3);
     }
-    
-    console.log('user needs to go')
+
+    console.log("user needs to go");
   }
-
-
-
 
   useEffect(() => {
     Animated.parallel([
@@ -381,18 +399,18 @@ export default function ProfileScreen() {
             delay={700}
           />
           <View style={styles.divider} />
-            <MenuRow
-              icon="log-out-outline"
-              label="Log Out"
-              iconBg="#FFF1F2"
-              iconColor="#EF4444"
-              delay={740}
-              isDestructive
-              onPress={handleLogout}
-            />
+          <MenuRow
+            icon="log-out-outline"
+            label="Log Out"
+            iconBg="#FFF1F2"
+            iconColor="#EF4444"
+            delay={740}
+            isDestructive
+            isWorking={true}
+            onPress={handleLogout}
+          />
         </Section>
       </ScrollView>
-
     </View>
   );
 }

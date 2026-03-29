@@ -24,7 +24,7 @@ import MenuCard from "../components/MenuCard";
 
 export default function Index() {
   let { isLocalized, setIsLocalized } = useMenusState();
-
+  let {isAuthenticated} = useAuthStore()
   let { data, loading, error, refetch } = useAppwrite({
     fn: getTopRatedMenu,
     params: {
@@ -41,7 +41,7 @@ export default function Index() {
       category: "",
       query: "",
     },
-    skip: false,
+    skip: !isAuthenticated,
   });
 
   let { user } = useAuthStore();
@@ -156,6 +156,7 @@ export default function Index() {
 
   useEffect(() => {
     //? Location Permission
+    console.log(user)
     requestLocationPermission();
 
     if (!loadingMenus) {

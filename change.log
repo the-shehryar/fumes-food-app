@@ -1,53 +1,88 @@
-### Signup Screen
-    -> Added Password Validation Indicator 
-    -> Added conditonal rendering for Password Validation Indicator 
-    -> User Registeration Implemented
+# FUMES — Development Log
+
+---
+
+## ✅ Completed
+
+### Authentication
+- User registration implemented with password validation indicator
+- Conditional rendering for validation feedback
+- OAuth (Google) login integrated via Appwrite
+- User logout functional on Profile screen
 
 ### Index Screen
-    -> Index Initial Design Implemented
-    -> Horizontal FlatList Added which shows the top menu items (network fetch data)
-    -> Automatically start fetching the main menu for search screen, Will localize the response
-    -> Activity Indicator added so user know whats happening needs a better way.
+- Initial design implemented
+- Horizontal FlatList rendering top-rated menu items via network fetch
+- Background fetch for main menu on load — localised for Search screen performance
+- Activity indicator added during loading states
 
 ### Search Screen
-    -> Had loads of bugs fixed it    
+- Multiple bugs identified and resolved
+- Stable search and filter behaviour
 
-### CustomInput Component
-    -> Added labels
-    -> Added conditonal rendering for labels
-    -> Dynamic sizing & pricing frontend partially pending
-### Cart Functionalies
-    -> Can add customizations in cart
-    -> Better Keys for FlatList in cart
-    -> Multiple entries of same item with different customization is doable
-    -> Add, remove, update quantity and customization in cart
-    -> Fixed cart total calculations & cart.store.ts
+### Product Screen
+- Dynamic routing from Menu Card to product detail
+- Full product details rendered dynamically
+- Extra ingredients (customizations) selectable from product screen
+- Direct link to cart from product screen
+- Like functionality added
 
-Checkout Screen 
-    -> User Can add new address (database will track)
-    -> User can select payment options
+### Cart
+- Add, remove, increase and decrease quantity all working
+- Same item with different customizations treated as separate entries
+- Customizations editable from within cart
+- Cart total calculation fixed and verified
+- Improved FlatList keys for stable rendering
 
-### Custom Product Screen
-    -> Menu Card lead to the screen
-    -> Dynamic Details and routing
-    -> Extra(Customizations) can be added
-    -> Direct Link to cart from screen
-    -> Added like functionality (mentioning just now)
+### Checkout Screen
+- User can add a new delivery address (tracked in database)
+- Payment method selection UI implemented
 
-### Profile 
-    -> User can log out. 
+### Custom Input Component
+- Labels added with conditional rendering
+- Foundation laid for dynamic sizing and pricing
 
-### Problems 
-Sizes are yet to be aligned properly ✅
-Extras(Customizations) UI in customProduct screen need fixing ✅
-Sized Based Pricing --- need to implement
-Sizes are yet to be implemented in database ADD IN NEXT SEEDIGN OPERATION(were not in orignal plan)
-Cart Button Indication or some other indication is current product is added to cart
-    Idea 1 -> make add to cart make a popup that takes size while quantity is mentioned 1 by default
-    Idea 2 -> make quantity bar appear upon add to cart
-    Take -> Both will introduce a new step while adding to cart but on the other hand it can be skipped using Menu Card Component 
-No database tracking for likes, reviews, yet 
-No orders implementations yet next thing now.
+### Profile Screen
+- User can log out successfully
 
-### Gotchas
-Always push before adding new packages.
+---
+
+## 🔧 In Progress
+
+| Issue | Status |
+|---|---|
+| Size-based pricing | Not implemented |
+| Sizes in database | Pending — add in next seeding operation (was not in original plan) |
+| Extras UI on Product Screen | Needs polish |
+| Size selector alignment | Needs fix |
+
+---
+
+## 💡 Pending Decisions
+
+### Cart — Add to Cart Interaction
+Two approaches under consideration:
+
+**Option A — Size Popup on Add**
+Show a popup that asks for size selection when user taps Add to Cart. Quantity defaults to 1. Cleaner intent but adds a step.
+
+**Option B — Inline Quantity Bar**
+Quantity bar appears in place of the Add to Cart button after first tap. Faster repeat adds but requires size to be pre-selected.
+
+**Note:** Both options add friction on first add but can be bypassed via the Menu Card component directly.
+
+---
+
+## ⏭️ Up Next
+- Order placement and order tracking implementation
+- Database tracking for likes and reviews
+- Size-based pricing logic
+
+---
+
+## ⚠️ Gotchas
+- Always push to Git **before** installing new packages to keep a clean rollback point
+
+---
+
+*Last updated: March 2026*

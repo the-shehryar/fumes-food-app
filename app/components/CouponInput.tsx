@@ -26,9 +26,6 @@ export default function CouponInput() {
 
   
 
-
-
-
 //? Handle on change text
 
   function handlePromo(text: string) {

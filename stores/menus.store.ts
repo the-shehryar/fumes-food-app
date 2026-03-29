@@ -8,12 +8,14 @@ type MenusState = {
   setIsLocalized: (value: boolean) => void;
   setMenus: (value: MenuItem[] | null) => void;
   setUpdatingMenus: (value: boolean) => void;
+  clearMenu: () => void;
 };
 
 const useMenusState = create<MenusState>((set) => ({
   isLocalized: false,
   menus: [],
   updatingMenu: false,
+  clearMenu: () => set({ menus: [] }),
   setUpdatingMenus: (value) => {
     set({ updatingMenu: value });
   },

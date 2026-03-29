@@ -23,12 +23,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Filter from "../components/Filter";
 import MenuCard from "../components/MenuCard";
 import SearchBar from "../components/SearchBar";
+import useAuthStore from "@/stores/auth.store";
 
 export default function SearchScreen() {
   //? You're using the `useLocalSearchParams` hook to access the search parameters from the URL.
 
   const { isSearching, setIsSearching } = useSearchStore();
-
+  const {user} = useAuthStore()
   let { category, query } = useLocalSearchParams<{
     category: string;
     query?: string;
@@ -98,6 +99,12 @@ export default function SearchScreen() {
       >
         <Text>Seed Data</Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.userBtn}
+        onPress={() => console.log(user) }
+      >
+        <Text>Seed Data</Text>
+      </TouchableOpacity>
       <View style={styles.locationWrapper}>
         <Text style={styles.locationHeaderText}>Delivery to</Text>
         <Pressable style={styles.locationPressable}>
@@ -151,7 +158,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   seedBtn: {
-    display: "none",
+    // display: "none",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 220,
+    height: 50,
+    backgroundColor: "#6bfa72ed",
+  },
+  userBtn: {
+    // display: "none",
     justifyContent: "center",
     alignItems: "center",
     width: 220,

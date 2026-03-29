@@ -160,6 +160,8 @@ export default function ProductScreen() {
   const [checkedExtras, setCheckedExtras] = useState<Record<string, boolean>>(
     {},
   );
+  const [rating, setRating] = useState(0);
+  const [showRating, setShowRating] = useState(false);
   const [descExpanded, setDescExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<"toppings" | "sides">("toppings");
   const tabIndicator = useRef(new Animated.Value(0)).current;
@@ -190,7 +192,9 @@ export default function ProductScreen() {
           .reduce((sum, extra) => sum + extra.price, 0)
       : 0;
 
-  const orderTotal = (product ? product.price : 0 * qty + extrasTotal).toFixed(2);
+  const orderTotal = (product ? product.price : 0 * qty + extrasTotal).toFixed(
+    2,
+  );
 
   //? Toggle Checkboxes
   const toggleExtra = (id: string) => {
@@ -318,7 +322,7 @@ export default function ProductScreen() {
 
   async function placeOrder(qty?: number, size?: string) {
     let item = { ...product };
-    console.log(item.price)
+    console.log(item.price);
     item.quantity = qty || 1;
     (item as any).size = size || ("large" as any);
     (item as any).id = (item as any).$id;
@@ -485,7 +489,19 @@ export default function ProductScreen() {
               onSelect={setSelectedSize}
             />
             <Extras items={product.customizations} />
-            {/* ── You May Also Like ── */}
+            <TouchableOpacity
+              style={styles.ratebtn}
+              onPress={() => setShowRating(true)}
+              activeOpacity={0.85}
+            >
+              <View style={styles.rateIconWrap}>
+                <Ionicons name="star" size={14} color={WHITE} />
+              </View>
+              <Text style={styles.ratetext}>Rate this item</Text>
+              <Ionicons name="chevron-forward" size={14} color={ORANGE} />
+            </TouchableOpacity>
+
+            {/* ── You may also like I'll use open ai here ── */}
             <View style={styles.relatedSection}>
               <Text style={styles.relatedTitle}>From the Same Restaurant</Text>
               <ScrollView
@@ -957,5 +973,32 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0.3,
+  },
+
+  // Rate Button
+  ratebtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    alignSelf: "flex-start",
+    backgroundColor: ORANGE_LIGHT,
+    borderWidth: 1.5,
+    borderColor: ORANGE,
+    borderRadius: 50,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
+  rateIconWrap: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: ORANGE,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  ratetext: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: ORANGE,
   },
 });

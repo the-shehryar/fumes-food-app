@@ -15,31 +15,34 @@ import {
   SignInParams,
   User,
 } from "@/types/type";
+import { makeRedirectUri } from "expo-auth-session";
+import * as WebBrowser from "expo-web-browser";
 import { Alert, Platform, ToastAndroid } from "react-native";
 import {
   Account,
   Avatars,
   Client,
   ID,
+  OAuthProvider,
   Query,
   Storage,
   TablesDB,
 } from "react-native-appwrite";
-
 export const appwriteConfig = {
   endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!,
   projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!,
   platform: process.env.EXPO_PUBLIC_APPWRITE_PLATFROM_NAME!,
   databaseId: process.env.EXPO_PUBLIC_DATABASES_ID!,
   bucketId: process.env.EXPO_PUBLIC_BUCKET_ID!,
-  userCollectionId: process.env.EXPO_PUBLIC_USER_COLLECtION_ID!,
+  userCollectionId: process.env.EXPO_PUBLIC_USER_COLLECTION_ID!,
   categoriesCollectionId: process.env.EXPO_PUBLIC_CATEGORIES_COLLECtION_ID!,
   menuCollectionId: process.env.EXPO_PUBLIC_MENU_COLLECtION_ID!,
   customizationsCollectionId:
     process.env.EXPO_PUBLIC_CUSTOMIZATIONS_COLLECtION_ID!,
   menuCustomizationsCollectionId:
     process.env.EXPO_PUBLIC_MENU_CUSTOMIZATIONS_COLLECtION_ID!,
-  menuItemSizesCollectionId : process.env.EXPO_PUBLIC_MENU_ITEMSIZES_COLLECTION_ID!  
+  menuItemSizesCollectionId:
+    process.env.EXPO_PUBLIC_MENU_ITEMSIZES_COLLECTION_ID!,
 };
 
 export const client = new Client()
@@ -76,6 +79,11 @@ export const createUser = async ({
     let avatarUrl = avatars.getInitialsURL(name);
 
     //* Registering User in Databases
+
+    //* Should not be saving password in database as i'm using appwrite for authentication
+    //* and it will handle password security and hashing but for now i am just going to save email
+    //* and name in database to fetch it later for user profile and other use cases
+
     const newUserData = await databases.createRow({
       databaseId: DATABASE_ID,
       tableId: "users",
@@ -83,7 +91,6 @@ export const createUser = async ({
       data: {
         accountId: newUser.$id,
         email,
-        password,
         name,
         avatarUrl: avatarUrl,
       },
@@ -108,22 +115,93 @@ export const signIn = async ({ email, password }: SignInParams) => {
   }
 };
 
-export let getCurrentUser = async () => {
+export let getCurrentUser = async (oauth?: boolean) => {
   try {
     let currentAccount = await account.get();
-    console.log(currentAccount.$id);
+
     if (!currentAccount) throw new Error("Can't get the account");
-    let currentUser = await databases.listRows<User>({
+
+    let userExist = await databases.listRows<User>({
       databaseId: DATABASE_ID,
-      tableId: "users",
+      tableId: appwriteConfig.userCollectionId,
       queries: [Query.equal("accountId", currentAccount.$id)],
     });
-    if (!currentUser) throw new Error("User does not exists");
-    console.log(currentUser.rows);
-    return currentUser.rows[0];
+
+    if (userExist.rows.length === 0 && oauth) {
+      const newUser = await databases.createRow({
+        databaseId: appwriteConfig.databaseId,
+        tableId: appwriteConfig.userCollectionId,
+        rowId: ID.unique(),
+        data: {
+          accountId: currentAccount.$id,
+          name: currentAccount.name,
+          email: currentAccount.email,
+          avatarUrl: `https://ui-avatars.com/api/?name=${currentAccount.name}&background=F97316&color=fff`,
+        },
+      });
+      return newUser;
+    }
+
+    return (userExist.rows[0] as User) ?? null;
   } catch (error) {
     console.log(error);
     throw new Error(error as string);
+  }
+};
+
+export let OauthLogin = async (provider: OAuthProvider) => {
+  try {
+    let deepLink = new URL(
+      makeRedirectUri({
+        scheme: `appwrite-callback-${appwriteConfig.projectId}`,
+      }),
+    );
+    let scheme = `${deepLink.protocol}//`;
+
+    // Login URL
+    const loginUrl = await account.createOAuth2Token({
+      provider: provider,
+      success: `${deepLink}`,
+      failure: `${deepLink}`,
+    });
+    console.log(loginUrl);
+    if (!loginUrl) throw new Error("Failed to create OAuth session");
+
+    const result = await WebBrowser.openAuthSessionAsync(`${loginUrl}`, scheme);
+
+    // Extract credentials from OAuth redirect URL
+    if (result.type !== "success")
+      throw new Error("OAuth login failed or was cancelled");
+
+    const url = new URL(result.url);
+    const secret = url.searchParams.get("secret");
+    const userId = url.searchParams.get("userId");
+
+    // Create session with OAuth credentials
+
+    if (userId && secret) {
+      try {
+        await account.deleteSession({ sessionId: "current" });
+      } catch (error) {
+        console.log(error);
+      }
+
+      let oauthUser = await account.createSession({
+        userId,
+        secret,
+      });
+      if (oauthUser) {
+        console.log("successfully logged in with oauth");
+        let user = await getCurrentUser(true);
+        return user;
+      } else {
+        console.log("check credentials");
+        return null;
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    return null;
   }
 };
 
@@ -182,7 +260,7 @@ export const getTopRatedMenu = async ({
   limit,
 }: GetTopRatedMenuParams) => {
   try {
-    console.log('fetching top rated')
+    console.log("fetching top rated");
     const menus = await databases.listRows({
       databaseId: DATABASE_ID,
       tableId: appwriteConfig.menuCollectionId,
@@ -214,7 +292,7 @@ export const getTopRatedMenu = async ({
               price: customization.price,
               icon: customization.icon,
               type: customization.type,
-              checked : false
+              checked: false,
             };
           }),
         );
@@ -290,7 +368,7 @@ export const getMenuWithCustomizations = async ({
               price: customization.price,
               icon: customization.icon,
               type: customization.type,
-              checked : false
+              checked: false,
             };
           }),
         );
