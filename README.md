@@ -2,7 +2,7 @@
 
 <img src="https://github.com/user-attachments/assets/3d610453-c1f1-4319-b08c-275cc3de10e7" width="400" height="auto" alt="App Logo"/>
 
-### *Your Food, Your Way, Delivered Today.*
+### _Your Food, Your Way, Delivered Today._
 
 
 
@@ -14,12 +14,6 @@
 [![Appwrite](https://img.shields.io/badge/Appwrite-FD366E?style=for-the-badge&logo=appwrite&logoColor=white)](https://appwrite.io/)
 [![NativeWind](https://img.shields.io/badge/NativeWind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://www.nativewind.dev/)
 [![Zustand](https://img.shields.io/badge/Zustand-443E38?style=for-the-badge&logo=react&logoColor=white)](https://zustand-demo.pmnd.rs/)
-
-
-
-
-
-
 
 <br/>
 
@@ -42,17 +36,17 @@ No bloat. No friction. Just 🔥 food.
 
 ## ✨ Features
 
-| Feature | Status |
-|--------|--------|
-| 🍔 Browse menu with category filters | ✅ Done |
-| 🔍 Local-first smart search | 🚧 Planned |
-| 🛒 Cart with item customizations | ✅ Done |
-| 🎞️ Cart animations | ✅ Done |
-| 🖼️ Compressed image uploads to Appwrite | ✅ Done |
-| 📍 Location detection + mock location guard | ✅ Done |
-| 🔐 Secure image loading via JWT | 🚧 Planned |
-| 🔄 Swipe down to refresh | 🚧 Planned |
-| 🗑️ Swipe to delete from cart | 🚧 Planned |
+| Feature                                     | Status     |
+| ------------------------------------------- | ---------- |
+| 🍔 Browse menu with category filters        | ✅ Done    |
+| 🔍 Local-first smart search                 | 🚧 Planned |
+| 🛒 Cart with item customizations            | ✅ Done    |
+| 🎞️ Cart animations                          | ✅ Done    |
+| 🖼️ Compressed image uploads to Appwrite     | ✅ Done    |
+| 📍 Location detection + mock location guard | ✅ Done    |
+| 🔐 Secure image loading via JWT in v.2      | 🚧 Planned |
+| 🔄 Swipe down to refresh in v.2             | 🚧 Planned |
+| 🗑️ Swipe to delete from cart in v.2         | 🚧 Planned |
 
 ---
 
@@ -66,8 +60,7 @@ No bloat. No friction. Just 🔥 food.
 ├── State           → Zustand
 ├── Local Storage   → AsyncStorage
 ├── Location        → expo-location
-├── Image           → expo-image-manipulator
-└── Mock Detection  → react-native-turbo-mock-location-detector
+└── Image           → expo-image-manipulator
 ```
 
 ---
@@ -96,6 +89,7 @@ npx expo start
 ```
 
 > ⚠️ Some features (mock location detection) require a **dev build** — not Expo Go.
+>
 > ```bash
 > npx expo run:android
 > ```
@@ -140,6 +134,7 @@ fumes-food-app/
 ## 🏗️ Architecture Highlights
 
 ### 🔄 Local-First Search Strategy
+
 ```
 App Load    →  Fetch menus from Appwrite  →  Save to AsyncStorage
 Search      →  Read AsyncStorage          →  Filter locally (instant ⚡)
@@ -147,16 +142,19 @@ Search      →  Read AsyncStorage          →  Filter locally (instant ⚡)
 ```
 
 ### 🖼️ Image Pipeline
+
 ```
 Pick Image  →  Compress (1024px / 0.7 quality)  →  Upload to Appwrite Storage
 ```
 
 ### 🔐 Secure Image Loading
+
 ```
 Request image  →  Generate JWT  →  Download to device cache  →  Render from local URI
 ```
 
 ### 📍 Location + Mock Guard
+
 ```
 App opens  →  Request location permission
            →  Check for mock location (turbo-mock-location-detector)
@@ -206,6 +204,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 **Crafted with 🔥 by [@the-shehryar](https://github.com/the-shehryar)**
 
-*Drop a ⭐ if FUMES made you hungry!*
+_Drop a ⭐ if FUMES made you hungry!_
 
 </div>
