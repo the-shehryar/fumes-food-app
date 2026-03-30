@@ -21,10 +21,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MenuCard from "../components/MenuCard";
+import HeroSlider from "../components/HeroSlider";
 
 export default function Index() {
   let { isLocalized, setIsLocalized } = useMenusState();
-  let {isAuthenticated} = useAuthStore()
+  let { isAuthenticated } = useAuthStore();
   let { data, loading, error, refetch } = useAppwrite({
     fn: getTopRatedMenu,
     params: {
@@ -49,67 +50,16 @@ export default function Index() {
   let { setUserAddresses, userAddresses } = usePreferencesStore();
   const HeaderComponent = () => (
     <>
-      <View style={styles.heroImageWrapper}>
-        <Image
-          style={styles.dryStyles}
-          source={images.burgerBackground}
-          resizeMode="contain"
-        />
-        <Image
-          style={styles.transparentBurgerStyles}
-          source={images.burgerTransparent}
-          resizeMode="contain"
-        />
-      </View>
-      <View style={styles.heroTextWrapper}>
-        <View style={styles.slideIndicator}>
-          <LinearGradient
-            colors={["#FF611D", "#FFA680"]}
-            style={styles.background}
-          >
-            <View style={styles.firstArm}></View>
-          </LinearGradient>
-
-          <View style={styles.indicatorTextWrapper}>
-            <Text style={styles.indicatorTextStyles}>2</Text>
-            <Text style={styles.indicatorTextShadowStyles}></Text>
-          </View>
-
-          <LinearGradient
-            // Background Linear Gradient
-            colors={["#FF611D", "#FFA680"]}
-            style={styles.background}
-          >
-            <View style={styles.secondArm}></View>
-          </LinearGradient>
-        </View>
-
-        <View style={styles.slideText}>
-          <View>
-            <Text style={{ fontSize: 24, fontWeight: "600", color: "#000" }}>
-              A Special Dish with —{" "}
-            </Text>
-            <Text style={{ fontSize: 40, fontWeight: "900", color: "#FF611D" }}>
-              Endless Taste
-            </Text>
-          </View>
-          <View>
-            <Text style={{ fontSize: 12, color: "#6e6e72" }}>
-              Close your eyes on the first bite, and you'll swear you're
-              standing in a sun-drenched Mediterranean kitchen.
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      {/*  This flat list will render circular filters */}
+      
+      <HeroSlider />
+      {/*  This flat list will render circular filters circles*/}
 
       <FlatList
         style={circularFilter.cirularFilerMain}
         data={CategoriesLocal}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle = {{paddingLeft : 10, paddingRight : 40}}
+        contentContainerStyle={{ paddingLeft: 10, paddingRight: 40 }}
         renderItem={({ item, index }) => {
           return (
             <View style={circularFilter.circularBtnWrapper}>
@@ -134,6 +84,7 @@ export default function Index() {
     </>
   );
 
+  //? Requesting User Permision for Location
   async function requestLocationPermission() {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
@@ -156,7 +107,7 @@ export default function Index() {
 
   useEffect(() => {
     //? Location Permission
-    console.log(user)
+    console.log(user);
     requestLocationPermission();
 
     if (!loadingMenus) {
@@ -176,7 +127,7 @@ export default function Index() {
   return (
     <SafeAreaView style={{ backgroundColor: "#fff" }}>
       {/* <View style={styles.customTopBarWrapper}></View> */}
-      
+
       <FlatList
         numColumns={2}
         columnWrapperStyle={cardListStyles.columnWrapper}
@@ -187,91 +138,15 @@ export default function Index() {
         renderItem={({ item }) => (
           <MenuCard item={item as unknown as MenuItem} />
         )}
-        ListEmptyComponent={<ActivityIndicator size={'large'} color={'#de5151'} />}
+        ListEmptyComponent={
+          <ActivityIndicator size={"large"} color={"#de5151"} />
+        }
       />
     </SafeAreaView>
   );
 }
 
 let styles = StyleSheet.create({
-  heroTextWrapper: {
-    width: "100%",
-    height: 140,
-    overflow: "visible",
-    flexDirection: "row",
-    // backgroundColor: "violet",
-  },
-  fragmentStyles: {
-    marginBottom: 100,
-  },
-  slideIndicator: {
-    width: "16%",
-    height: "100%",
-    // backgroundColor: "#10cf90",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative",
-  },
-  slideText: {
-    width: "70%",
-    height: "100%",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "flex-start",
-  },
-  firstArm: {
-    width: 4,
-    height: "16%",
-  },
-  secondArm: {
-    width: 4,
-    height: "50%",
-    borderRadius: 2,
-  },
-  indicatorTextWrapper: {
-    // width : '100%',
-    height: "24%",
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative",
-    // backgroundColor  : "red"
-  },
-  indicatorTextStyles: {
-    fontSize: 14,
-    fontWeight: "bold",
-    zIndex: 10,
-  },
-  indicatorTextShadowStyles: {
-    backgroundColor: "#00000020", // Shadow color with opacity
-    width: 10,
-    height: 10,
-    bottom: 4,
-    left: -4,
-    zIndex: 4,
-    filter: "blur(4px)",
-  },
-  customTopBarWrapper: {
-    width: "100%",
-    height: 40,
-    backgroundColor: "#fff",
-  },
-  heroImageWrapper: {
-    width: "100%",
-    height: 340,
-    position: "relative",
-  },
-  dryStyles: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "contain",
-  },
-  transparentBurgerStyles: {
-    width: "100%",
-    height: "80%",
-    position: "absolute",
-    top: "10%",
-  },
   mainView: {
     width: "100%",
     height: 220,
@@ -329,8 +204,6 @@ let styles = StyleSheet.create({
     wordWrap: "no-wrap",
     fontWeight: "bold",
     justifyContent: "flex-start",
-    // width : 80,
-    // height : 80
   },
   offerTag: {
     fontSize: 8,
@@ -362,7 +235,6 @@ let styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    // marginBottom : 4
   },
   background: {
     borderRadius: 2,
