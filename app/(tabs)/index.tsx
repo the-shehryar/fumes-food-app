@@ -92,7 +92,9 @@ export default function Index() {
       return;
     }
     // ✅ permission granted, get location
-    const location = await Location.getCurrentPositionAsync({});
+    const location = await Location.getCurrentPositionAsync({
+      accuracy : Location.Accuracy.Balanced,
+    });
 
     const [address] = await Location.reverseGeocodeAsync({
       latitude: location.coords.latitude,

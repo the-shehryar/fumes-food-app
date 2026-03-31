@@ -12,6 +12,8 @@
 
 ### Index Screen
 - Initial design implemented
+- Location permission request and handling added
+- Animated hero slider with pagination implemented using react-native-reanimated-carousel
 - Horizontal FlatList rendering top-rated menu items via network fetch
 - Background fetch for main menu on load — localised for Search screen performance
 - Activity indicator added during loading states
@@ -84,5 +86,11 @@ Quantity bar appears in place of the Add to Cart button after first tap. Faster 
 - Always push to Git **before** installing new packages to keep a clean rollback point
 
 ---
+
+31st March, 2026
+Animated Flatlist with reanimated was a mistake it gives a jittery effect when switching slides
+once carousel reaches end or user tries to go backwards, felt unnatural and bugged.
+Im switching to react-native-reanimated-carousel for out of the box infinite carousel 
+support and better performance.
 
 *Last updated: March 2026*

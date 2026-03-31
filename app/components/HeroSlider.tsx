@@ -1,19 +1,45 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
+import React, { useEffect } from "react";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import Animated, {
-  interpolate,
-  SharedValue,
-  useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
+  withDelay,
+  withTiming,
 } from "react-native-reanimated";
+import Carousel, {
+  ICarouselInstance,
+  Pagination,
+} from "react-native-reanimated-carousel";
+
+//? Static Images
 import { images } from "../../constants";
 
 const SliderImages = [
-  images.burgerTransparent,
-  images.burgerTransparent,
-  images.burgerTransparent,
+  {
+    id: 1,
+    image: images.burgerTransparent,
+    mainHeading: "A Special Dish with — ",
+    subHeading: "Endless Taste",
+    description:
+      "Close your eyes on the first bite, and you'll swear you're standing in a sun-drenched Mediterranean kitchen.",
+  },
+  {
+    id: 1,
+    image: images.burgerTransparent,
+    mainHeading: "A Special Dish with — ",
+    subHeading: "Endless Taste",
+    description:
+      "Close your eyes on the first bite, and you'll swear you're standing in a sun-drenched Mediterranean kitchen.",
+  },
+  {
+    id: 1,
+    image: images.sandwichOffer,
+    mainHeading: "A Special Dish with — ",
+    subHeading: "Endless Taste",
+    description:
+      "Close your eyes on the first bite, and you'll swear you're standing in a sun-drenched Mediterranean kitchen.",
+  },
 ];
 
 const { width } = Dimensions.get("screen");
@@ -24,34 +50,68 @@ const caroselItemWidth = viewportWidth + spacing;
 function CarouselItem({
   imageUri,
   index,
-  scrollX,
+  activeIndex,
 }: {
   imageUri: any;
   index: number;
-  scrollX: SharedValue<number>;
+  activeIndex: number;
 }) {
-  let carouselStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateY: interpolate(
-            scrollX.value,
-            [index - 1, index, index + 1],
-            [viewportWidth / 8, 0, viewportWidth / 8],
-          ),
-        },
-      ],
-    };
-  });
+  const translateYMainHeading = useSharedValue(30);
+  const opacityMainHeading = useSharedValue(0);
+  const translateYSecHeading = useSharedValue(30);
+  const opacitySecHeading = useSharedValue(0);
+  const translateYDescHeading = useSharedValue(30);
+  const opacityDescHeading = useSharedValue(0);
+
+  useEffect(() => {
+    if(activeIndex === index){
+      translateYMainHeading.value = 30;
+      opacityMainHeading.value = 0;
+      translateYSecHeading.value = 30;
+      opacitySecHeading.value = 0;
+      translateYDescHeading.value = 30;
+      opacityDescHeading.value = 0;
+  
+      translateYMainHeading.value = withTiming(0, { duration: 400 });
+      opacityMainHeading.value = withTiming(1, { duration: 400 });
+      translateYSecHeading.value = withDelay(100, withTiming(0, { duration: 400 }));
+      opacitySecHeading.value = withDelay(100, withTiming(1, { duration: 400 }));
+      translateYDescHeading.value = withDelay(200, withTiming(0, { duration: 400 }));;
+      opacityDescHeading.value = withDelay(200, withTiming(1, { duration: 400 }));;
+    }else {
+      translateYMainHeading.value = 30;
+      opacityMainHeading.value = 0;
+      translateYSecHeading.value = 30;
+      opacitySecHeading.value = 0;
+      translateYDescHeading.value = 30;
+      opacityDescHeading.value = 0;
+    }
+
+  }, [activeIndex]);
+
+  const animatedMainStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateYMainHeading.value }],
+    opacity: opacityMainHeading.value,
+  }));
+  const animatedSecStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateYSecHeading.value }],
+    opacity: opacitySecHeading.value,
+  }));
+  const animatedDescStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateYDescHeading.value }],
+    opacity: opacityDescHeading.value,
+  }));
 
   return (
     <View style={[styles.fragmentStyles]}>
-      <Animated.View
-        style={[{
-          width: viewportWidth,
-          height: 340,
-          position: "relative",
-        }, carouselStyles]}
+      <View
+        style={[
+          {
+            width: viewportWidth,
+            height: 340,
+            position: "relative",
+          },
+        ]}
       >
         <Image
           style={styles.dryStyles}
@@ -63,7 +123,7 @@ function CarouselItem({
           source={imageUri}
           resizeMode="contain"
         />
-      </Animated.View>
+      </View>
       <View style={styles.heroTextWrapper}>
         <View style={styles.slideIndicator}>
           <LinearGradient
@@ -89,18 +149,25 @@ function CarouselItem({
 
         <View style={styles.slideText}>
           <View>
-            <Text style={{ fontSize: 24, fontWeight: "600", color: "#000" }}>
+            <Animated.Text
+              style={[
+                { fontSize: 24, fontWeight: "600", color: "#000" },
+                animatedMainStyle,
+              ]}
+            >
               A Special Dish with —{" "}
-            </Text>
-            <Text style={{ fontSize: 40, fontWeight: "900", color: "#FF611D" }}>
+            </Animated.Text>
+            <Animated.Text
+              style={[{ fontSize: 40, fontWeight: "900", color: "#FF611D" }, animatedSecStyle]}
+            >
               Endless Taste
-            </Text>
+            </Animated.Text>
           </View>
           <View>
-            <Text style={{ fontSize: 12, color: "#6e6e72" }}>
+            <Animated.Text style={[{ fontSize: 12, color: "#6e6e72" }, animatedDescStyle]}>
               Close your eyes on the first bite, and you'll swear you're
               standing in a sun-drenched Mediterranean kitchen.
-            </Text>
+            </Animated.Text>
           </View>
         </View>
       </View>
@@ -109,38 +176,58 @@ function CarouselItem({
 }
 
 function HeroSlider() {
-  let scrollX = useSharedValue(0);
-  let onScroll = useAnimatedScrollHandler((event) => {
-    scrollX.value = event.contentOffset.x / caroselItemWidth;
-  });
-  return (
-    <>
-      {/* Primary Sliding Target */}
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const ref = React.useRef<ICarouselInstance>(null);
+  const progress = useSharedValue<number>(0);
+  //? Get current Index
+  const currentIndex = ref.current?.getCurrentIndex();
+  const onPressPagination = (index: number) => {
+    ref.current?.scrollTo({
+      /**
+       * Calculate the difference between the current index and the target index
+       * to ensure that the carousel scrolls to the nearest index
+       */
+      count: index - progress.value,
+      animated: true,
+    });
+  };
 
-      <Animated.FlatList
-        style={{
-          width: viewportWidth,
-          height: 500,
-          // backgroundColor : "red",
-          marginBottom: 100,
-        }}
+  return (
+    <View
+      style={{ width: "100%", height: "auto", justifyContent: "flex-start" }}
+    >
+      {/* Primary Sliding Target */}
+      <Carousel
+        ref={ref}
+        style={{ width, height: 480 }}
+        autoPlay={true}
+        autoPlayInterval={5000}
+        width={width}
         data={SliderImages}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        onScroll={onScroll}
-        contentContainerStyle={{ gap: spacing }}
-        scrollEventThrottle={16}
-        snapToInterval={width + spacing}
-        decelerationRate={"fast"}
-        renderItem={({ item, index }) => {
-          return (
-            <CarouselItem imageUri={item} index={index} scrollX={scrollX} />
-          );
+        onProgressChange={(offsetProgress, absoluteProgress) => {
+          // absoluteProgress is a float like 0.0, 1.0, 2.0
+          // Round it to snap to the nearest index
+          const index = Math.round(absoluteProgress);
+          setActiveIndex(index);
+          progress.value = absoluteProgress; // keeping existing progress shared value
         }}
+        renderItem={({ item, index }) => (
+          <CarouselItem
+            imageUri={item.image}
+            index={index}
+            activeIndex={activeIndex}
+          />
+        )}
       />
 
-      {/* Secondary Sliding Target */}
-    </>
+      {/* <Pagination.Basic
+        progress={progress}
+        data={SliderImages}
+        dotStyle={{ backgroundColor: "#ff611d41", borderRadius: 50 }}
+        containerStyle={{ gap: 5, marginTop: 10 }}
+        onPress={onPressPagination}
+      /> */}
+    </View>
   );
 }
 
