@@ -82,7 +82,7 @@ export interface MenuItem extends Models.Row {
   rating: number;
   calories: number;
   protein: number;
-  size?: ItemSize[] | [{ name: "medium" }, { name: "small" }];
+  sizes?: ItemSize[];
   category_name: string;
   $id: any;
   quantity?: number;
@@ -100,7 +100,7 @@ interface CartItemType {
   calories: number;
   category_name: string;
   quantity: number;
-  size: string;
+  sizes: ItemSize[];
   customizations: CartCustomization[];
   uid: string;
 }
@@ -116,8 +116,11 @@ interface ItemSize {
     | "full"
     | "regular";
   price: number;
+  protein : number,
   isDefault : boolean,
   calories : number,
+  menuItemId : string,
+  isSelected : boolean,
   $createdAt : any,
   $updatedAt : any
 }

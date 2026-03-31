@@ -88,9 +88,35 @@ Quantity bar appears in place of the Add to Cart button after first tap. Faster 
 ---
 
 31st March, 2026
+----------------
+
 Animated Flatlist with reanimated was a mistake it gives a jittery effect when switching slides
 once carousel reaches end or user tries to go backwards, felt unnatural and bugged.
 Im switching to react-native-reanimated-carousel for out of the box infinite carousel 
 support and better performance.
 
-*Last updated: March 2026*
+1st April, 2026
+---------------
+
+Ripped out a ton of custom carousel logic since the library handles 
+pagination and infinite looping natively — less code, fewer bugs, better 
+perf. Win-win-win. Threw in some stagger animations on the text while I 
+was at it, looks clean.
+
+Fixed the size selector alignment on the product screen, was bugging me 
+for a while. Also wired up default size selection on product load — 
+falls back to whatever's flagged as default in the DB, or small if 
+nothing's set. No more forcing users to manually pick a size before 
+adding to cart, that UX debt is finally paid off.
+
+Price now derives from selected size reactively across both the product 
+screen and cart — state stays consistent, no stale values. 
+
+Next up, nuking the DB and reseeding with proper size-based pricing baked 
+in at the schema level. Tired of hardcoding prices client-side — moving 
+to a single source of truth in the backend so pricing changes don't 
+require a redeploy.
+
+
+
+*Last updated: April 2026*

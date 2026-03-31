@@ -35,9 +35,18 @@ const CartItem: React.FC<{
   item: CartItemType;
   index: number;
 }> = ({ item, index }) => {
-  let { items, increaseQty,updateCustomizations, decreaseQty, removeItem } = useCartStore();
+  let {
+    items,
+    increaseQty,
+    updateCustomizations,
+    decreaseQty,
+    removeItem,
+    updateItem,
+  } = useCartStore();
   const [showSizes, setShowSizes] = useState(false);
-  const [itemSize, setItemSize] = useState<string>(item.size);
+  const [itemSize, setItemSize] = useState<string>(
+    item.sizes?.find((s) => s.isSelected)?.name || "small",
+  );
   const slideAnim = useRef(new Animated.Value(30)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const removeAnim = useRef(new Animated.Value(1)).current;
@@ -45,7 +54,8 @@ const CartItem: React.FC<{
 
   let extrasTotal =
     item.customizations?.reduce(
-      (base: number, cus: CartCustomization) => (cus.checked ? base + cus.price : base),
+      (base: number, cus: CartCustomization) =>
+        cus.checked ? base + cus.price : base,
       0,
     ) ?? 0;
   function handleCustomizationPopup(item: CartItemType) {
@@ -59,6 +69,7 @@ const CartItem: React.FC<{
   }
 
   useEffect(() => {
+    console.log(items[0].sizes);
     Animated.parallel([
       Animated.timing(slideAnim, {
         toValue: 0,
@@ -73,7 +84,7 @@ const CartItem: React.FC<{
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [items]);
 
   const handleIncrease = (id: string, customizations: CartCustomization[]) => {
     increaseQty(item.id, item.customizations);
@@ -209,26 +220,34 @@ const CartItem: React.FC<{
 
           {showSizes && (
             <View style={styles.sizesDropdown}>
-              {SIZES.map((s, index) => (
+              {item.sizes.map((size, index) => (
                 <TouchableOpacity
-                  key={s}
+                  key={index}
                   style={[
                     styles.sizeOption,
-                    itemSize.toLowerCase() === s.toLowerCase() &&
+                    itemSize.toLowerCase() === size.name.toLowerCase() &&
                       styles.sizeOptionActive,
                   ]}
                   onPress={() => {
-                    setItemSize(s);
+                    setItemSize(size.name);
+                    let updatedSizes = item.sizes.map((s) => {
+                      if (s.name === size.name) {
+                        return { ...s, isSelected: true };
+                      } else {
+                        return { ...s, isSelected: false };
+                      }
+                    });
+                    updateItem(updatedSizes, item.uid);
                     setShowSizes(false);
                   }}
                 >
                   <Text
                     style={[
                       styles.sizeOptionText,
-                      item.size === s && styles.sizeOptionTextActive,
+                      size.isSelected && styles.sizeOptionTextActive,
                     ]}
                   >
-                    {s}
+                    {size.name}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -248,7 +267,10 @@ const CartItem: React.FC<{
                 <View style={styles.popup}>
                   <Extras items={item.customizations} />
                   <TouchableOpacity
-                    onPress={() => {setVisible(false); updateCustomizations(item.id, item.customizations);}}
+                    onPress={() => {
+                      setVisible(false);
+                      updateCustomizations(item.id, item.customizations);
+                    }}
                     style={styles.btn}
                   >
                     <Text style={styles.btnText}>Save</Text>
@@ -275,7 +297,7 @@ const CartItem: React.FC<{
               </TouchableOpacity>
             </View>
             <Text style={styles.cartItemPrice}>
-              ${(item.price * item.quantity + extrasTotal).toFixed(2)}
+              ${item.sizes.find((s) => s.name === itemSize)?.price || 0 * item.quantity + extrasTotal}
             </Text>
           </View>
         </View>

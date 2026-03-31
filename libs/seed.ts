@@ -52,11 +52,12 @@ interface SeedMenuItem {
   protein: number;
   category_name: string;
   customizations: string[]; 
-  size: {
+  sizes: {
     name: string;
     price: number;
     calories: number;
     protein: number;
+    isSelected : boolean,
     isDefault: boolean;
   }[];
 }
@@ -209,7 +210,7 @@ async function seed(): Promise<void> {
     menuMap[item.name] = doc.$id;
 
     const sizeIds = await Promise.all(
-      item.size.map(async (size) => {
+      item.sizes.map(async (size) => {
         const createdSize = await databases.createRow({
           databaseId: DATABASE_ID,
           tableId: appwriteConfig.menuItemSizesCollectionId,
@@ -220,6 +221,7 @@ async function seed(): Promise<void> {
             calories: size.calories,
             protein: size.protein,
             isDefault: size.isDefault,
+            isSelected : size.isSelected,
             menuItemId: doc.$id,
           },
         });

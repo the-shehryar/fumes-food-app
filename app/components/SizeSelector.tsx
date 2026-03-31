@@ -57,7 +57,7 @@ export default function SizeSelector({
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.row}
       >
-        {hardCodedSizes.map((size) => {
+        {sizes?.map((size) => {
           const isActive = selected === size.name;
           return (
             <TouchableOpacity

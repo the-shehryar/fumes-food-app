@@ -11,7 +11,8 @@ import sandwichOffer from "@/assets/images/sandwich-offer.png";
 import burgerTransparent from "@/assets/images/transparent-burger-extra.png";
 import emptyCartBackground from "@/assets/images/empty-cart.png";
 import sandwichTransparent from '@/assets/images/sandwich-offer-removebg-preview.png';
-
+import pizzaTransparentFull from '@/assets/images/pizza-transparent-full.png';
+import biryaniTransparent from '@/assets/images/biryani-transparent.png';
 
 
 
@@ -32,6 +33,8 @@ export const images = {
   chineeseOffer,
   emptyCartBackground,
   sandwichTransparent,
+  pizzaTransparentFull,
+  biryaniTransparent
 };
 
 export let emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;

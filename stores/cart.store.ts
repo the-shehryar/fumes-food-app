@@ -1,4 +1,4 @@
-import { CartCustomization, CartItemType } from "@/types/type";
+import { CartCustomization, CartItemType, ItemSize } from "@/types/type";
 import * as Crypto from "expo-crypto";
 import { create } from "zustand";
 
@@ -18,6 +18,7 @@ interface CartStore {
     id: string,
     customizations: CartCustomization[],
   ) => void;
+  updateItem: (item: ItemSize[], uid: string) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
@@ -72,6 +73,14 @@ export const useCartStore = create<CartStore>((set, get) => ({
   deliveryCharges: 20,
   isCouponApplied: false,
   customizations: [],
+
+  updateItem: (value, uid) => {
+    set({
+      items: get().items.map((i) =>
+        i.uid === uid ? { ...i, sizes: value } : i,
+      ),
+    });
+  },
   setCouponApplied: (value) => {
     set({ isCouponApplied: value });
   },
@@ -111,9 +120,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
   updateCustomizations: (id, customizations) => {
     set({
       items: get().items.map((i) =>
-        i.id === id
-          ? { ...i, customizations }
-          : i,
+        i.id === id ? { ...i, customizations } : i,
       ),
     });
   },
@@ -161,12 +168,13 @@ export const useCartStore = create<CartStore>((set, get) => ({
 
   getTotalPrice: () =>
     get().items.reduce((total, item) => {
-      const base = item.price;
+      const base = item.sizes;
+      let selectedPrice = base.find((s) => s.isSelected)?.price ?? 0;
       const customPrice =
         item.customizations?.reduce(
           (s: number, c: CartCustomization) => (c.checked ? s + c.price : s),
           0,
         ) ?? 0;
-      return total + item.quantity * (base + customPrice);
+      return total + item.quantity * (selectedPrice + customPrice);
     }, 0),
 }));

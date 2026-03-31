@@ -55,7 +55,7 @@ export default function CartScreen() {
   let {deliveryCharges} = useCartStore()
 
 
-  let discountApplied = couponApplied ? ((totalPrice + deliveryCharges) * coupon.discount /100).toFixed(2) : ""
+  let discountApplied: number = couponApplied ? ((totalPrice + deliveryCharges) * coupon.discount /100) : 0;
 
 
   useEffect(() => {
@@ -176,7 +176,7 @@ export default function CartScreen() {
                       <View style={styles.billCard}>
                         <View style={styles.billRow}>
                           <Text style={styles.billLabel}>Subtotal</Text>
-                          <Text style={styles.billValue}>${totalPrice}</Text>
+                          <Text style={styles.billValue}>${totalPrice.toFixed(2)}</Text>
                         </View>
                         <View style={styles.billDivider} />
                         <View style={styles.billRow}>
@@ -213,7 +213,7 @@ export default function CartScreen() {
                             Total Amount
                           </Text>
                           <Text style={styles.billTotalValue}>
-                            ${((totalPrice + deliveryCharges) - parseFloat(discountApplied))}
+                            ${((totalPrice + deliveryCharges) - discountApplied).toFixed(2)}
                           </Text>
                         </View>
                       </View>
@@ -247,7 +247,7 @@ export default function CartScreen() {
               <View style={styles.footerInfo}>
                 <Text style={styles.footerLabel}>Total</Text>
                 <Text style={styles.footerTotal}>
-                  ${((totalPrice + deliveryCharges) - parseFloat(discountApplied))}
+                  ${((totalPrice + deliveryCharges) - discountApplied).toFixed(2)}
                 </Text>
               </View>
               <TouchableOpacity style={styles.checkoutBtn} onPress={()=> router.push('/checkout')} activeOpacity={0.88}>

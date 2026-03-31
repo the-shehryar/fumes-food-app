@@ -63,7 +63,7 @@ const seedbaleData = {
       protein: 30,
       category_name: "Pizzas",
       size: [
-        { name: "small", price: 25.99, calories: 550, isDefault: true, protein : 50  },
+        { name: "small", price: 25.99, calories: 550, isDefault: true, protein : 50   },
         { name: "medium", price: 30.99, calories: 850, isDefault: false, protein : 50  },
         { name: "large", price: 34.99, calories: 1050, isDefault: false, protein : 50  },
         { name: "extra-large", price: 40.99, calories: 1550, isDefault: false, protein : 50  },

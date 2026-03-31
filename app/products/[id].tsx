@@ -1,7 +1,12 @@
 import Stars from "@/app/components/Stars";
 import { getStoredData } from "@/libs/asyncStorage";
 import { useCartStore } from "@/stores/cart.store";
-import { CartCustomization, CartItemType, MenuItem } from "@/types/type";
+import {
+  CartCustomization,
+  CartItemType,
+  ItemSize,
+  MenuItem,
+} from "@/types/type";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
@@ -50,26 +55,32 @@ const PRODUCT = {
     "We take premium ground beef, smash it hard onto a screaming-hot griddle, and let physics do the rest. The result? Lacy, caramelized edges that shatter at first bite and a juicy center that reminds you what a burger should taste like. Topped with melted American cheese, crisp lettuce, ripe tomato, pickles, and onions, all tucked into a buttery toasted bun with our tangy house sauce. Simple ingredients, perfect technique, unforgettable flavor. This is how burgers are meant to be.",
   image:
     "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&q=90",
+  itemSize: [
+    {
+      name: "small",
+      price: 25.99,
+      calories: 550,
+      isDefault: true,
+      protein: 50,
+    },
+    {
+      name: "medium",
+      price: 29.99,
+      calories: 550,
+      isDefault: false,
+      protein: 50,
+    },
+    {
+      name: "large",
+      price: 33.99,
+      calories: 550,
+      isDefault: false,
+      protein: 50,
+    },
+  ],
   tags: ["Beef", "Cheese", "Grilled", "Best Seller"],
 };
 
-const TOPPINGS = [
-  { id: "t1", icon: "🧀", label: "Extra Cheese", price: 1.25 },
-  { id: "t2", icon: "🥩", label: "Extra Meat Patty", price: 5.25 },
-  { id: "t3", icon: "🥑", label: "Avocado Slice", price: 1.75 },
-  { id: "t4", icon: "🥓", label: "Crispy Bacon", price: 2.5 },
-  { id: "t5", icon: "🌶️", label: "Jalapeños", price: 0.75 },
-  { id: "t6", icon: "🍳", label: "Fried Egg", price: 1.0 },
-];
-
-const SIDES = [
-  { id: "s1", icon: "🍟", label: "Loaded Fries", price: 3.49 },
-  { id: "s2", icon: "🥗", label: "Garden Salad", price: 2.99 },
-  { id: "s3", icon: "🧅", label: "Onion Rings", price: 2.75 },
-  { id: "s4", icon: "🥤", label: "Soft Drink (330ml)", price: 1.5 },
-  { id: "s5", icon: "🍦", label: "Vanilla Soft Serve", price: 1.99 },
-  { id: "s6", icon: "🫙", label: "Coleslaw Cup", price: 1.25 },
-];
 
 const RELATED = [
   {
@@ -147,7 +158,7 @@ function ExtraRow({ item, checked, onToggle }: ExtraRowProps) {
 }
 
 export default function ProductScreen() {
-  const [selectedSize, setSelectedSize] = useState("medium");
+  const [selectedSize, setSelectedSize] = useState("small");
   let [product, setProduct] = useState<MenuItem | null>(null);
   let { id } = useLocalSearchParams();
   let [toppings, setToppings] = useState<CartCustomization[] | []>([]);
@@ -192,9 +203,12 @@ export default function ProductScreen() {
           .reduce((sum, extra) => sum + extra.price, 0)
       : 0;
 
-  const orderTotal = (product ? product.price : 0 * qty + extrasTotal).toFixed(
-    2,
-  );
+  const selectedSizePrice =
+    product?.sizes?.find((s) => s.isSelected)?.price ?? product?.price ?? 0;
+  const orderTotal = (selectedSizePrice * qty + extrasTotal).toFixed(2);
+  // const orderTotal = (product ? product.price : 0 * qty + extrasTotal).toFixed(
+  //   2,
+  // );
 
   //? Toggle Checkboxes
   const toggleExtra = (id: string) => {
@@ -302,7 +316,26 @@ export default function ProductScreen() {
         let foundItem = localProducts.find((item) => item.$id === id);
 
         if (foundItem) {
+          foundItem.sizes = [
+            {
+              name: "small",
+              price: 25.99,
+              calories: 550,
+              isDefault: true,
+              isSelected: true,
+              protein: 50,
+            },
+            {
+              name: "large",
+              price: 32.0,
+              calories: 550,
+              isDefault: false,
+              isSelected: false,
+              protein: 50,
+            },
+          ] as any;
           setProduct(foundItem as MenuItem);
+          setSelectedSize(foundItem.sizes?.find((s) => s.isDefault)?.name || "small");
           const productToppings = foundItem.customizations.filter(
             (item) => item.type === "topping",
           );
@@ -321,10 +354,11 @@ export default function ProductScreen() {
   };
 
   async function placeOrder(qty?: number, size?: string) {
-    let item = { ...product };
-    console.log(item.price);
-    item.quantity = qty || 1;
-    (item as any).size = size || ("large" as any);
+    let item = { ...(product as any) };
+    item.sizes.map((s: ItemSize) =>
+      s.name === size ? { ...s, isSelected: true } : s,
+    );
+    // item.size = size;
     (item as any).id = (item as any).$id;
     delete (item as any).$id;
     addItem(item as unknown as CartItemType);
@@ -332,6 +366,7 @@ export default function ProductScreen() {
 
   useEffect(() => {
     fetchItemData();
+
     // console.log(checkedExtras);
   }, [id]);
 
@@ -450,7 +485,9 @@ export default function ProductScreen() {
               <View>
                 <Text style={styles.priceLabel}>Price</Text>
                 <Text style={styles.priceValue}>
-                  ${product.price.toFixed(2)}
+                  $
+                  {product.sizes?.find((s) => s.isSelected)?.price.toFixed(2) ??
+                    product.price.toFixed(2)}
                 </Text>
               </View>
               <View style={styles.ratingBadge}>
@@ -480,13 +517,21 @@ export default function ProductScreen() {
             </View>
             {/* ── Extra Ingredients ── */}
             <SizeSelector
-              sizes={
-                product.size !== undefined
-                  ? product.size
-                  : [{ name: "medium" }, { name: "small" }]
-              }
+              sizes={product.sizes !== undefined ? product.sizes : []}
               selected={selectedSize}
-              onSelect={setSelectedSize}
+              onSelect={(sizeName) => {
+                setSelectedSize(sizeName);
+                setProduct((prev) => {
+                  if (!prev) return prev;
+                  return {
+                    ...prev,
+                    sizes: prev.sizes?.map((s) => ({
+                      ...s,
+                      isSelected: s.name === sizeName,
+                    })),
+                  };
+                });
+              }}
             />
             <Extras items={product.customizations} />
             <TouchableOpacity

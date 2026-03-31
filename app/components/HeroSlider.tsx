@@ -19,26 +19,26 @@ const SliderImages = [
   {
     id: 1,
     image: images.burgerTransparent,
-    mainHeading: "A Special Dish with — ",
-    subHeading: "Endless Taste",
+    mainHeading: "Smashed, Seared",
+    subHeading: "Burger Perfection",
     description:
-      "Close your eyes on the first bite, and you'll swear you're standing in a sun-drenched Mediterranean kitchen.",
+      "Premium beef smashed onto a scorching griddle, layered with melted cheese, crisp lettuce, and our secret house sauce — every bite hits different.",
   },
   {
-    id: 1,
-    image: images.burgerTransparent,
-    mainHeading: "A Special Dish with — ",
-    subHeading: "Endless Taste",
+    id: 2,
+    image: images.pizzaTransparentFull,
+    mainHeading: "Wood-Fired Crust",
+    subHeading: "Slice of Heaven",
     description:
-      "Close your eyes on the first bite, and you'll swear you're standing in a sun-drenched Mediterranean kitchen.",
+      "Bubbling mozzarella, rich tomato sauce, and hand-stretched dough baked to a golden crisp. One slice and you're in Naples.",
   },
   {
-    id: 1,
-    image: images.sandwichOffer,
-    mainHeading: "A Special Dish with — ",
-    subHeading: "Endless Taste",
+    id: 3,
+    image: images.biryaniTransparent,
+    mainHeading: "Shahi Biryani",
+    subHeading: "Slow-Cooked Spices",
     description:
-      "Close your eyes on the first bite, and you'll swear you're standing in a sun-drenched Mediterranean kitchen.",
+      "Fragrant basmati rice layered with tender chicken, caramelized onions, and a blend of aged spices. A dish fit for royalty.",
   },
 ];
 
@@ -101,14 +101,14 @@ function CarouselItem({
     transform: [{ translateY: translateYDescHeading.value }],
     opacity: opacityDescHeading.value,
   }));
-
+  let total = SliderImages.length
   return (
     <View style={[styles.fragmentStyles]}>
       <View
         style={[
           {
             width: viewportWidth,
-            height: 340,
+            height: 320,
             position: "relative",
           },
         ]}
@@ -134,7 +134,7 @@ function CarouselItem({
           </LinearGradient>
 
           <View style={styles.indicatorTextWrapper}>
-            <Text style={styles.indicatorTextStyles}>2</Text>
+            <Text style={styles.indicatorTextStyles}>{"🔥"}</Text>
             <Text style={styles.indicatorTextShadowStyles}></Text>
           </View>
 
@@ -143,7 +143,7 @@ function CarouselItem({
             colors={["#FF611D", "#FFA680"]}
             style={styles.background}
           >
-            <View style={styles.secondArm}></View>
+            <View style={[styles.secondArm]}></View>
           </LinearGradient>
         </View>
 
@@ -151,22 +151,21 @@ function CarouselItem({
           <View>
             <Animated.Text
               style={[
-                { fontSize: 24, fontWeight: "600", color: "#000" },
+                { fontSize: 20, fontWeight: "600", color: "#000" },
                 animatedMainStyle,
               ]}
             >
-              A Special Dish with —{" "}
+             {SliderImages[index].subHeading}
             </Animated.Text>
             <Animated.Text
-              style={[{ fontSize: 40, fontWeight: "900", color: "#FF611D" }, animatedSecStyle]}
-            >
-              Endless Taste
+              style={[{ fontSize: 32, fontWeight: "900", color: "#FF611D" }, animatedSecStyle]}
+              >
+              {SliderImages[index].mainHeading}
             </Animated.Text>
           </View>
           <View>
             <Animated.Text style={[{ fontSize: 12, color: "#6e6e72" }, animatedDescStyle]}>
-              Close your eyes on the first bite, and you'll swear you're
-              standing in a sun-drenched Mediterranean kitchen.
+              {SliderImages[index].description}
             </Animated.Text>
           </View>
         </View>
@@ -264,7 +263,7 @@ const styles = StyleSheet.create({
   },
   firstArm: {
     width: 4,
-    height: "16%",
+    height : '16%'
   },
   secondArm: {
     width: 4,
@@ -278,7 +277,7 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   indicatorTextStyles: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "bold",
     zIndex: 10,
   },
