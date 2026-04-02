@@ -1,6 +1,8 @@
+import { requestLocationPermission } from "@/libs/helpers";
 import useAuthStore from "@/stores/auth.store";
 import { Address } from "@/types/type";
-import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -48,7 +50,15 @@ export default function NewAddressModal({
 
   const { user } = useAuthStore();
 
-  const handleDetectLocation = async () => {};
+  const handleDetectLocation = async () => {
+    // Detect location using Geolocation API
+    let locationPermission = await requestLocationPermission();
+    if (locationPermission?.street && locationPermission?.city) {
+      setStreet(locationPermission.street);
+      setCity(locationPermission.city);
+      setDetecting(true);
+    }
+  };
 
   const handleSave = () => {
     if (!street.trim() || !city.trim()) return;
@@ -76,6 +86,13 @@ export default function NewAddressModal({
 
   const isValid = street.trim().length > 0 && city.trim().length > 0;
 
+  useEffect(() => {
+    if (detecting) {
+      const timer = setTimeout(() => {
+        setDetecting(false);
+      }, 2000);
+      return () => clearTimeout(timer);}
+  }, [street, city]);
   return (
     <Modal
       visible={visible}
@@ -104,16 +121,17 @@ export default function NewAddressModal({
 
             {/* Auto Detect */}
             <TouchableOpacity
-              style={styles.detectBtn}
+              style={[styles.detectBtn, detecting && { backgroundColor: ORANGE_LIGHT }]}
               onPress={handleDetectLocation}
               disabled={detecting}
             >
               {detecting ? (
-                <ActivityIndicator color="#fff" size="small" />
+                <ActivityIndicator color= {DARK} size="small" />
               ) : (
-                <Text style={styles.detectIcon}>📡</Text>
+                <Ionicons name="location-sharp" size={20} color="#fff" />
+                // <Text style={styles.detectIcon}>📡</Text>
               )}
-              <Text style={styles.detectText}>
+              <Text style={[styles.detectText, detecting && { color: DARK }]}>
                 {detecting ? "Detecting location..." : "Detect My Location"}
               </Text>
             </TouchableOpacity>

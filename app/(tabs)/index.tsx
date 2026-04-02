@@ -1,4 +1,4 @@
-import { CategoriesLocal, images } from "@/constants";
+import { CategoriesLocal } from "@/constants";
 import { getMenuWithCustomizations, getTopRatedMenu } from "@/libs/appwrite";
 import { storeData } from "@/libs/asyncStorage";
 import useAppwrite from "@/libs/useAppwrite";
@@ -7,7 +7,6 @@ import useLocationStore from "@/stores/location.store";
 import useMenusState from "@/stores/menus.store";
 import usePreferencesStore from "@/stores/preferences.store";
 import { MenuItem } from "@/types/type";
-import { LinearGradient } from "expo-linear-gradient";
 import * as Location from "expo-location";
 import { Fragment, useEffect } from "react";
 import {
@@ -20,8 +19,9 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import MenuCard from "../components/MenuCard";
 import HeroSlider from "../components/HeroSlider";
+import MenuCard from "../components/MenuCard";
+import { requestLocationPermission } from "@/libs/helpers";
 
 export default function Index() {
   let { isLocalized, setIsLocalized } = useMenusState();
@@ -50,7 +50,6 @@ export default function Index() {
   let { setUserAddresses, userAddresses } = usePreferencesStore();
   const HeaderComponent = () => (
     <>
-      
       <HeroSlider />
       {/*  This flat list will render circular filters circles*/}
 
@@ -85,32 +84,20 @@ export default function Index() {
   );
 
   //? Requesting User Permision for Location
-  async function requestLocationPermission() {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      console.log("Location permission denied");
-      return;
+
+
+  async function registerUserLocation() {
+    let location = await requestLocationPermission();
+    if (location) {
+      setAddress(location.compactAddress);
+    }else {
+      setAddress("Unknown Location");
     }
-    // ✅ permission granted, get location
-    const location = await Location.getCurrentPositionAsync({
-      accuracy : Location.Accuracy.Balanced,
-    });
-
-    const [address] = await Location.reverseGeocodeAsync({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    });
-    let city = address.city ?? "Unknown City";
-    let country = address.country ?? "Unknown Country";
-    let compiledAddress = city + ", " + country;
-
-    setAddress(compiledAddress);
   }
-
   useEffect(() => {
     //? Location Permission
     console.log(user);
-    requestLocationPermission();
+    registerUserLocation();
 
     if (!loadingMenus) {
       try {

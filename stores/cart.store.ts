@@ -1,4 +1,9 @@
-import { CartCustomization, CartItemType, ItemSize } from "@/types/type";
+import {
+  CartCustomization,
+  CartItemType,
+  Coupon,
+  ItemSize,
+} from "@/types/type";
 import * as Crypto from "expo-crypto";
 import { create } from "zustand";
 
@@ -8,8 +13,10 @@ interface CartStore {
   discountValue: number;
   isCouponApplied: boolean;
   index?: number;
+  coupon?: Coupon;
   customizations: CartItemType[];
   setCouponApplied: (value: boolean) => void;
+  setCoupon: (coupon: Coupon) => void;
   addItem: (item: CartItemType) => void;
   removeItem: (id: string, customizations: CartCustomization[]) => void;
   increaseQty: (id: string, customizations: CartCustomization[]) => void;
@@ -69,11 +76,14 @@ function areCustomizationsEqual(
 }
 export const useCartStore = create<CartStore>((set, get) => ({
   items: [],
+  coupon: { code: "", discount: 0 },
   discountValue: 0,
   deliveryCharges: 20,
   isCouponApplied: false,
   customizations: [],
-
+  setCoupon: (coupon) => {
+    set({ coupon });
+  },
   updateItem: (value, uid) => {
     set({
       items: get().items.map((i) =>
@@ -161,7 +171,13 @@ export const useCartStore = create<CartStore>((set, get) => ({
     });
   },
 
-  clearCart: () => set({ items: [] }),
+  clearCart: () =>
+    set({
+      items: [],
+      coupon: { code: "", discount: 0 },
+      isCouponApplied: false,
+      discountValue: 0,
+    }),
 
   getTotalItems: () =>
     get().items.reduce((total, item) => total + item.quantity, 0),

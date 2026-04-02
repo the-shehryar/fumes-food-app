@@ -1,4 +1,4 @@
-import { DATABASE_ID, databases } from "@/libs/appwrite";
+import { appwriteConfig, DATABASE_ID, databases } from "@/libs/appwrite";
 import useAuthStore from "@/stores/auth.store";
 import { useCartStore } from "@/stores/cart.store";
 import usePreferencesStore from "@/stores/preferences.store";
@@ -6,6 +6,7 @@ import { Address, AddressAppwrite } from "@/types/type";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Animated,
   Image,
   Platform,
@@ -26,6 +27,7 @@ import AppleIcon from "@/assets/images/apple-icon.svg";
 import Card from "@/assets/images/card.svg";
 import GoogleIcon from "@/assets/images/google-icon.svg";
 import Cash from "@/assets/images/pakistan-rupee-note-color-icon.svg";
+import { router } from "expo-router";
 
 // ─── Design Tokens ────────────────────────────────────────────────────────────
 const ORANGE = "#F97316";
@@ -144,26 +146,37 @@ const SectionHeader: React.FC<{
 // ─── Screen ───────────────────────────────────────────────────────────────────
 export default function CheckoutScreen() {
   const insets = useSafeAreaInsets();
-  const [selectedAddress, setSelectedAddress] = useState("1");
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState("");
   const [addressModal, setAddressModal] = useState(false);
   const [fetchingAddress, setFetchingAddresses] = useState<boolean>(false);
 
   const [selectedPayment, setSelectedPayment] = useState("cod");
-  const [coupon, setCoupon] = useState("NEWFUMES");
   const [couponApplied, setCouponApplied] = useState(false);
   const [orderSummaryOpen, setOrderSummaryOpen] = useState(false);
 
   let { userAddresses, setUserAddresses } = usePreferencesStore();
-  let { user } = useAuthStore();
-  let { items: itemsInCart, deliveryCharges } = useCartStore();
+  let { user, isAuthenticated } = useAuthStore();
+  let {
+    items: itemsInCart,
+    deliveryCharges,
+    isCouponApplied,
+    getTotalItems,
+    clearCart,
+    coupon,
+    getTotalPrice,
+  } = useCartStore();
 
   const subtotal = itemsInCart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
-  const discount = couponApplied ? 4.0 : 0;
+  const discount = isCouponApplied ? (coupon ? coupon.discount : 0) : 0;
 
-  const total = subtotal + deliveryCharges - discount;
+  let total = getTotalPrice() + deliveryCharges - discount;
+  if (getTotalItems() === 0) {
+    total = 0;
+  }
 
   const summaryAnim = useRef(new Animated.Value(0)).current;
 
@@ -177,7 +190,7 @@ export default function CheckoutScreen() {
   };
 
   async function creatNewAddress(address: Address) {
-    // Also add address creation limit - liek one user can only have 5 addresses at max
+    // Also add address creation limit - like one user can only have 5 addresses at max
     let uniqueId = ID.unique();
     try {
       let addressTable = await databases.createRow({
@@ -195,7 +208,7 @@ export default function CheckoutScreen() {
           $createdAt: Date.now().toLocaleString(),
           $updatedAt: Date.now().toLocaleString(),
         };
-        setUserAddresses(alteredAddress as AddressAppwrite);
+        setUserAddresses(alteredAddress as unknown as AddressAppwrite);
         //? Add subscription event to reRender but for now add a state
       }
     } catch (error) {
@@ -203,11 +216,9 @@ export default function CheckoutScreen() {
         ToastAndroid.show(error.message, ToastAndroid.LONG);
     }
   }
-
   function handleNewAddress() {
     setAddressModal(true);
   }
-
   async function fetchUserAddress(targetUser: string) {
     try {
       let savedAddresses = await databases.listRows({
@@ -228,7 +239,59 @@ export default function CheckoutScreen() {
         ToastAndroid.show(error.message, ToastAndroid.LONG);
     }
   }
+  async function handleOrderPlacement() {
+    // Validate address, payment method selection, payment status
+    let itemsInCartStringified = JSON.stringify(itemsInCart);
+    try {
+      setIsPlacingOrder(true);
+      let userAddress = userAddresses.find(
+        (address) => address.$id === selectedAddress,
+      );
+      console.log("Selected Address:", userAddress);
+      // Validate user selected the address
+      if (userAddress) {
+        // craft an order object and save to appwrite
+        let order = await databases.createRow({
+          databaseId: appwriteConfig.databaseId,
+          tableId: appwriteConfig.ordersCollectionId,
+          rowId: ID.unique(),
+          data: {
+            userId: user?.$id,
+            totalPrice: total,
+            discount: discount,
+            items: itemsInCartStringified,
+            status: "pending",
+            address: `${userAddress.address}, ${userAddress.city}`,
+          },
+        });
 
+        if (order) {
+          setIsPlacingOrder(false);
+          clearCart();
+          redirectHome();
+          ToastAndroid.show("Order placed successfully!", ToastAndroid.LONG);
+        } else {
+          setIsPlacingOrder(false);
+          ToastAndroid.show(
+            "Failed to place order. Please try again.",
+            ToastAndroid.LONG,
+          );
+        }
+      }
+    } catch (error) {
+      setIsPlacingOrder(false);
+      console.log(error instanceof Error ? error.message : error);
+      error instanceof Error &&
+        ToastAndroid.show(error.message, ToastAndroid.LONG);
+    }
+  }
+  function redirectHome() {
+    if(isAuthenticated){
+      router.replace('/')
+    }else {
+      router.replace('/login')
+    }
+  }
   useEffect(() => {
     if (userAddresses !== undefined && userAddresses.length > 0) {
       setSelectedAddress(userAddresses[0].$id);
@@ -237,33 +300,11 @@ export default function CheckoutScreen() {
       fetchUserAddress(user?.$id);
       setFetchingAddresses(true);
     }
-  }, [userAddresses]);
+  }, [userAddresses, total, itemsInCart]);
 
   return (
     <View style={styles.root}>
-      {/* Add Address Modal */}
-      {/* <Modal
-        visible={addressModal}
-        transparent // ✅ keeps background visible
-        animationType="fade" // "slide" | "fade" | "none"
-        onRequestClose={() => setAddressModal(false)}
-      >
-      
-        <View style={styles.overlay}>
-
-          <View style={styles.popup}>
-            <Text style={styles.title}>Please Add Customizations Here🔥</Text>
-            <Text style={styles.message}>Your food is on the way.</Text>
-            <TouchableOpacity
-              onPress={() => setAddressModal(false)}
-              style={styles.btn}
-            >
-              <Text style={styles.btnText}>Got it</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal> */}
-
+      {/* New Address Modal*/}
       <NewAddressModal
         visible={addressModal}
         onClose={() => setAddressModal(false)}
@@ -514,7 +555,7 @@ export default function CheckoutScreen() {
               ))}
             </View>
 
-            {/* Card fields shown when stripe selected */}
+            {/* Card fields shown when safepay / stripe selected */}
             {selectedPayment === "stripe" && (
               <Animated.View style={styles.stripeCard}>
                 <Text style={styles.stripeCardTitle}>Card Details</Text>
@@ -655,13 +696,22 @@ export default function CheckoutScreen() {
           <Text style={styles.footerTotalLabel}>Total</Text>
           <Text style={styles.footerTotalValue}>${total.toFixed(2)}</Text>
         </View>
-        <TouchableOpacity style={styles.placeOrderBtn} activeOpacity={0.88}>
-          <Ionicons
-            name="checkmark-circle-outline"
-            size={20}
-            color={WHITE}
-            style={{ marginRight: 8 }}
-          />
+        <TouchableOpacity
+          onPress={handleOrderPlacement}
+          style={styles.placeOrderBtn}
+          activeOpacity={0.88}
+        >
+          {isPlacingOrder ? (
+            <ActivityIndicator size={"small"} />
+          ) : (
+            <Ionicons
+              name="checkmark-circle-outline"
+              size={20}
+              color={WHITE}
+              style={{ marginRight: 8 }}
+            />
+          )}
+
           <Text style={styles.placeOrderText}>Place Order</Text>
         </TouchableOpacity>
       </View>

@@ -43,6 +43,7 @@ export const appwriteConfig = {
     process.env.EXPO_PUBLIC_MENU_CUSTOMIZATIONS_COLLECtION_ID!,
   menuItemSizesCollectionId:
     process.env.EXPO_PUBLIC_MENU_ITEMSIZES_COLLECTION_ID!,
+    ordersCollectionId : process.env.EXPO_PUBLIC_ORDERS_COLLECCTION!,
 };
 
 export const client = new Client()

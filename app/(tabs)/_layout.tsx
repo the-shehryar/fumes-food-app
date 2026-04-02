@@ -1,6 +1,7 @@
 import { Tabs } from "expo-router";
 import Octicons from "@expo/vector-icons/Octicons";
 import Feather from '@expo/vector-icons/Feather';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useCartStore } from "@/stores/cart.store";
 import { useEffect, useState } from "react";
 
@@ -29,9 +30,9 @@ export default function TabLayout() {
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) => {
             return focused ? (
-              <Octicons name="home" size={24} color={color} />
+              <Feather name="coffee" size={24} color={color} />
             ) : (
-              <Octicons name="home" size={24} color="#444" />
+             <Feather name="coffee" size={24} color="#444" />
             );
           },
         }}
@@ -73,9 +74,9 @@ export default function TabLayout() {
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) => {
             return focused ? (
-              <Octicons name="person" size={24} color={color} />
+              <Feather name="user" size={24} color={color} />
             ) : (
-              <Octicons name="person" size={24} color="#444" />
+              <Feather name="user" size={24} color={'#444'} />
             );
           },
         }}

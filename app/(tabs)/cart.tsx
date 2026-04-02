@@ -1,5 +1,6 @@
 import { useCartStore } from "@/stores/cart.store";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Dimensions,
@@ -8,9 +9,9 @@ import {
   Platform,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
-  TextInput
 } from "react-native";
 import {
   SafeAreaView,
@@ -18,8 +19,6 @@ import {
 } from "react-native-safe-area-context";
 import CartItem from "../components/CartItem";
 import EmptyCart from "../components/EmptyCart";
-import { router } from "expo-router";
-import { Coupon } from "@/types/type";
 
 const ORANGE = "#F97316";
 const ORANGE_LIGHT = "#FFF4EE";
@@ -33,7 +32,6 @@ const GREEN_LIGHT = "#F0FDF4";
 const RED = "#EF4444";
 const RED_LIGHT = "#FFF1F2";
 
-
 export default function CartScreen() {
   const {
     items,
@@ -42,6 +40,10 @@ export default function CartScreen() {
     increaseQty,
     decreaseQty,
     clearCart,
+    isCouponApplied,
+    setCouponApplied,
+    coupon,
+    setCoupon,
     getTotalItems,
     getTotalPrice,
   } = useCartStore();
@@ -49,20 +51,23 @@ export default function CartScreen() {
   const insets = useSafeAreaInsets();
   const totalItems = getTotalItems();
   const totalPrice = getTotalPrice();
-  const [coupon, setCoupon] = useState<Coupon>({code : "NEWFUMES", discount : 10});
-  const [couponApplied, setCouponApplied] = useState<boolean>(false);
-  const [discount, setDiscount] = useState(0)
-  let {deliveryCharges} = useCartStore()
+  const couponList = [
+    { code: "NEWFUMES", discount: 10 },
+    { code: "SOUTH5", discount: 5 },
+  ];
+  // const [coupon, setCoupon] = useState<Coupon>({code : "NEWFUMES", discount : 10});
+  const [discount, setDiscount] = useState(0);
+  let { deliveryCharges } = useCartStore();
 
-
-  let discountApplied: number = couponApplied ? ((totalPrice + deliveryCharges) * coupon.discount /100) : 0;
-
+  let discountApplied: number = isCouponApplied
+    ? (totalPrice + deliveryCharges) * (coupon ? coupon.discount / 100 : 1)
+    : 0;
 
   useEffect(() => {
     console.log("Cart Items:", items);
     console.log("Total Items:", totalItems);
     console.log("Total Price:", getTotalPrice());
-  }, [items, totalItems, totalPrice, couponApplied]);
+  }, [items, totalItems, totalPrice, isCouponApplied]);
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -76,7 +81,6 @@ export default function CartScreen() {
           backgroundColor: "#fefefe",
         }}
       >
-
         <View
           style={{
             width: "100%",
@@ -122,14 +126,19 @@ export default function CartScreen() {
                         <Ionicons
                           name="pricetag-outline"
                           size={18}
-                          color={couponApplied ? GREEN : GRAY}
+                          color={isCouponApplied ? GREEN : GRAY}
                           style={{ marginRight: 10 }}
                         />
                         <TextInput
-                          value={coupon.code}
+                          value={coupon?.code || ""}
                           onChangeText={(text) => {
-                            setCoupon(prev => ({...prev, code : text}));
-                            if (couponApplied) setCouponApplied(false);
+                            setCoupon({
+                              code: text,
+                              discount:
+                                couponList.find((c) => c.code === text)
+                                  ?.discount || 0,
+                            });
+                            if (isCouponApplied) setCouponApplied(false);
                           }}
                           placeholder="Promo code"
                           placeholderTextColor={GRAY}
@@ -139,20 +148,28 @@ export default function CartScreen() {
                         <TouchableOpacity
                           style={[
                             styles.couponApplyBtn,
-                            couponApplied && { backgroundColor: GREEN_LIGHT },
+                            isCouponApplied && { backgroundColor: GREEN_LIGHT },
                           ]}
-                          onPress={() =>
-                            coupon.code.length > 0 &&
-                            setCouponApplied(!couponApplied)
-                          }
+                          onPress={() => {
+                            // Check if coupon code is valid
+                            const validCoupon = couponList.find(
+                              (c) =>
+                                c.code.toUpperCase() ===
+                                coupon?.code.toUpperCase(),
+                            );
+                            if (validCoupon) {
+                              setCouponApplied(!isCouponApplied);
+                            }
+
+                          }}
                         >
                           <Text
                             style={[
                               styles.couponApplyText,
-                              couponApplied && { color: GREEN },
+                              isCouponApplied && { color: GREEN },
                             ]}
                           >
-                            {couponApplied ? "Applied" : "Apply"}
+                            {isCouponApplied ? "Applied" : "Apply"}
                           </Text>
                         </TouchableOpacity>
                       </View>
@@ -176,7 +193,9 @@ export default function CartScreen() {
                       <View style={styles.billCard}>
                         <View style={styles.billRow}>
                           <Text style={styles.billLabel}>Subtotal</Text>
-                          <Text style={styles.billValue}>${totalPrice.toFixed(2)}</Text>
+                          <Text style={styles.billValue}>
+                            ${totalPrice.toFixed(2)}
+                          </Text>
                         </View>
                         <View style={styles.billDivider} />
                         <View style={styles.billRow}>
@@ -185,7 +204,7 @@ export default function CartScreen() {
                             ${deliveryCharges}
                           </Text>
                         </View>
-                        {couponApplied && (
+                        {isCouponApplied && (
                           <>
                             <View style={styles.billDivider} />
                             <View style={styles.billRow}>
@@ -196,7 +215,9 @@ export default function CartScreen() {
                               </Text>
                               <Text
                                 style={[styles.billValue, { color: GREEN }]}
-                              >{discountApplied}</Text>
+                              >
+                                {discountApplied}
+                              </Text>
                             </View>
                           </>
                         )}
@@ -213,7 +234,12 @@ export default function CartScreen() {
                             Total Amount
                           </Text>
                           <Text style={styles.billTotalValue}>
-                            ${((totalPrice + deliveryCharges) - discountApplied).toFixed(2)}
+                            $
+                            {(
+                              totalPrice +
+                              deliveryCharges -
+                              discountApplied
+                            ).toFixed(2)}
                           </Text>
                         </View>
                       </View>
@@ -247,10 +273,14 @@ export default function CartScreen() {
               <View style={styles.footerInfo}>
                 <Text style={styles.footerLabel}>Total</Text>
                 <Text style={styles.footerTotal}>
-                  ${((totalPrice + deliveryCharges) - discountApplied).toFixed(2)}
+                  ${(totalPrice + deliveryCharges - discountApplied).toFixed(2)}
                 </Text>
               </View>
-              <TouchableOpacity style={styles.checkoutBtn} onPress={()=> router.push('/checkout')} activeOpacity={0.88}>
+              <TouchableOpacity
+                style={styles.checkoutBtn}
+                onPress={() => router.push("/checkout")}
+                activeOpacity={0.88}
+              >
                 <Text style={styles.checkoutText}>CHECKOUT</Text>
               </TouchableOpacity>
             </View>
@@ -428,6 +458,4 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
   },
   addMoreText: { fontSize: 14, fontWeight: "700", color: ORANGE },
-
-
 });

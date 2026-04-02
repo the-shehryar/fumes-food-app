@@ -106,7 +106,7 @@ interface CartItemType {
 }
 
 interface ItemSize {
-  $id : any,
+  $id: any;
   name:
     | "small"
     | "medium"
@@ -116,13 +116,13 @@ interface ItemSize {
     | "full"
     | "regular";
   price: number;
-  protein : number,
-  isDefault : boolean,
-  calories : number,
-  menuItemId : string,
-  isSelected : boolean,
-  $createdAt : any,
-  $updatedAt : any
+  protein: number;
+  isDefault: boolean;
+  calories: number;
+  menuItemId: string;
+  isSelected: boolean;
+  $createdAt: any;
+  $updatedAt: any;
 }
 export interface CartCustomization {
   icon: string;
@@ -137,6 +137,19 @@ export interface Coupon {
   code: string;
   discount: number;
 }
+
+export interface OrderItem {
+  userId: string;
+  totalPrice: number;
+  discount: number;
+  items: string;
+  status: "pending" | "preparing" | "delivered" | "cancelled" | "dispatched";
+  address: string;
+  $createdAt: string;
+  $updatedAt: string;
+  $id: string;
+}
+
 interface CartStore {
   items: CartItemType[];
   index: number;

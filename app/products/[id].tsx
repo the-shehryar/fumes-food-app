@@ -358,6 +358,7 @@ export default function ProductScreen() {
     item.sizes.map((s: ItemSize) =>
       s.name === size ? { ...s, isSelected: true } : s,
     );
+    item.quantity = qty;
     // item.size = size;
     (item as any).id = (item as any).$id;
     delete (item as any).$id;
@@ -366,8 +367,6 @@ export default function ProductScreen() {
 
   useEffect(() => {
     fetchItemData();
-
-    // console.log(checkedExtras);
   }, [id]);
 
   return (

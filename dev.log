@@ -117,6 +117,14 @@ in at the schema level. Tired of hardcoding prices client-side — moving
 to a single source of truth in the backend so pricing changes don't 
 require a redeploy.
 
+3rd April, 2026
+----------------
+Implemented adding address by location detection, I used expo-location to get the coordinates and 
+then reverse geocoding to get the address details. Added a loading state for the detect location 
+button to prevent multiple taps and indicate progress.
+Testing with new tabs icon - probably will change again but wanted to try something different for a bit.
+But a animated tab bar is for the v.2 release, want to get the core functionality down first.
+Next is Profile Screen and then safe pay (50% chances).
 
 
 *Last updated: April 2026*
