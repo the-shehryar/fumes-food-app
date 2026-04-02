@@ -7,6 +7,7 @@ import * as Crypto from "expo-crypto";
 import { Link } from "expo-router";
 import React, { useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Stars from "./Stars";
 
 const MenuCard = ({ item }: { item: MenuItem }) => {
   // console.log(item.image_url)
@@ -95,6 +96,7 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
           >
             {item.name}
           </Text>
+          <Stars rating={4}/>
           <View style={cardListStyles.ctaBlock}>
             <View style={cardListStyles.priceBlock}>
               <Text style={cardListStyles.priceHead}>STARTING AT</Text>
@@ -155,7 +157,7 @@ let cardListStyles = StyleSheet.create({
     fontWeight: 600,
     marginVertical: 4,
     minHeight: 20,
-    height: 30,
+    height: 20,
   },
   cardImageWrapper: {
     width: "100%",

@@ -9,6 +9,7 @@ import {
 } from "@/types/type";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import * as MediaLib from "expo-media-library";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -23,6 +24,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ViewShot from "react-native-view-shot";
 import Extras from "../components/Extras";
 
 const { width, height } = Dimensions.get("window");
@@ -80,7 +82,6 @@ const PRODUCT = {
   ],
   tags: ["Beef", "Cheese", "Grilled", "Best Seller"],
 };
-
 
 const RELATED = [
   {
@@ -335,7 +336,9 @@ export default function ProductScreen() {
             },
           ] as any;
           setProduct(foundItem as MenuItem);
-          setSelectedSize(foundItem.sizes?.find((s) => s.isDefault)?.name || "small");
+          setSelectedSize(
+            foundItem.sizes?.find((s) => s.isDefault)?.name || "small",
+          );
           const productToppings = foundItem.customizations.filter(
             (item) => item.type === "topping",
           );
@@ -365,93 +368,126 @@ export default function ProductScreen() {
     addItem(item as unknown as CartItemType);
   }
 
+  const viewShotRef = useRef<ViewShot>(null);
+
+  const onCapture = async () => {
+    try {
+      // Capture the view and get the URI
+      const uri = await viewShotRef.current?.capture?.();
+      console.log("Image saved to:", uri);
+    } catch (error) {
+      console.error("Capture failed:", error);
+    }
+  };
   useEffect(() => {
     fetchItemData();
   }, [id]);
 
   return (
     //* if product is not null
+
     product !== null ? (
-      <View style={styles.root}>
-        <StatusBar barStyle="light-content" />
-
-        {/* ── Floating Header ── */}
-        <Animated.View
-          style={[
-            styles.floatingHeader,
-            { backgroundColor: headerBg, paddingTop: insets.top + 4 },
-          ]}
+      <>
+        <TouchableOpacity
+          onPress={onCapture}
+          style={{ marginTop: 20, padding: 10, backgroundColor: "black" }}
         >
-          {/* Bottom border fades in with white bg */}
-          <Animated.View
-            style={[
-              styles.floatingHeaderBorder,
-              { opacity: headerBorderOpacity },
-            ]}
-          />
-
-          <AnimatedBtn name="chevron-back" />
-
-          <Animated.Text
-            style={[styles.floatingTitle, { opacity: headerTitleOpacity }]}
-            numberOfLines={1}
-          >
-            {product.name}
-          </Animated.Text>
-
-          <View style={{ flexDirection: "row" }}>
-            <AnimatedBtn
-              name="cart"
-              onPress={() => router.replace("/(tabs)/cart")}
-              style={{ marginRight: 8 }}
-            />
-            <AnimatedBtn name="share-social-outline" />
-          </View>
-        </Animated.View>
-
-        <Animated.ScrollView
-          showsVerticalScrollIndicator={false}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: false },
-          )}
-          scrollEventThrottle={16}
-          contentContainerStyle={{ paddingBottom: insets.bottom + 110 }}
+          <Text style={{ color: "white" }}>Take Screenshot</Text>
+        </TouchableOpacity>
+        <ViewShot
+          ref={viewShotRef}
+          options={{ format: "png", quality: 1.0 }}
+          onCapture={async (uri) => {
+            await MediaLib.saveToLibraryAsync(uri);
+            console.log("Screenshot saved to gallery:", uri);
+          }}
+          captureMode="mount"
+          style ={{ flex: 1 }}
         >
-          {/* ── Hero Image ── */}
-          <View style={styles.heroWrap}>
-            <Animated.Image
-              source={{ uri: product.image_url }}
+          <View style={styles.root}>
+            <StatusBar barStyle="light-content" />
+
+            {/* ── Floating Header ── */}
+            <Animated.View
               style={[
-                styles.heroImg,
-                { transform: [{ translateY: heroTranslate }] },
+                styles.floatingHeader,
+                { backgroundColor: headerBg, paddingTop: insets.top + 4 },
               ]}
-            />
-            {/* Gradient overlay */}
-            <LinearGradient
-              colors={["rgba(0,0,0,0.38)", "rgba(0,0,0,0)", "rgba(0,0,0,0)"]}
-              style={StyleSheet.absoluteFill}
-            />
-          </View>
+            >
+              {/* Bottom border fades in with white bg */}
+              <Animated.View
+                style={[
+                  styles.floatingHeaderBorder,
+                  { opacity: headerBorderOpacity },
+                ]}
+              />
 
-          <View style={styles.sheet}>
-            <View style={styles.titleRow}>
-              <Text style={styles.productName}>{product.name}</Text>
-              <Animated.View style={{ transform: [{ scale: likeScale }] }}>
-                <TouchableOpacity
-                  style={[styles.likeBtn, liked && styles.likeBtnActive]}
-                  onPress={toggleLike}
-                >
-                  <Ionicons
-                    name={liked ? "heart" : "heart-outline"}
-                    size={20}
-                    color={liked ? WHITE : GRAY}
-                  />
-                </TouchableOpacity>
-              </Animated.View>
-            </View>
-            {/* Address no need to add this  */}
-            {/* <View style={styles.addressRow}>
+              <AnimatedBtn name="chevron-back" />
+
+              <Animated.Text
+                style={[styles.floatingTitle, { opacity: headerTitleOpacity }]}
+                numberOfLines={1}
+              >
+                {product.name}
+              </Animated.Text>
+
+              <View style={{ flexDirection: "row" }}>
+                <AnimatedBtn
+                  name="cart"
+                  onPress={() => router.replace("/(tabs)/cart")}
+                  style={{ marginRight: 8 }}
+                />
+                <AnimatedBtn name="share-social-outline" />
+              </View>
+            </Animated.View>
+
+            <Animated.ScrollView
+              showsVerticalScrollIndicator={false}
+              onScroll={Animated.event(
+                [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                { useNativeDriver: false },
+              )}
+              scrollEventThrottle={16}
+              contentContainerStyle={{ paddingBottom: insets.bottom + 110 }}
+            >
+              {/* ── Hero Image ── */}
+              <View style={styles.heroWrap}>
+                <Animated.Image
+                  source={{ uri: product.image_url }}
+                  style={[
+                    styles.heroImg,
+                    { transform: [{ translateY: heroTranslate }] },
+                  ]}
+                />
+                {/* Gradient overlay */}
+                <LinearGradient
+                  colors={[
+                    "rgba(0,0,0,0.38)",
+                    "rgba(0,0,0,0)",
+                    "rgba(0,0,0,0)",
+                  ]}
+                  style={StyleSheet.absoluteFill}
+                />
+              </View>
+
+              <View style={styles.sheet}>
+                <View style={styles.titleRow}>
+                  <Text style={styles.productName}>{product.name}</Text>
+                  <Animated.View style={{ transform: [{ scale: likeScale }] }}>
+                    <TouchableOpacity
+                      style={[styles.likeBtn, liked && styles.likeBtnActive]}
+                      onPress={toggleLike}
+                    >
+                      <Ionicons
+                        name={liked ? "heart" : "heart-outline"}
+                        size={20}
+                        color={liked ? WHITE : GRAY}
+                      />
+                    </TouchableOpacity>
+                  </Animated.View>
+                </View>
+                {/* Address no need to add this  */}
+                {/* <View style={styles.addressRow}>
               <Ionicons
                 name="location-outline"
                 size={14}
@@ -460,158 +496,169 @@ export default function ProductScreen() {
               />
               <Text style={styles.addressText}>{PRODUCT.address}</Text>
             </View> */}
-            {/* Metadata Row */}
-            <View style={styles.metaRow}>
-              <View style={styles.metaChip}>
-                <Stars rating={product.rating} size={13} />
-                <Text style={styles.metaChipText}>{product.rating}</Text>
-              </View>
-              <View style={styles.metaDivider} />
-              <View style={styles.metaChip}>
-                <Ionicons name="flame-outline" size={14} color={ORANGE} />
-                <Text style={styles.metaChipText}>{product.calories} KCal</Text>
-              </View>
-              <View style={styles.metaDivider} />
-              <View style={styles.metaChip}>
-                <Ionicons name="time-outline" size={14} color={GREEN} />
-                <Text style={[styles.metaChipText, { color: GREEN }]}>
-                  25-35 min
-                </Text>
-              </View>
-            </View>
-            {/* Price Section */}
-            <View style={styles.priceRow}>
-              <View>
-                <Text style={styles.priceLabel}>Price</Text>
-                <Text style={styles.priceValue}>
-                  $
-                  {product.sizes?.find((s) => s.isSelected)?.price.toFixed(2) ??
-                    product.price.toFixed(2)}
-                </Text>
-              </View>
-              <View style={styles.ratingBadge}>
-                <Ionicons
-                  name="star"
-                  size={13}
-                  color="#FBBF24"
-                  style={{ marginRight: 4 }}
+                {/* Metadata Row */}
+                <View style={styles.metaRow}>
+                  <View style={styles.metaChip}>
+                    <Stars rating={product.rating} size={13} />
+                    <Text style={styles.metaChipText}>{product.rating}</Text>
+                  </View>
+                  <View style={styles.metaDivider} />
+                  <View style={styles.metaChip}>
+                    <Ionicons name="flame-outline" size={14} color={ORANGE} />
+                    <Text style={styles.metaChipText}>
+                      {product.calories} KCal
+                    </Text>
+                  </View>
+                  <View style={styles.metaDivider} />
+                  <View style={styles.metaChip}>
+                    <Ionicons name="time-outline" size={14} color={GREEN} />
+                    <Text style={[styles.metaChipText, { color: GREEN }]}>
+                      25-35 min
+                    </Text>
+                  </View>
+                </View>
+                {/* Price Section */}
+                <View style={styles.priceRow}>
+                  <View>
+                    <Text style={styles.priceLabel}>Price</Text>
+                    <Text style={styles.priceValue}>
+                      $
+                      {product.sizes
+                        ?.find((s) => s.isSelected)
+                        ?.price.toFixed(2) ?? product.price.toFixed(2)}
+                    </Text>
+                  </View>
+                  <View style={styles.ratingBadge}>
+                    <Ionicons
+                      name="star"
+                      size={13}
+                      color="#FBBF24"
+                      style={{ marginRight: 4 }}
+                    />
+                    <Text style={styles.ratingBadgeText}>
+                      4.0 · 134 reviews
+                    </Text>
+                  </View>
+                </View>
+                {/* Product Description */}
+                <View style={styles.descSection}>
+                  <Text style={styles.descLabel}>Description</Text>
+                  <Text
+                    style={styles.descText}
+                    numberOfLines={descExpanded ? undefined : 3}
+                  >
+                    {product.description}
+                  </Text>
+                  <TouchableOpacity onPress={() => setDescExpanded((e) => !e)}>
+                    <Text style={styles.descToggle}>
+                      {descExpanded ? "Show less ↑" : "Read more ↓"}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                {/* ── Extra Ingredients ── */}
+                <SizeSelector
+                  sizes={product.sizes !== undefined ? product.sizes : []}
+                  selected={selectedSize}
+                  onSelect={(sizeName) => {
+                    setSelectedSize(sizeName);
+                    setProduct((prev) => {
+                      if (!prev) return prev;
+                      return {
+                        ...prev,
+                        sizes: prev.sizes?.map((s) => ({
+                          ...s,
+                          isSelected: s.name === sizeName,
+                        })),
+                      };
+                    });
+                  }}
                 />
-                <Text style={styles.ratingBadgeText}>4.0 · 134 reviews</Text>
+                <Extras items={product.customizations} />
+                <TouchableOpacity
+                  style={styles.ratebtn}
+                  onPress={() => setShowRating(true)}
+                  activeOpacity={0.85}
+                >
+                  <View style={styles.rateIconWrap}>
+                    <Ionicons name="star" size={14} color={WHITE} />
+                  </View>
+                  <Text style={styles.ratetext}>Rate this item</Text>
+                  <Ionicons name="chevron-forward" size={14} color={ORANGE} />
+                </TouchableOpacity>
+
+                {/* ── You may also like I'll use open ai here ── */}
+                <View style={styles.relatedSection}>
+                  <Text style={styles.relatedTitle}>
+                    From the Same Restaurant
+                  </Text>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.relatedScroll}
+                  >
+                    {RELATED.map((item) => (
+                      <TouchableOpacity
+                        key={item.id}
+                        style={styles.relatedCard}
+                        activeOpacity={0.85}
+                      >
+                        <Image
+                          source={{ uri: item.image }}
+                          style={styles.relatedImg}
+                        />
+                        <Text style={styles.relatedName} numberOfLines={1}>
+                          {item.name}
+                        </Text>
+                        <View style={styles.relatedFooter}>
+                          <Text style={styles.relatedPrice}>${item.price}</Text>
+                          <TouchableOpacity style={styles.relatedAddBtn}>
+                            <Ionicons name="add" size={16} color={WHITE} />
+                          </TouchableOpacity>
+                        </View>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
               </View>
-            </View>
-            {/* Product Description */}
-            <View style={styles.descSection}>
-              <Text style={styles.descLabel}>Description</Text>
-              <Text
-                style={styles.descText}
-                numberOfLines={descExpanded ? undefined : 3}
+            </Animated.ScrollView>
+
+            {/* ── Sticky Footer ── */}
+            <View
+              style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}
+            >
+              {/* Qty controls */}
+              <View style={styles.footerQty}>
+                <TouchableOpacity
+                  style={styles.qtyBtn}
+                  onPress={() => setQty((q) => Math.max(1, q - 1))}
+                >
+                  <Text style={styles.qtyBtnText}>−</Text>
+                </TouchableOpacity>
+                <Text style={styles.qtyNum}>{qty}</Text>
+                <TouchableOpacity
+                  style={[styles.qtyBtn, styles.qtyBtnFill]}
+                  onPress={() => setQty((q) => q + 1)}
+                >
+                  <Text style={[styles.qtyBtnText, { color: WHITE }]}>+</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Place order */}
+              <TouchableOpacity
+                style={styles.placeOrderBtn}
+                onPress={() => {
+                  placeOrder(qty, selectedSize);
+                }}
+                activeOpacity={0.88}
               >
-                {product.description}
-              </Text>
-              <TouchableOpacity onPress={() => setDescExpanded((e) => !e)}>
-                <Text style={styles.descToggle}>
-                  {descExpanded ? "Show less ↑" : "Read more ↓"}
+                <Text style={styles.placeOrderText}>
+                  Place Order — ${orderTotal}
                 </Text>
               </TouchableOpacity>
             </View>
-            {/* ── Extra Ingredients ── */}
-            <SizeSelector
-              sizes={product.sizes !== undefined ? product.sizes : []}
-              selected={selectedSize}
-              onSelect={(sizeName) => {
-                setSelectedSize(sizeName);
-                setProduct((prev) => {
-                  if (!prev) return prev;
-                  return {
-                    ...prev,
-                    sizes: prev.sizes?.map((s) => ({
-                      ...s,
-                      isSelected: s.name === sizeName,
-                    })),
-                  };
-                });
-              }}
-            />
-            <Extras items={product.customizations} />
-            <TouchableOpacity
-              style={styles.ratebtn}
-              onPress={() => setShowRating(true)}
-              activeOpacity={0.85}
-            >
-              <View style={styles.rateIconWrap}>
-                <Ionicons name="star" size={14} color={WHITE} />
-              </View>
-              <Text style={styles.ratetext}>Rate this item</Text>
-              <Ionicons name="chevron-forward" size={14} color={ORANGE} />
-            </TouchableOpacity>
-
-            {/* ── You may also like I'll use open ai here ── */}
-            <View style={styles.relatedSection}>
-              <Text style={styles.relatedTitle}>From the Same Restaurant</Text>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.relatedScroll}
-              >
-                {RELATED.map((item) => (
-                  <TouchableOpacity
-                    key={item.id}
-                    style={styles.relatedCard}
-                    activeOpacity={0.85}
-                  >
-                    <Image
-                      source={{ uri: item.image }}
-                      style={styles.relatedImg}
-                    />
-                    <Text style={styles.relatedName} numberOfLines={1}>
-                      {item.name}
-                    </Text>
-                    <View style={styles.relatedFooter}>
-                      <Text style={styles.relatedPrice}>${item.price}</Text>
-                      <TouchableOpacity style={styles.relatedAddBtn}>
-                        <Ionicons name="add" size={16} color={WHITE} />
-                      </TouchableOpacity>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
           </View>
-        </Animated.ScrollView>
-
-        {/* ── Sticky Footer ── */}
-        <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
-          {/* Qty controls */}
-          <View style={styles.footerQty}>
-            <TouchableOpacity
-              style={styles.qtyBtn}
-              onPress={() => setQty((q) => Math.max(1, q - 1))}
-            >
-              <Text style={styles.qtyBtnText}>−</Text>
-            </TouchableOpacity>
-            <Text style={styles.qtyNum}>{qty}</Text>
-            <TouchableOpacity
-              style={[styles.qtyBtn, styles.qtyBtnFill]}
-              onPress={() => setQty((q) => q + 1)}
-            >
-              <Text style={[styles.qtyBtnText, { color: WHITE }]}>+</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Place order */}
-          <TouchableOpacity
-            style={styles.placeOrderBtn}
-            onPress={() => {
-              placeOrder(qty, selectedSize);
-            }}
-            activeOpacity={0.88}
-          >
-            <Text style={styles.placeOrderText}>
-              Place Order — ${orderTotal}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+        </ViewShot>
+      </>
     ) : (
       ""
     )

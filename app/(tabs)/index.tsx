@@ -1,14 +1,15 @@
 import { CategoriesLocal } from "@/constants";
 import { getMenuWithCustomizations, getTopRatedMenu } from "@/libs/appwrite";
 import { storeData } from "@/libs/asyncStorage";
+import { requestLocationPermission } from "@/libs/helpers";
 import useAppwrite from "@/libs/useAppwrite";
 import useAuthStore from "@/stores/auth.store";
 import useLocationStore from "@/stores/location.store";
 import useMenusState from "@/stores/menus.store";
 import usePreferencesStore from "@/stores/preferences.store";
 import { MenuItem } from "@/types/type";
-import * as Location from "expo-location";
-import { Fragment, useEffect } from "react";
+import * as MediaLib from "expo-media-library";
+import { Fragment, useEffect, useRef } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -16,12 +17,13 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import ViewShot from "react-native-view-shot";
 import HeroSlider from "../components/HeroSlider";
 import MenuCard from "../components/MenuCard";
-import { requestLocationPermission } from "@/libs/helpers";
 
 export default function Index() {
   let { isLocalized, setIsLocalized } = useMenusState();
@@ -85,15 +87,27 @@ export default function Index() {
 
   //? Requesting User Permision for Location
 
-
   async function registerUserLocation() {
     let location = await requestLocationPermission();
     if (location) {
       setAddress(location.compactAddress);
-    }else {
+    } else {
       setAddress("Unknown Location");
     }
   }
+
+  const viewShotRef = useRef<ViewShot>(null);
+
+  const onCapture = async () => {
+    try {
+      // Capture the view and get the URI
+      const uri = await viewShotRef.current?.capture?.();
+      console.log("Image saved to:", uri);
+    } catch (error) {
+      console.error("Capture failed:", error);
+    }
+  };
+
   useEffect(() => {
     //? Location Permission
     console.log(user);
@@ -112,26 +126,44 @@ export default function Index() {
     }
     // console.log("user - status", JSON.stringify(user, null, 2));
   }, [loading]);
-
   return (
-    <SafeAreaView style={{ backgroundColor: "#fff" }}>
-      {/* <View style={styles.customTopBarWrapper}></View> */}
+    <View style={{flex : 1, backgroundColor : "#FFF"}}>
+      {/* <TouchableOpacity
+        onPress={onCapture}
+        style={{ marginTop: 20, padding: 10, backgroundColor: "black" }}
+      >
+        <Text style={{ color: "white" }}>Take Screenshot</Text>
+      </TouchableOpacity> */}
+      <ViewShot
+        ref={viewShotRef}
+        options={{ format: "png", quality: 1.0 }}
+        onCapture={async (uri) => {
+          await MediaLib.saveToLibraryAsync(uri);
+          console.log("Screenshot saved to gallery:", uri);
+        }}
+        style={{ flex: 1, backgroundColor: "#fff" }}
+        captureMode="mount"
+      >
+        <SafeAreaView style={{ backgroundColor: "#fff" }}>
+          {/* <View style={styles.customTopBarWrapper}></View> */}
 
-      <FlatList
-        numColumns={2}
-        columnWrapperStyle={cardListStyles.columnWrapper}
-        keyExtractor={(item) => item.$id}
-        style={cardListStyles.mainFlatListWrapper}
-        data={data}
-        ListHeaderComponent={HeaderComponent}
-        renderItem={({ item }) => (
-          <MenuCard item={item as unknown as MenuItem} />
-        )}
-        ListEmptyComponent={
-          <ActivityIndicator size={"large"} color={"#de5151"} />
-        }
-      />
-    </SafeAreaView>
+          <FlatList
+            numColumns={2}
+            columnWrapperStyle={cardListStyles.columnWrapper}
+            keyExtractor={(item) => item.$id}
+            style={cardListStyles.mainFlatListWrapper}
+            data={data}
+            ListHeaderComponent={HeaderComponent}
+            renderItem={({ item }) => (
+              <MenuCard item={item as unknown as MenuItem} />
+            )}
+            ListEmptyComponent={
+              <ActivityIndicator size={"large"} color={"#de5151"} />
+            }
+          />
+        </SafeAreaView>
+      </ViewShot>
+    </View>
   );
 }
 
@@ -246,7 +278,7 @@ let cardListStyles = StyleSheet.create({
     height: "auto",
     paddingHorizontal: 0,
     overflowX: "hidden",
-    marginTop: 20,
+    // marginTop: 20,
   },
   columnWrapper: {
     justifyContent: "space-between",
