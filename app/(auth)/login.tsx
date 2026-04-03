@@ -1,56 +1,76 @@
 import Logo from "@/assets/images/applogo.svg";
-import { router } from "expo-router";
+import GoogleIcon from "@/assets/images/google-icon.svg";
+import AppleIcon from "@/assets/images/ic_round-apple.svg";
+import { OauthLogin, signIn } from "@/libs/appwrite";
+import useAuthStore from "@/stores/auth.store";
+import { SignInForm, User } from "@/types/type";
+import { Link, router } from "expo-router";
+import { useState } from "react";
 import {
+  Alert,
   Dimensions,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
+  Text,
+  ToastAndroid,
   TouchableWithoutFeedback,
   View,
-  Button
 } from "react-native";
-import * as Sentry from '@sentry/react-native'
-import CustomButton from "../components/CustomButton";
-import Feather from "@expo/vector-icons/Feather";
-import AppleIcon from '@/assets/images/ic_round-apple.svg'
-import GoogleIcon from '@/assets/images/google-icon.svg'
-import EmailIconWhite from '@/assets/images/ic_outline-email.svg'
-import { OauthLogin } from "@/libs/appwrite";
 import { OAuthProvider } from "react-native-appwrite";
-import useAuthStore from "@/stores/auth.store";
-import { User } from "@/types/type";
-
-
-
-
-
+import CustomButton from "../components/CustomButton";
+import CustomInput from "../components/CustomInput";
+import { Feather } from "@expo/vector-icons";
 
 export default function SignIn() {
+  let { user, setUser, isAuthenticated } = useAuthStore();
+  let [form, setForm] = useState<SignInForm>({ email: "", password: "" });
+  //* Destructuring from state
+  let { email, password } = form;
 
-  let {user, setUser, isAuthenticated}  = useAuthStore();
+  function handleEmailSignup() {
+    router.push("/(auth)/signup");
+  }
+  const signInUser = async () => {
+    if (!email || !password)
+      // showing toast message to inform user
+      Platform.OS === "android"
+        ? ToastAndroid.show(
+            "Please provide all the required information",
+            ToastAndroid.TOP,
+          )
+        : Alert.alert("Error", "Please provide right info");
+    //* perfroming Sign In
 
-function handleEmailSignup (){
-  router.push("/(auth)/signup");
-}
-
+    let safeEmail = email.trim();
+    let safePassword = password.trim();
+    await signIn({ email: safeEmail, password: safePassword });
+    router.replace("/");
+    try {
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  };
   function handleEmailLogin() {
     router.push("/(auth)/signIn");
   }
   function handleAppleLogin() {
     router.push("/(auth)/signIn");
   }
- async function handleGoogleLogin(provider : OAuthProvider) {
-
-    let user = await OauthLogin(provider)
-    console.log(user)
-    if(user !== null){
-      isAuthenticated = true
-      setUser(user as User)
+  async function handleGoogleLogin(provider: OAuthProvider) {
+    let user = await OauthLogin(provider);
+    console.log(user);
+    if (user !== null) {
+      isAuthenticated = true;
+      setUser(user as User);
       router.push("/");
-    }else {
-      console.log('user cant do oauth')
+    } else {
+      console.log("user cant do oauth");
     }
+  }
+  function handleSignUpRedirect(){
+    router.replace('/(auth)/signup')
   }
   return (
     <KeyboardAvoidingView
@@ -62,7 +82,13 @@ function handleEmailSignup (){
           <Logo style={styles.logoWrapper} />
           <CustomButton
             color={"#000"}
-            icon = {<AppleIcon style={{marginHorizontal : 8}} width={20} height={20}/>}
+            icon={
+              <AppleIcon
+                style={{ marginHorizontal: 8 }}
+                width={20}
+                height={20}
+              />
+            }
             leftIcon={true}
             title="Continue with Apple"
             textStyle="#fff"
@@ -72,14 +98,20 @@ function handleEmailSignup (){
           />
           <CustomButton
             color={"#f5f5f5"}
-            icon = {<GoogleIcon style={{marginHorizontal : 8}} width={20} height={20}/>}
+            icon={
+              <GoogleIcon
+                style={{ marginHorizontal: 8 }}
+                width={20}
+                height={20}
+              />
+            }
             leftIcon={true}
             title="Continue with Google"
             textStyle="#000"
             style="big-filled"
-            onPressTouch={() => handleGoogleLogin(OAuthProvider.Google) }
+            onPressTouch={() => handleGoogleLogin(OAuthProvider.Google)}
           />
-          <CustomButton
+          {/* <CustomButton
             color={"#ff611d"}
             icon = {<EmailIconWhite style={{marginHorizontal : 8}} width={20} height={20}/>}
             leftIcon={true}
@@ -87,8 +119,76 @@ function handleEmailSignup (){
             textStyle="#fff"
             style="big-filled"
             onPressTouch={handleEmailLogin}
-          />
-
+          /> */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or login with emaail</Text>
+            <View style={styles.dividerLine} />
+          </View>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View>
+              {/* <Logo style={styles.logoWrapper} /> */}
+              {/* <Image
+            style={styles.logoWrapper}
+            source={images.appLogo}
+            resizeMode="contain"
+          /> */}
+              <CustomInput
+                placeholder="Email"
+                value={form.email}
+                onChangeText={(text) => {
+                  setForm((prev) => ({ ...prev, email: text }));
+                }}
+                label=""
+                keyboardType="default"
+              />
+              <CustomInput
+                placeholder="Password"
+                value={form.password}
+                secureTextEntry
+                onChangeText={(text) => {
+                  setForm((prev) => ({ ...prev, password: text }));
+                }}
+                label=""
+                keyboardType="default"
+              />
+              <View style={styles.checkBoxWrapper}>
+                {/* Add a checkbox here */}
+                <Text style={styles.checkBoxText}>Forgot Password</Text>
+              </View>
+              <View style={styles.CtaBtnWrapper}>
+                <CustomButton
+                  color={"#ff611d"}
+                  textStyle="#fff"
+                  leftIcon={false}
+                  title="Sign In"
+                  style="default"
+                  onPressTouch={signInUser}
+                />
+              </View>
+              {/* <View style={styles.signUpBtnDirector}>
+                <Text style={styles.directingLine}>Don't have an account?</Text>
+                <Link style={styles.underlinedLink} href={"/signup"}>
+                  SignUp ——{">"}
+                </Link>
+              </View> */}
+              {/* <View style={styles.seperatorWrapper}>
+            <View style={styles.seperator}></View>
+          </View> */}
+              <CustomButton
+                color={"#f5f5f5"}
+                icon={
+                 <Feather name="user" size={24} color={'#000'}/>
+                }
+                leftIcon={false}
+                title= "Don't have an account?"
+                textStyle="#000"
+                style="big-filled"
+                onPressTouch={handleSignUpRedirect}
+                // value="googleAuth"
+              />
+            </View>
+          </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -125,7 +225,61 @@ let styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  //   container: {
-  //   flex: 1,
-  // },
+  checkBoxWrapper: {
+    width: "100%",
+    height: "auto",
+    paddingHorizontal: 40,
+    justifyContent: "center",
+    alignItems: "flex-end",
+    marginVertical: 10,
+  },
+  checkBoxText: {
+    fontSize: 12,
+  },
+  signUpBtnDirector: {
+    width: "100%",
+    height: "auto",
+    marginVertical: 20,
+    marginBottom: 40,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  underlinedLink: {
+    fontSize: 12,
+    color: "#ff611d",
+    fontWeight: "bold",
+    textDecorationLine: "underline",
+  },
+  directingLine: {
+    marginHorizontal: 4,
+  },
+  seperatorWrapper: {
+    width: "100%",
+    height: "auto",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  seperator: {
+    width: "30%",
+    height: 20,
+    marginBottom: 50,
+    borderBottomWidth: 2,
+    borderBottomColor: "#f5f5f5",
+  },
+  divider: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    gap: 8,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#eee",
+  },
+  dividerText: {
+    fontSize: 12,
+    color: "#aaa",
+  },
 });

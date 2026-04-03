@@ -315,7 +315,6 @@ export default function CheckoutScreen() {
 
       <StatusBar barStyle="dark-content" backgroundColor={WHITE} />
 
-      {/* ── Top Bar ── */}
       <View style={[styles.topBar, { paddingTop: insets.top + 8 }]}>
         <TouchableOpacity style={styles.iconBtn}>
           <Ionicons name="chevron-back" size={22} color={DARK} />

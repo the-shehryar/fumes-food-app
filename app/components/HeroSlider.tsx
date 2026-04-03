@@ -179,7 +179,7 @@ function HeroSlider() {
   const ref = React.useRef<ICarouselInstance>(null);
   const progress = useSharedValue<number>(0);
   //? Get current Index
-  const currentIndex = ref.current?.getCurrentIndex();
+  // const currentIndex = ref.current?.getCurrentIndex();
   const onPressPagination = (index: number) => {
     ref.current?.scrollTo({
       /**

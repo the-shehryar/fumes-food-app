@@ -4,15 +4,17 @@ import { getCategories, getMenuWithCustomizations } from "@/libs/appwrite";
 import { getStoredData } from "@/libs/asyncStorage";
 import seed from "@/libs/seed";
 import useAppwrite from "@/libs/useAppwrite";
+import useAuthStore from "@/stores/auth.store";
 import useLocationStore from "@/stores/location.store";
 import useMenusState from "@/stores/menus.store";
 import useSearchStore from "@/stores/search.store";
 import { Category, MenuItem } from "@/types/type";
 import { useLocalSearchParams } from "expo-router/build/hooks";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -23,13 +25,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Filter from "../components/Filter";
 import MenuCard from "../components/MenuCard";
 import SearchBar from "../components/SearchBar";
-import useAuthStore from "@/stores/auth.store";
+
+
+import { images } from "@/constants";
 
 export default function SearchScreen() {
   //? You're using the `useLocalSearchParams` hook to access the search parameters from the URL.
 
   const { isSearching, setIsSearching } = useSearchStore();
-  const {user} = useAuthStore()
+  const { user } = useAuthStore();
   let { category, query } = useLocalSearchParams<{
     category: string;
     query?: string;
@@ -78,17 +82,15 @@ export default function SearchScreen() {
     //* searchLocalStorage functions from asyncStorage
     //* What if i add two useEffect one that always fires the second on can fire only on changes like menu and i can add search / refetch over cache or network there - i need to think it through
     // if (category !== undefined && query !== undefined) {
-      //? User is in search mode
+    //? User is in search mode
 
-
-
-      let safeCategory = category ? category : ""
-      let safeQuery = query? query : ""
-      refetch({ category  : safeCategory, query : safeQuery })
-        .catch((error) => console.log(error))
-        .finally(() => {
-          setIsSearching(false);
-        });
+    let safeCategory = category ? category : "";
+    let safeQuery = query ? query : "";
+    refetch({ category: safeCategory, query: safeQuery })
+      .catch((error) => console.log(error))
+      .finally(() => {
+        setIsSearching(false);
+      });
   }, [category, query]);
 
   return (
@@ -101,7 +103,7 @@ export default function SearchScreen() {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.userBtn}
-        onPress={() => console.log(user) }
+        onPress={() => console.log(user)}
       >
         <Text>Seed Data</Text>
       </TouchableOpacity>
@@ -124,6 +126,33 @@ export default function SearchScreen() {
       <Filter
         categories={categories ? (categories as unknown as Category[]) : []}
       />
+      <FlatList
+              style={circularFilter.cirularFilerMain}
+              data={categories}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingLeft: 10, paddingRight: 40 }}
+              renderItem={({ item, index }) => {
+                return (
+                  <View style={circularFilter.circularBtnWrapper}>
+                    <Pressable style={[circularFilter.circularBtn]}>
+                      {({ pressed }) => (
+                        <Fragment>
+                          <View>
+                            <Image
+                              source={images.coffeeOffer}
+                              style={circularFilter.imageStyles}
+                              resizeMode="contain"
+                            />
+                          </View>
+                        </Fragment>
+                      )}
+                    </Pressable>
+                    <Text style={circularFilter.btnText}>{item.name}</Text>
+                  </View>
+                );
+              }}
+            />
       <View style={searchPageStyles.container}>
         {isSearching ? <ActivityIndicator size="large" color="#0000ff" /> : ""}
       </View>
@@ -213,5 +242,38 @@ let searchPageStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     // backgroundColor: "red",
+  },
+});
+
+let circularFilter = StyleSheet.create({
+  cirularFilerMain: {
+    width: "auto",
+    height: "auto",
+    paddingTop: 20,
+    paddingLeft: 20,
+    marginBottom: 40,
+  },
+  btnText: {
+    fontSize: 10,
+    marginTop: 8,
+  },
+  circularBtn: {
+    width: "100%",
+    height: 70,
+    borderRadius: "50%",
+    elevation: 4,
+    overflow: "hidden",
+  },
+  circularBtnWrapper: {
+    width: 70,
+
+    // backgroundColor : "red",
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 8,
+  },
+  imageStyles: {
+    width: "auto",
+    height: "100%",
   },
 });

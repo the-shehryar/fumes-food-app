@@ -87,6 +87,10 @@ export default function SignUp() {
     },
   ];
 
+  function handleLoginRedirect() {
+    router.replace("/(auth)/login");
+  }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -155,12 +159,21 @@ export default function SignUp() {
               onPressTouch={submitSignUp}
             />
           </View>
-          <View style={styles.signInBtnDirector}>
+          {/* <View style={styles.signInBtnDirector}>
             <Text style={styles.directingLine}>Already have an account?</Text>
-            <Link style={styles.underlinedLink} href={"/(auth)/signIn"}>
-              SignIn
+            <Link style={styles.underlinedLink} href={"/(auth)/login"}>
+              Login
             </Link>
-          </View>
+          </View> */}
+          <CustomButton
+            color={"#f5f5f5"}
+            icon={<Feather name="user" size={24} color={"#000"} />}
+            leftIcon={false}
+            title="Already have an account?"
+            textStyle="#000"
+            style="big-filled"
+            onPressTouch={handleLoginRedirect}
+          />
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

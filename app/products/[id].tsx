@@ -31,57 +31,18 @@ const { width, height } = Dimensions.get("window");
 const HERO_HEIGHT = height * 0.44;
 
 import SizeSelector from "@/app/components/SizeSelector";
-
-// ─── Tokens ───────────────────────────────────────────────────────────────────
-
-const ORANGE = "#F97316";
-const ORANGE_LIGHT = "#FFF4EE";
-const DARK = "#1A1A1A";
-const GRAY = "#9CA3AF";
-const GRAY_LIGHT = "#F5F5F5";
-const WHITE = "#FFFFFF";
-const BORDER = "#F0F0F0";
-const GREEN = "#16A34A";
-const GREEN_LIGHT = "#F0FDF4";
-
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-const PRODUCT = {
-  name: "Smash Beef Burger — The Good Burger Joint",
-  restaurant: "The Good Burger Joint",
-  address: "Grover St, Bloomsbury Tower, Lahore",
-  rating: 4,
-  calories: 689,
-  price: 17.99,
-  totalPrice: 35.98,
-  description:
-    "We take premium ground beef, smash it hard onto a screaming-hot griddle, and let physics do the rest. The result? Lacy, caramelized edges that shatter at first bite and a juicy center that reminds you what a burger should taste like. Topped with melted American cheese, crisp lettuce, ripe tomato, pickles, and onions, all tucked into a buttery toasted bun with our tangy house sauce. Simple ingredients, perfect technique, unforgettable flavor. This is how burgers are meant to be.",
-  image:
-    "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&q=90",
-  itemSize: [
-    {
-      name: "small",
-      price: 25.99,
-      calories: 550,
-      isDefault: true,
-      protein: 50,
-    },
-    {
-      name: "medium",
-      price: 29.99,
-      calories: 550,
-      isDefault: false,
-      protein: 50,
-    },
-    {
-      name: "large",
-      price: 33.99,
-      calories: 550,
-      isDefault: false,
-      protein: 50,
-    },
-  ],
-  tags: ["Beef", "Cheese", "Grilled", "Best Seller"],
-};
+import Colors from "@/constants/Colors";
+let {
+  ORANGE,
+  ORANGE_LIGHT,
+  DARK,
+  GRAY,
+  GRAY_LIGHT,
+  GREEN_LIGHT,
+  GREEN,
+  WHITE,
+  BORDER,
+} = Colors;
 
 const RELATED = [
   {
@@ -119,7 +80,7 @@ type ExtraRowProps = {
   checked: boolean;
   onToggle: () => void;
 };
-// ─── Extra Item Row ───────────────────────────────────────────────────────────
+// Extra Item Row Component 
 function ExtraRow({ item, checked, onToggle }: ExtraRowProps) {
   const scale = useRef(new Animated.Value(1)).current;
 
@@ -157,7 +118,7 @@ function ExtraRow({ item, checked, onToggle }: ExtraRowProps) {
     </Animated.View>
   );
 }
-
+// Product Screen Component
 export default function ProductScreen() {
   const [selectedSize, setSelectedSize] = useState("small");
   let [product, setProduct] = useState<MenuItem | null>(null);
@@ -402,7 +363,7 @@ export default function ProductScreen() {
             console.log("Screenshot saved to gallery:", uri);
           }}
           captureMode="mount"
-          style ={{ flex: 1 }}
+          style={{ flex: 1 }}
         >
           <View style={styles.root}>
             <StatusBar barStyle="light-content" />

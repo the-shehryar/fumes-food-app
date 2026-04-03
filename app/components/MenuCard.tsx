@@ -4,9 +4,10 @@ import { useCartStore } from "@/stores/cart.store";
 import useSearchStore from "@/stores/search.store";
 import { MenuItem } from "@/types/type";
 import * as Crypto from "expo-crypto";
+import { Image } from "expo-image";
 import { Link } from "expo-router";
 import React, { useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Stars from "./Stars";
 
 const MenuCard = ({ item }: { item: MenuItem }) => {
@@ -72,6 +73,10 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
     }
   };
 
+  const optimizeCloudinaryUrl = (url: string) => {
+    return url.replace("/upload/", "/upload/w_400,h_300,c_fill,q_auto,f_auto/");
+  };
+  console.log(item.image_url);
   return (
     <Link
       href={{ pathname: "/products/[id]", params: { id: item.$id } }}
@@ -81,11 +86,16 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
       <TouchableOpacity style={cardListStyles.cardWrapper}>
         <View style={cardListStyles.cardImageWrapper}>
           <Image
+            source={{
+              uri: optimizeCloudinaryUrl(item.image_url),
+              headers: {
+                Referer: "https://res.cloudinary.com",
+              },
+            }}
             style={cardListStyles.cardImage}
-            resizeMode="cover"
-            source={{ uri: item.image_url }}
-            onLoad={() => console.log("✅ image loaded")}
-            onError={(e) => console.log("❌ image error", e.nativeEvent.error)}
+            contentFit="cover"
+            onLoad={() => console.log(item.image_url)}
+            onError={(e) => console.log("❌ image error", e)}
           />
         </View>
         <View style={cardListStyles.cardContentWrapper}>
@@ -96,7 +106,7 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
           >
             {item.name}
           </Text>
-          <Stars rating={4}/>
+          <Stars rating={4} />
           <View style={cardListStyles.ctaBlock}>
             <View style={cardListStyles.priceBlock}>
               <Text style={cardListStyles.priceHead}>STARTING AT</Text>
@@ -170,7 +180,7 @@ let cardListStyles = StyleSheet.create({
   },
   cardImage: {
     width: "100%",
-    height: "110%",
+    height: 160,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
   },

@@ -1,3 +1,4 @@
+import { File, Paths } from "expo-file-system";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import { ID } from "react-native-appwrite";
 import { appwriteConfig, DATABASE_ID, databases, storage } from "./appwrite";
@@ -51,14 +52,22 @@ interface SeedMenuItem {
   calories: number;
   protein: number;
   category_name: string;
-  customizations: string[]; 
+  customizations: string[];
   sizes: {
-    name: string;
+    name:
+      | "small"
+      | "medium"
+      | "large"
+      | "extra-large"
+      | "half"
+      | "full"
+      | "regular";
     price: number;
-    calories: number;
     protein: number;
-    isSelected : boolean,
     isDefault: boolean;
+    calories: number;
+    menuItemId: string;
+    // isSelected: boolean;
   }[];
 }
 
@@ -102,7 +111,8 @@ async function clearStorage(): Promise<void> {
   );
 }
 //? Upload image to Storage
-
+// Image compression for faster uploads and optimized storage usage.
+// using ImageManipulator to resize and compress the image before uploading.
 async function compressImage(imageUri: string) {
   const compression = await ImageManipulator.manipulate(imageUri)
     .resize({ width: 1024 })
@@ -115,10 +125,27 @@ async function compressImage(imageUri: string) {
 
   return result.uri;
 }
+// Downloadinng image from remote URL to local cache and return local URI
+async function downloadImage(imageUrl: string): Promise<string> {
+  // const fileName = imageUrl.split("/").pop() || `img-${Date.now()}.jpg`;
+const fileName = `img-${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
+  // Create a File reference pointing to cache directory
+  const file = new File(Paths.join(Paths.cache, fileName));
+  // Download the remote image into that file
+  let savedImage = await File.downloadFileAsync(imageUrl, file);
+  return savedImage.uri; // this is now a local file:// URI
+}
 
 async function uploadImageToStorage(imageUrl: string) {
   // Compressed Image
-  const compressedUri = await compressImage(imageUrl);
+  // Downloading image to local cache first because Appwrite SDK needs a file object or blob to upload, 
+  // it cannot directly take a remote URL. So I downloaded it first, compressing it, 
+  // and then will upload the compressed version. This way I can ensure faster uploads and 
+  // optimized storage usage. The original image remains untouched in the remote source.
+
+  const localUri = await downloadImage(imageUrl);
+  // Compressing the downloaded image
+  const compressedUri = await compressImage(localUri);
   // Fetching Compressed Image
   const response = await fetch(compressedUri);
   // Creating a blob to upload
@@ -189,8 +216,9 @@ async function seed(): Promise<void> {
   // 4. Create Menu Items
   const menuMap: Record<string, string> = {};
   for (const item of data.menu) {
-    const uploadedImage = await uploadImageToStorage(item.image_url);
-    console.log(uploadedImage);
+    console.log(item.sizes);
+    // const uploadedImage = await uploadImageToStorage(item.image_url);
+    // console.log(uploadedImage);
     const doc = await databases.createRow({
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.menuCollectionId,
@@ -198,17 +226,19 @@ async function seed(): Promise<void> {
       data: {
         name: item.name,
         description: item.description,
-        image_url: uploadedImage,
+        image_url: item.image_url, // using original URL for because pexels keep blocking programatically fetching.
         price: item.price,
         rating: item.rating,
         calories: item.calories,
         protein: item.protein,
+        // sizes: item.sizes,
         categories: categoryMap[item.category_name],
       },
     });
-    console.log(doc.name);
+    console.log(doc.sizes);
+    console.log(doc)
     menuMap[item.name] = doc.$id;
-
+    console.log(item.sizes);
     const sizeIds = await Promise.all(
       item.sizes.map(async (size) => {
         const createdSize = await databases.createRow({
@@ -221,7 +251,7 @@ async function seed(): Promise<void> {
             calories: size.calories,
             protein: size.protein,
             isDefault: size.isDefault,
-            isSelected : size.isSelected,
+            // isSelected: size.isSelected || false,
             menuItemId: doc.$id,
           },
         });
@@ -235,7 +265,7 @@ async function seed(): Promise<void> {
       tableId: appwriteConfig.menuCollectionId,
       rowId: doc.$id,
       data: {
-        sizes: sizeIds, 
+        sizes: sizeIds,
       },
     });
 

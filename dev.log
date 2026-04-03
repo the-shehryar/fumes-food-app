@@ -126,5 +126,28 @@ Testing with new tabs icon - probably will change again but wanted to try someth
 But a animated tab bar is for the v.2 release, want to get the core functionality down first.
 Next is Profile Screen and then safe pay (50% chances).
 
+19:22 PM
+1. data.ts had a typo of size but i had laid out everything as sizes
+2. Pexels.com image download failing FileSystem.downloadAsync sends no browser headers so Pexels blocks it with a timeout. 
+The real fix was to just store the Pexels URL directly in the database for seed data, uploading to your own storage only
+matters when real users upload their own images. Still pexel is constantly block image request, for future i'll add a cloudinary
+or imgur as alternative but for now I added imageURLs in appwrite database.
+3. isSelected causing row rejection a ui aiding property that is added at time of rendering i mistook it as a 
+required database entry but that was easy to spot.I learnt appwrite rejects the entire row if you pass an attribute that
+doesn't exist in the schema — it doesn't just ignore unknown fields, this made the error look like menuItemId was
+missing even though it wasn't. 
+4. Finally reseeding was successfull
+### Rule only pass attributes that exist in the Appwrite schema.
+5. While rendering images from URL, add headers of referer as pexels blocks hotlinking
 
-*Last updated: April 2026*
+23:00 PM 
+6. Added expo image as native Image Component was behaving weird, also added cloudinary to 
+optimize images on the fly.
+
+7. Combined the login and signin screen for better authflow. now user can have all option in one
+place, though need to fix some spacing but over all looking great.
+
+### noticed that i made a rookie mistake and made a singleway realtionship in database for menuItem 
+and sizes.
+
+*Last updated: 3rd April 2026*

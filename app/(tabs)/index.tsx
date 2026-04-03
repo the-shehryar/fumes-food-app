@@ -1,4 +1,3 @@
-import { CategoriesLocal } from "@/constants";
 import { getMenuWithCustomizations, getTopRatedMenu } from "@/libs/appwrite";
 import { storeData } from "@/libs/asyncStorage";
 import { requestLocationPermission } from "@/libs/helpers";
@@ -8,18 +7,10 @@ import useLocationStore from "@/stores/location.store";
 import useMenusState from "@/stores/menus.store";
 import usePreferencesStore from "@/stores/preferences.store";
 import { MenuItem } from "@/types/type";
+import { Image as NewImage } from "expo-image";
 import * as MediaLib from "expo-media-library";
-import { Fragment, useEffect, useRef } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useEffect, useRef } from "react";
+import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ViewShot from "react-native-view-shot";
 import HeroSlider from "../components/HeroSlider";
@@ -54,34 +45,6 @@ export default function Index() {
     <>
       <HeroSlider />
       {/*  This flat list will render circular filters circles*/}
-
-      <FlatList
-        style={circularFilter.cirularFilerMain}
-        data={CategoriesLocal}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingLeft: 10, paddingRight: 40 }}
-        renderItem={({ item, index }) => {
-          return (
-            <View style={circularFilter.circularBtnWrapper}>
-              <Pressable style={[circularFilter.circularBtn]}>
-                {({ pressed }) => (
-                  <Fragment>
-                    <View>
-                      <Image
-                        source={item.image}
-                        style={circularFilter.imageStyles}
-                        resizeMode="contain"
-                      />
-                    </View>
-                  </Fragment>
-                )}
-              </Pressable>
-              <Text style={circularFilter.btnText}>{item.name}</Text>
-            </View>
-          );
-        }}
-      />
     </>
   );
 
@@ -127,7 +90,7 @@ export default function Index() {
     // console.log("user - status", JSON.stringify(user, null, 2));
   }, [loading]);
   return (
-    <View style={{flex : 1, backgroundColor : "#FFF"}}>
+    <View style={{ flex: 1, backgroundColor: "#FFF" }}>
       {/* <TouchableOpacity
         onPress={onCapture}
         style={{ marginTop: 20, padding: 10, backgroundColor: "black" }}
@@ -151,7 +114,7 @@ export default function Index() {
             numColumns={2}
             columnWrapperStyle={cardListStyles.columnWrapper}
             keyExtractor={(item) => item.$id}
-            style={cardListStyles.mainFlatListWrapper}
+            style={[cardListStyles.mainFlatListWrapper]}
             data={data}
             ListHeaderComponent={HeaderComponent}
             renderItem={({ item }) => (
@@ -161,6 +124,7 @@ export default function Index() {
               <ActivityIndicator size={"large"} color={"#de5151"} />
             }
           />
+        
         </SafeAreaView>
       </ViewShot>
     </View>
@@ -366,38 +330,5 @@ let cardListStyles = StyleSheet.create({
   itemCount: {
     fontSize: 16,
     fontWeight: 600,
-  },
-});
-
-let circularFilter = StyleSheet.create({
-  cirularFilerMain: {
-    width: "auto",
-    height: "auto",
-    paddingTop: 20,
-    paddingLeft: 20,
-    marginBottom: 40,
-  },
-  btnText: {
-    fontSize: 10,
-    marginTop: 8,
-  },
-  circularBtn: {
-    width: "100%",
-    height: 70,
-    borderRadius: "50%",
-    elevation: 4,
-    overflow: "hidden",
-  },
-  circularBtnWrapper: {
-    width: 70,
-
-    // backgroundColor : "red",
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 8,
-  },
-  imageStyles: {
-    width: "auto",
-    height: "100%",
   },
 });
