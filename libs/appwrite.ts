@@ -22,6 +22,7 @@ import {
   Account,
   Avatars,
   Client,
+  Functions,
   ID,
   OAuthProvider,
   Query,
@@ -50,7 +51,7 @@ export const client = new Client()
   .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!)
   .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!)
   .setPlatform(process.env.EXPO_PUBLIC_APPWRITE_PLATFROM_NAME!);
-
+export const appwriteFunc = new Functions(client)
 export const account = new Account(client);
 export const databases = new TablesDB(client);
 export const avatars = new Avatars(client);

@@ -4,8 +4,6 @@
 
 ### _Your Food, Your Way, Delivered Today._
 
-
-
 <br/>
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -42,6 +40,7 @@ No bloat. No friction. Just 🔥 food.
 | 🔍 Local-first smart search                 | 🚧 Planned |
 | 💸 Safepay (Stripe alternative in Pakistan) | 🚧 Planned |
 | 🛒 Cart with item customizations            | ✅ Done    |
+| 🛒 Cloudinary added for image optimizations | ✅ Done    |
 | 🎞️ Cart animations                          | ✅ Done    |
 | 🖼️ Compressed image uploads to Appwrite     | ✅ Done    |
 | 📍 Location detection + mock location guard | ✅ Done    |

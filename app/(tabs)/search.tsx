@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   seedBtn: {
-    // display: "none",
+    display: "none",
     justifyContent: "center",
     alignItems: "center",
     width: 220,
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#6bfa72ed",
   },
   userBtn: {
-    // display: "none",
+    display: "none",
     justifyContent: "center",
     alignItems: "center",
     width: 220,

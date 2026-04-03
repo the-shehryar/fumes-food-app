@@ -1,0 +1,8 @@
+{
+  "name": "safepay-tracker",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@sfpy/node-core": "latest"
+  }
+}
