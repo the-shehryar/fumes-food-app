@@ -1,6 +1,11 @@
 const seedbaleData = {
   categories: [
     {
+      name : "All",
+      description : "All the available items",
+      image_url : "https://res.cloudinary.com/dfbjrsr7e/image/upload/v1775500413/Gemini_Generated_Image_stxlvbstxlvbstxl_jhsusi.png"
+    },
+    {
       name: "Burgers",
       description: "Juicy grilled burgers",
       image_url:

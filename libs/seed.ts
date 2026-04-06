@@ -174,7 +174,7 @@ async function uploadImageToStorage(imageUrl: string) {
 
 async function seed(): Promise<void> {
   // 1. Clear all
-  await clearAll(appwriteConfig.menuItemSizesCollectionId);
+  // await clearAll(appwriteConfig.menuItemSizesCollectionId);
   await clearAll(appwriteConfig.categoriesCollectionId);
   await clearAll(appwriteConfig.customizationsCollectionId);
   await clearAll(appwriteConfig.menuCollectionId);
@@ -236,40 +236,42 @@ async function seed(): Promise<void> {
         calories: item.calories,
         protein: item.protein,
         categories: categoryMap[item.category_name],
+        // adding sizes as strigified JSON as relationships are not properly
+        // working in appwrite i guess those are in experimental stage that is why.
+        sizes : JSON.stringify(item.sizes)
       },
     });
-    console.log(doc.sizes);
-    console.log(doc)
-    menuMap[item.name] = doc.$id;
-    console.log(item.sizes);
-    const sizeIds = await Promise.all(
-      item.sizes.map(async (size) => {
-        const createdSize = await databases.createRow({
-          databaseId: DATABASE_ID,
-          tableId: appwriteConfig.menuItemSizesCollectionId,
-          rowId: ID.unique(),
-          data: {
-            name: size.name,
-            price: size.price,
-            calories: size.calories,
-            protein: size.protein,
-            isDefault: size.isDefault,
-            menuItemId: doc.$id,
-          },
-        });
-        return createdSize.$id;
-      }),
-    );
 
-    // Step 3 — Update menu item with size relationship IDs
-    await databases.updateRow({
-      databaseId: appwriteConfig.databaseId,
-      tableId: appwriteConfig.menuCollectionId,
-      rowId: doc.$id,
-      data: {
-        sizes: sizeIds,
-      },
-    });
+
+    menuMap[item.name] = doc.$id;
+    // const sizeIds = await Promise.all(
+    //   item.sizes.map(async (size) => {
+    //     const createdSize = await databases.createRow({
+    //       databaseId: DATABASE_ID,
+    //       tableId: appwriteConfig.menuItemSizesCollectionId,
+    //       rowId: ID.unique(),
+    //       data: {
+    //         name: size.name,
+    //         price: size.price,
+    //         calories: size.calories,
+    //         protein: size.protein,
+    //         isDefault: size.isDefault,
+    //         menuItemId: doc.$id,
+    //       },
+    //     });
+    //     return createdSize.$id;
+    //   }),
+    // );
+
+    // // Step 3 — Update menu item with size relationship IDs
+    // await databases.updateRow({
+    //   databaseId: appwriteConfig.databaseId,
+    //   tableId: appwriteConfig.menuCollectionId,
+    //   rowId: doc.$id,
+    //   data: {
+    //     sizes: sizeIds,
+    //   },
+    // });
 
     // 5. Create menu_customizations
     if (item.customizations)

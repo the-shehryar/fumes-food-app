@@ -12,14 +12,10 @@ const SearchBar = () => {
   const [query, setQuery] = useState(searchParams.query || "");
   const { setIsSearching } = useSearchStore();
 
- const debounceSearch = useDebouncedCallback((text: string) => {
-  router.setParams({ 
-    category: searchParams.category || "", 
-    query: text  
-  });
-  if (!text) setIsSearching(false); 
-}, 200);
-
+  const debounceSearch = useDebouncedCallback((text: string) => {
+    router.setParams({ query: text, category: searchParams.category || "" });
+    if (!text) setIsSearching(false);
+  }, 200);
 
   const handleSearch = (text: string) => {
     setQuery(text);

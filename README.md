@@ -34,19 +34,19 @@ No bloat. No friction. Just 🔥 food.
 
 ## ✨ Features
 
-| Feature                                     | Status     |
-| ------------------------------------------- | ---------- |
-| 🍔 Browse menu with category filters        | ✅ Done    |
-| 🔍 Local-first smart search                 | ✅ Done    |
-| 💸 Safepay (Stripe alternative in Pakistan) | 🚧 Planned |
-| 🛒 Cart with item customizations            | ✅ Done    |
-| 🛒 Cloudinary added for image optimizations | ✅ Done    |
-| 🎞️ Cart animations                          | ✅ Done    |
-| 🖼️ Compressed image uploads to Appwrite     | ✅ Done    |
-| 📍 Location detection + mock location guard | ✅ Done    |
-| 🔐 Secure image loading via JWT in v.2      | 🚧 Planned |
-| 🔄 Swipe down to refresh in v.2             | 🚧 Planned |
-| 🗑️ Swipe to delete from cart in v.2         | 🚧 Planned |
+| Feature                                           | Status     |
+| --------------------------------------------------| ---------- |
+| 🍔 Browse menu with category filters              | ✅ Done    |
+| 🔍 Local-first smart search                       | ✅ Done    |
+| 💸 Safepay (Stripe alternative in Pakistan)       | 🚧 Planned |
+| 🛒 Cart with item customizations                  | ✅ Done    |
+| 🛒 Cloudinary added for image optimizations       | ✅ Done    |
+| 🎞️ Cart animations                                | ✅ Done    |
+| 🖼️ Compressed image uploads to Appwrite           | ✅ Done    |
+| 📍 Location detection + mock location guard       | ✅ Done    |
+| 🔐 Secure image loading via JWT in v.2            | 🚧 Planned |
+| 🔄 Swipe down to refresh in v.2                   | 🚧 Planned |
+| 🗑️ Swipe to delete from cart in v.2               | 🚧 Planned |
 
 ---
 

@@ -63,6 +63,7 @@ export interface User extends Models.Row {
 export interface Category extends Models.Row {
   name: string;
   description: string;
+  image: string;
 }
 
 interface GetMenuParams {
@@ -70,13 +71,12 @@ interface GetMenuParams {
   query: string;
 }
 interface LocalSearchFilter {
-  limit? : number,
-  filter? : string,
-  criteria? : {
-    type? : string,
-    value? : string | number
-  },
-
+  limit?: number;
+  filter?: string;
+  criteria?: {
+    type?: string;
+    value?: string | number;
+  };
 }
 
 interface GetTopRatedMenuParams extends GetMenuParams {
@@ -91,7 +91,7 @@ export interface MenuItem extends Models.Row {
   rating: number;
   calories: number;
   protein: number;
-  sizes?: ItemSize[];
+  sizes?: string | ItemSize[];
   category_name: string;
   $id: any;
   quantity?: number;
@@ -115,7 +115,7 @@ interface CartItemType {
 }
 
 interface ItemSize {
-  $id: any;
+  $id?: any;
   name:
     | "small"
     | "medium"
