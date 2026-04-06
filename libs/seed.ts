@@ -7,6 +7,7 @@ import seedableData from "./data";
 interface Category {
   name: string;
   description: string;
+  image_url : string
 }
 
 interface Customization {
@@ -190,6 +191,7 @@ async function seed(): Promise<void> {
       data: {
         name: cat.name,
         description: cat.description,
+        image : cat.image_url
       },
     });
     categoryMap[cat.name] = doc.$id;
@@ -226,12 +228,13 @@ async function seed(): Promise<void> {
       data: {
         name: item.name,
         description: item.description,
-        image_url: item.image_url, // using original URL for because pexels keep blocking programatically fetching.
+        image_url: item.image_url, 
+        // using original URL for because pexels keep blocking programatically fetching
+        // somehow cloudinary is not working too....... 
         price: item.price,
         rating: item.rating,
         calories: item.calories,
         protein: item.protein,
-        // sizes: item.sizes,
         categories: categoryMap[item.category_name],
       },
     });
@@ -251,7 +254,6 @@ async function seed(): Promise<void> {
             calories: size.calories,
             protein: size.protein,
             isDefault: size.isDefault,
-            // isSelected: size.isSelected || false,
             menuItemId: doc.$id,
           },
         });

@@ -18,7 +18,7 @@ const SearchBar = () => {
     query: text  
   });
   if (!text) setIsSearching(false); 
-}, 500);
+}, 200);
 
 
   const handleSearch = (text: string) => {

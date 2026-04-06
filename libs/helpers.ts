@@ -30,3 +30,7 @@ export async function requestLocationPermission() {
   // Location Instance
   return addressInstance;
 }
+
+export const optimizeCloudinaryUrl = (url: string, width = 400, height=300) => {
+  return url.replace("/upload/", `/upload/w_${width},h_${height},c_fill,q_auto,f_auto/`);
+};

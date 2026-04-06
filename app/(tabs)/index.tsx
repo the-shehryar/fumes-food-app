@@ -1,15 +1,14 @@
-import { getMenuWithCustomizations, getTopRatedMenu } from "@/libs/appwrite";
-import { storeData } from "@/libs/asyncStorage";
+import { getMenuWithCustomizations } from "@/libs/appwrite";
+import { getStoredData, storeData } from "@/libs/asyncStorage";
 import { requestLocationPermission } from "@/libs/helpers";
 import useAppwrite from "@/libs/useAppwrite";
 import useAuthStore from "@/stores/auth.store";
 import useLocationStore from "@/stores/location.store";
 import useMenusState from "@/stores/menus.store";
 import usePreferencesStore from "@/stores/preferences.store";
-import { MenuItem } from "@/types/type";
-import { Image as NewImage } from "expo-image";
+import { LocalSearchFilter, MenuItem } from "@/types/type";
 import * as MediaLib from "expo-media-library";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ViewShot from "react-native-view-shot";
@@ -17,34 +16,34 @@ import HeroSlider from "../components/HeroSlider";
 import MenuCard from "../components/MenuCard";
 
 export default function Index() {
-  let { isLocalized, setIsLocalized } = useMenusState();
+  let { isLocalized, setIsLocalized, setMenus, menus, setIsLocalizing } =
+    useMenusState();
   let { isAuthenticated } = useAuthStore();
-  let { data, loading, error, refetch } = useAppwrite({
-    fn: getTopRatedMenu,
-    params: {
-      category: "",
-      query: "",
-      limit: 6,
-    },
-    skip: false,
-  });
+  let [topRated, setTopRated] = useState<MenuItem[]>([]);
+  // let { data, loading, error, refetch } = useAppwrite({
+  //   fn: getTopRatedMenu,
+  //   params: {
+  //     category: "",
+  //     query: "",
+  //     limit: 6,
+  //   },
+  //   skip: !isAuthenticated,
+  // });
 
-  let { data: menus, loading: loadingMenus } = useAppwrite({
+  let { data: fetchedMenus, loading: loadingMenus } = useAppwrite({
     fn: getMenuWithCustomizations,
     params: {
       category: "",
       query: "",
     },
-    skip: !isAuthenticated,
+    skip: !isAuthenticated || isLocalized,
   });
 
   let { user } = useAuthStore();
   let { setAddress } = useLocationStore();
-  let { setUserAddresses, userAddresses } = usePreferencesStore();
   const HeaderComponent = () => (
     <>
       <HeroSlider />
-      {/*  This flat list will render circular filters circles*/}
     </>
   );
 
@@ -59,8 +58,22 @@ export default function Index() {
     }
   }
 
+  async function loadTopRatedMenu(options: LocalSearchFilter) {
+    try {
+      let toprated = await getStoredData("mainMenu", {
+        limit: options.limit,
+        filter: options.filter,
+        criteria: options.criteria
+          ? { type: options.criteria?.type, value: options.criteria?.value }
+          : {},
+      });
+      setTopRated(toprated as MenuItem[]);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  //High Quality Screenshot
   const viewShotRef = useRef<ViewShot>(null);
-
   const onCapture = async () => {
     try {
       // Capture the view and get the URI
@@ -73,22 +86,38 @@ export default function Index() {
 
   useEffect(() => {
     //? Location Permission
-    console.log(user);
     registerUserLocation();
 
-    if (!loadingMenus) {
+    if (loadingMenus) {
+      setIsLocalizing(true);
+      return;
+    }
+    if (!loadingMenus && fetchedMenus) {
+      //? Once the getMenuWithCustomization is completed
       try {
-        let menusInString = JSON.stringify(menus);
-        //? Localizing
-        storeData(menusInString).catch((error) => console.log(error));
+        let menusInString = JSON.stringify(fetchedMenus);
+        //? Localize the data to aysnc storage
+        storeData(menusInString, "mainMenu").catch((error) =>
+          console.log(error),
+        );
+        setMenus(fetchedMenus as unknown as MenuItem[]);
+        loadTopRatedMenu({
+          limit: 6,
+          filter: "rating",
+          criteria: {
+            type: "equals",
+            value: 4,
+          },
+        });
         setIsLocalized(true);
       } catch (error) {
         console.log(error);
         setIsLocalized(false);
+      }finally {
+        setIsLocalizing(false)
       }
     }
-    // console.log("user - status", JSON.stringify(user, null, 2));
-  }, [loading]);
+  }, [loadingMenus]);
   return (
     <View style={{ flex: 1, backgroundColor: "#FFF" }}>
       {/* <TouchableOpacity
@@ -108,14 +137,12 @@ export default function Index() {
         captureMode="mount"
       >
         <SafeAreaView style={{ backgroundColor: "#fff" }}>
-          {/* <View style={styles.customTopBarWrapper}></View> */}
-
           <FlatList
             numColumns={2}
             columnWrapperStyle={cardListStyles.columnWrapper}
             keyExtractor={(item) => item.$id}
             style={[cardListStyles.mainFlatListWrapper]}
-            data={data}
+            data={topRated}
             ListHeaderComponent={HeaderComponent}
             renderItem={({ item }) => (
               <MenuCard item={item as unknown as MenuItem} />
@@ -124,7 +151,6 @@ export default function Index() {
               <ActivityIndicator size={"large"} color={"#de5151"} />
             }
           />
-        
         </SafeAreaView>
       </ViewShot>
     </View>

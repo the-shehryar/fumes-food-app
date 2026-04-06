@@ -69,6 +69,15 @@ interface GetMenuParams {
   category: string;
   query: string;
 }
+interface LocalSearchFilter {
+  limit? : number,
+  filter? : string,
+  criteria? : {
+    type? : string,
+    value? : string | number
+  },
+
+}
 
 interface GetTopRatedMenuParams extends GetMenuParams {
   limit: number;

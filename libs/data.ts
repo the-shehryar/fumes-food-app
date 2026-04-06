@@ -1,11 +1,41 @@
 const seedbaleData = {
   categories: [
-    { name: "Burgers", description: "Juicy grilled burgers" },
-    { name: "Pizzas", description: "Oven-baked cheesy pizzas" },
-    { name: "Burritos", description: "Rolled Mexican delights" },
-    { name: "Sandwiches", description: "Stacked and stuffed sandwiches" },
-    { name: "Wraps", description: "Rolled up wraps packed with flavor" },
-    { name: "Bowls", description: "Balanced rice and protein bowls" },
+    {
+      name: "Burgers",
+      description: "Juicy grilled burgers",
+      image_url:
+        "https://res.cloudinary.com/dfbjrsr7e/image/upload/v1775500421/Gemini_Generated_Image_3nyf153nyf153nyf_mvrqnv.png",
+    },
+    {
+      name: "Pizzas",
+      description: "Oven-baked cheesy pizzas",
+      image_url:
+        "https://res.cloudinary.com/dfbjrsr7e/image/upload/v1775500420/Gemini_Generated_Image_ev8qpvev8qpvev8q_bteclg.png",
+    },
+    {
+      name: "Burritos",
+      description: "Rolled Mexican delights",
+      image_url:
+        "https://res.cloudinary.com/dfbjrsr7e/image/upload/v1775500410/Gemini_Generated_Image_qwnovkqwnovkqwno_po6bjq.png",
+    },
+    {
+      name: "Sandwiches",
+      description: "Stacked and stuffed sandwiches",
+      image_url:
+        "https://res.cloudinary.com/dfbjrsr7e/image/upload/v1775500435/Gemini_Generated_Image_1c11tw1c11tw1c11_it9q4a.png",
+    },
+    {
+      name: "Wraps",
+      description: "Rolled up wraps packed with flavor",
+      image_url:
+        "https://res.cloudinary.com/dfbjrsr7e/image/upload/v1775500410/Gemini_Generated_Image_qwnovkqwnovkqwno_po6bjq.png",
+    },
+    {
+      name: "Bowls",
+      description: "Balanced rice and protein bowls",
+      image_url:
+        "https://res.cloudinary.com/dfbjrsr7e/image/upload/v1775500409/Gemini_Generated_Image_tk1j1etk1j1etk1j_m6eidx.png",
+    },
   ],
 
   customizations: [

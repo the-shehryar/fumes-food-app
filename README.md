@@ -37,7 +37,7 @@ No bloat. No friction. Just 🔥 food.
 | Feature                                     | Status     |
 | ------------------------------------------- | ---------- |
 | 🍔 Browse menu with category filters        | ✅ Done    |
-| 🔍 Local-first smart search                 | 🚧 Planned |
+| 🔍 Local-first smart search                 | ✅ Done    |
 | 💸 Safepay (Stripe alternative in Pakistan) | 🚧 Planned |
 | 🛒 Cart with item customizations            | ✅ Done    |
 | 🛒 Cloudinary added for image optimizations | ✅ Done    |

@@ -1,11 +1,11 @@
-import { MenuItem } from "@/types/type";
+import { LocalSearchFilter, MenuItem } from "@/types/type";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export let storeData = async (data: string) => {
+export let storeData = async (data: string, key: string) => {
   //? Should be stringfied array or object
   try {
-    console.log('tring the localization')
-    let localStorage = await AsyncStorage.setItem("mainMenu", data);
+    console.log("tring the localization");
+    let localStorage = await AsyncStorage.setItem(key, data);
     console.log("Data was successfully localized");
   } catch (error) {
     console.log(error);
@@ -13,11 +13,34 @@ export let storeData = async (data: string) => {
   }
 };
 
-export let getStoredData = async (data: string): Promise<MenuItem[] | null> => {
+export let getStoredData = async (
+  key: string,
+  options?: LocalSearchFilter,
+): Promise<MenuItem[] | null> => {
   try {
-    const localizedData = await AsyncStorage.getItem(data);
+    const localizedData = await AsyncStorage.getItem(key);
     if (localizedData !== null) {
-      return JSON.parse(localizedData) as MenuItem[];
+      let searched = JSON.parse(localizedData) as MenuItem[];
+
+      //? If there is criteria is passed
+      
+      if (Object.keys(options?.criteria ?? {}).length > 0) {
+        searched.map((item) => {
+          const filterKey = options?.filter as keyof typeof item;
+          if(options?.criteria?.type === 'equals'){
+            if (filterKey && item[filterKey] === options?.criteria?.value) {
+              return item
+            }
+          }
+        });
+      }
+
+      //? if there is any limit passed 
+      if (options?.limit && options?.limit > 0) {
+        return searched.slice(0, options.limit);
+      }
+      // console.log(searched)
+      return searched;
     }
     return null;
   } catch (error) {

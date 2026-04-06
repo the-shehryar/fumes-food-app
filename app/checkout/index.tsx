@@ -27,43 +27,12 @@ import AppleIcon from "@/assets/images/apple-icon.svg";
 import Card from "@/assets/images/card.svg";
 import GoogleIcon from "@/assets/images/google-icon.svg";
 import Cash from "@/assets/images/pakistan-rupee-note-color-icon.svg";
+import Colors from "@/constants/Colors";
 import { router } from "expo-router";
+import OrderCompletion from "../components/OrderCompletion";
 
-// ─── Design Tokens ────────────────────────────────────────────────────────────
-const ORANGE = "#F97316";
-const ORANGE_LIGHT = "#FFF4EE";
-const DARK = "#1A1A1A";
-const GRAY = "#9CA3AF";
-const GRAY_LIGHT = "#F5F5F5";
-const WHITE = "#FFFFFF";
-const BORDER = "#F0F0F0";
-const GREEN = "#16A34A";
-const GREEN_LIGHT = "#F0FDF4";
-
-// ─── Data ─────────────────────────────────────────────────────────────────────
-const ADDRESSES = [
-  {
-    id: "1",
-    tag: "Home",
-    icon: "home",
-    address: "14-B, Street 5, G-11/1",
-    city: "Islamabad, Pakistan",
-  },
-  {
-    id: "2",
-    tag: "Work",
-    icon: "briefcase",
-    address: "3rd Floor, Blue Area, F-7 Markaz",
-    city: "Islamabad, Pakistan",
-  },
-  {
-    id: "3",
-    tag: "Other",
-    icon: "location",
-    address: "Plot 22, Sector E-11/4",
-    city: "Islamabad, Pakistan",
-  },
-];
+const { ORANGE, ORANGE_LIGHT, DARK, GRAY, GRAY_LIGHT, WHITE, BORDER, GREEN } =
+  Colors;
 
 const PAYMENT_METHODS = [
   {
@@ -74,7 +43,7 @@ const PAYMENT_METHODS = [
     available: true,
   },
   {
-    id: "stripe",
+    id: "safepay",
     label: "Credit / Debit Card",
     sublabel: "Visa, Mastercard, Amex",
     icon: <Card width={20} height={20} />,
@@ -93,14 +62,15 @@ const PAYMENT_METHODS = [
     sublabel: Platform.OS === "ios" ? "Touch / Face ID" : "Touch / Face ID",
     icon: <AppleIcon width={20} height={20} />,
     available: Platform.OS === "ios",
-    // available : true
   },
 ];
 
-// ─── Animated Section ─────────────────────────────────────────────────────────
-const FadeIn: React.FC<{ delay?: number; children: React.ReactNode }> = ({
+const FadeIn = ({
   delay = 0,
   children,
+}: {
+  delay: number;
+  children: React.ReactNode;
 }) => {
   const anim = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(16)).current;
@@ -127,7 +97,6 @@ const FadeIn: React.FC<{ delay?: number; children: React.ReactNode }> = ({
   );
 };
 
-// ─── Section Header ───────────────────────────────────────────────────────────
 const SectionHeader: React.FC<{
   title: string;
   action?: string;
@@ -143,14 +112,14 @@ const SectionHeader: React.FC<{
   </View>
 );
 
-// ─── Screen ───────────────────────────────────────────────────────────────────
 export default function CheckoutScreen() {
   const insets = useSafeAreaInsets();
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState("");
   const [addressModal, setAddressModal] = useState(false);
   const [fetchingAddress, setFetchingAddresses] = useState<boolean>(false);
-
+  const [orderCompletionVisible, setOrderCompletionVisible] =
+    useState<boolean>(false);
   const [selectedPayment, setSelectedPayment] = useState("cod");
   const [couponApplied, setCouponApplied] = useState(false);
   const [orderSummaryOpen, setOrderSummaryOpen] = useState(false);
@@ -242,6 +211,10 @@ export default function CheckoutScreen() {
   async function handleOrderPlacement() {
     // Validate address, payment method selection, payment status
     let itemsInCartStringified = JSON.stringify(itemsInCart);
+    if (itemsInCart.length < 1) {
+      ToastAndroid.show("Empty Cart", ToastAndroid.LONG);
+      return;
+    }
     try {
       setIsPlacingOrder(true);
       let userAddress = userAddresses.find(
@@ -268,7 +241,7 @@ export default function CheckoutScreen() {
         if (order) {
           setIsPlacingOrder(false);
           clearCart();
-          redirectHome();
+          setOrderCompletionVisible(true);
           ToastAndroid.show("Order placed successfully!", ToastAndroid.LONG);
         } else {
           setIsPlacingOrder(false);
@@ -286,17 +259,17 @@ export default function CheckoutScreen() {
     }
   }
   function redirectHome() {
-    if(isAuthenticated){
-      router.replace('/')
-    }else {
-      router.replace('/login')
+    if (isAuthenticated) {
+      router.replace("/");
+    } else {
+      router.replace("/login");
     }
   }
   useEffect(() => {
     if (userAddresses !== undefined && userAddresses.length > 0) {
       setSelectedAddress(userAddresses[0].$id);
     } else {
-      // Fetch Address,
+      // Fetch Address
       fetchUserAddress(user?.$id);
       setFetchingAddresses(true);
     }
@@ -312,7 +285,13 @@ export default function CheckoutScreen() {
           creatNewAddress(newAddress);
         }}
       />
-
+      {/* Order Completion Modal */}
+      <OrderCompletion
+        visible={orderCompletionVisible}
+        onClose={() => setOrderCompletionVisible(false)}
+        onSave={redirectHome}
+      />
+      {/*  */}
       <StatusBar barStyle="dark-content" backgroundColor={WHITE} />
 
       <View style={[styles.topBar, { paddingTop: insets.top + 8 }]}>
@@ -330,7 +309,6 @@ export default function CheckoutScreen() {
           { paddingBottom: insets.bottom + 120 },
         ]}
       >
-        {/* ── Order Summary Toggle ── */}
         <FadeIn delay={80}>
           <View style={styles.px}>
             <TouchableOpacity
@@ -418,7 +396,6 @@ export default function CheckoutScreen() {
           </View>
         </FadeIn>
 
-        {/* ── Delivery Address ── */}
         <FadeIn delay={180}>
           <View style={styles.px}>
             <SectionHeader title="Delivery Address" />
@@ -472,7 +449,7 @@ export default function CheckoutScreen() {
                           )}
                         </View>
                       </TouchableOpacity>
-                      {idx < ADDRESSES.length - 1 && (
+                      {idx < userAddresses.length - 1 && (
                         <View style={styles.divider} />
                       )}
                     </View>
@@ -495,7 +472,6 @@ export default function CheckoutScreen() {
           </View>
         </FadeIn>
 
-        {/* ── Payment Method ── */}
         <FadeIn delay={280}>
           <View style={styles.px}>
             <SectionHeader title="Payment Method" />

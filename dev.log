@@ -150,4 +150,32 @@ place, though need to fix some spacing but over all looking great.
 ### noticed that i made a rookie mistake and made a singleway realtionship in database for menuItem 
 and sizes.
 
+5th April, 2026
+---------------
+Added a mechanism to avoid the triggering hook in search page if index page hook has
+already ran, 80% completion of local first search only serving the result and minor details
+pending.
+
+Bug.Spotted: MenuCard, decrease quantity button is not working as expected must check tomorrow.
+Bug.Spotted: Empty order is placeable - need to fix
+Bug.Spotted: Empty order is placeable - custom product not loading image
+6th April, 2026
+---------------
+3:00 PM 
+Internet is not working as of now.
+
+4:00 PM
+Empty Order Bug is fixed
+Added a order completion modal
+Working on menucard bug
+
+5:40 PM
+Laptop battery is 6% gotta charge.
+
+11:00 PM
+Local First Search Implemented
+Circular Filter Buttons Added
+Custom Product Image not rendering fixed.
+Search page flatlist snapping fixed
+
 *Last updated: 3rd April 2026*

@@ -1,7 +1,16 @@
 import { Category } from "@/types/type";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
-import { FlatList, StyleSheet, Text, TouchableOpacity } from "react-native";
+import React, { Fragment, useState } from "react";
+import {
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { images } from "@/constants";
+
 
 const Filter = ({ categories }: { categories: Category[] }) => {
   const searchParams = useLocalSearchParams();
@@ -32,17 +41,33 @@ const Filter = ({ categories }: { categories: Category[] }) => {
       style={styles.mainFlatListWrapper}
       data={filterData}
       renderItem={({ item }) => (
-        <TouchableOpacity
-          style={[
-            styles.categoriesBtn,
-            item.$id === active ? styles.activeCategoryBtn : null,
-          ]}
-          onPress={() => handlePress(item.$id, searchParams.query as string)}
-        >
-          <Text style={item.$id === active ? styles.activeCategoryText : null}>
-            {item.name}
-          </Text>
-        </TouchableOpacity>
+        // <TouchableOpacity
+        //   style={[
+        //     styles.categoriesBtn,
+        //     item.$id === active ? styles.activeCategoryBtn : null,
+        //   ]}
+        //   onPress={() => handlePress(item.$id, searchParams.query as string)}
+        // >
+        //   <Text style={item.$id === active ? styles.activeCategoryText : null}>
+        //     {item.name}
+        //   </Text>
+        // </TouchableOpacity>
+        <View style={circularFilter.circularBtnWrapper}>
+          <Pressable style={[circularFilter.circularBtn]}>
+            {({ pressed }) => (
+              <Fragment>
+                <View>
+                  <Image
+                    source={images.coffeeOffer}
+                    style={circularFilter.imageStyles}
+                    resizeMode="contain"
+                  />
+                </View>
+              </Fragment>
+            )}
+          </Pressable>
+          <Text style={circularFilter.btnText}>{item.name}</Text>
+        </View>
       )}
     />
   );
@@ -59,12 +84,10 @@ let styles = StyleSheet.create({
   },
   mainFlatListWrapper: {
     width: "100%",
-    height: 60,
-    // paddingHorizontal: 20,
+    height: 140,
     overflowX: "hidden",
     margin: 20,
     marginBottom: 4,
-    // backgroundColor : 'cyan',
   },
   categoriesBtn: {
     width: 100,
@@ -74,5 +97,39 @@ let styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginRight: 10,
+  },
+});
+
+let circularFilter = StyleSheet.create({
+  cirularFilerMain: {
+    width: "auto",
+    height: "auto",
+    // backgroundColor  : "red",
+    paddingTop: 20,
+    paddingLeft: 20,
+    marginBottom: 20,
+  },
+  btnText: {
+    fontSize: 10,
+    marginTop: 8,
+  },
+  circularBtn: {
+    width: "100%",
+    height: 70,
+    borderRadius: "50%",
+    elevation: 4,
+    overflow: "hidden",
+  },
+  circularBtnWrapper: {
+    width: 70,
+
+    // backgroundColor : "red",
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 8,
+  },
+  imageStyles: {
+    width: "auto",
+    height: "100%",
   },
 });

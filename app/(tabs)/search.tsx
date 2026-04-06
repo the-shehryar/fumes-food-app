@@ -1,7 +1,6 @@
 import LocationIcon from "@/assets/images/majesticons_map-marker.svg";
 
 import { getCategories, getMenuWithCustomizations } from "@/libs/appwrite";
-import { getStoredData } from "@/libs/asyncStorage";
 import seed from "@/libs/seed";
 import useAppwrite from "@/libs/useAppwrite";
 import useAuthStore from "@/stores/auth.store";
@@ -26,12 +25,13 @@ import Filter from "../components/Filter";
 import MenuCard from "../components/MenuCard";
 import SearchBar from "../components/SearchBar";
 
-
 import { images } from "@/constants";
+import { getStoredData } from "@/libs/asyncStorage";
 
 export default function SearchScreen() {
   //? You're using the `useLocalSearchParams` hook to access the search parameters from the URL.
 
+  let { address } = useLocationStore();
   const { isSearching, setIsSearching } = useSearchStore();
   const { user } = useAuthStore();
   let { category, query } = useLocalSearchParams<{
@@ -39,9 +39,13 @@ export default function SearchScreen() {
     query?: string;
   }>();
 
-  //? Then, you're using the `useAppwrite` hook to fetch the menu items based on the category and query parameters. The `getMenu` function is called with the appropriate parameters, and the results are stored in the `data` variable. You also have a `refetch` function that can be used to manually trigger a new fetch when the category or query parameters change.
+  //? Then, i'm using the `useAppwrite` hook to fetch the menu items based on the
+  //? category and query parameters. The `getMenu` function is called with the appropriate
+  //? parameters, and the results are stored in the `data` variable. You also have a
+  //? `refetch` function that can be used to manually trigger a new fetch when the category
+  //? or query parameters change.
 
-  let { isLocalized, menus, setMenus } = useMenusState();
+  let { isLocalized, isLocalizing, menus, setMenus } = useMenusState();
 
   let { data, refetch, loading, error } = useAppwrite({
     fn: getMenuWithCustomizations,
@@ -49,49 +53,71 @@ export default function SearchScreen() {
       category: category ? category : "",
       query: query ? query : "",
     },
-    skip: false,
+    skip: isLocalized || isLocalizing,
   });
-
-  if (isLocalized && category === undefined && query === undefined) {
-    fetchLocalData("mainMenu");
-  }
-  // console.log(`menu from search screen ${data}`);
 
   let { data: categories } = useAppwrite({
     fn: getCategories,
     skip: false,
   });
 
-  async function fetchLocalData(value: string) {
-    let parsedData = await getStoredData(value);
-    setMenus(parsedData);
-  }
   async function searchLocally(category: string, query: string) {
-    let newItems = menus?.filter((item) => {
+    console.log("menus length:", menus?.length);
+    console.log("query:", query); // check what query is
+    console.log("category:", category); // check what category is
+
+    let matchedArray = menus?.filter((item) => {
+      console.log('matching....')
       let target = item.name.toLowerCase();
       return target.includes(query.toLowerCase());
     });
+    if (category.trim().length > 0) {
+      let categoryFiltered = matchedArray?.filter(
+        (item) => item.category_name === category,
+      );
+      console.log('reseting menus')
+      setMenus(categoryFiltered as MenuItem[]);
+    } else {
+      console.log('reseting menus')
+      setMenus(matchedArray as MenuItem[]);
+    }
 
+    console.log("matchedArray:", matchedArray);
     setIsSearching(false);
   }
 
-  let { address } = useLocationStore();
-
   useEffect(() => {
-    //? Make refetch once local Storage is empty
-    //* searchLocalStorage functions from asyncStorage
-    //* What if i add two useEffect one that always fires the second on can fire only on changes like menu and i can add search / refetch over cache or network there - i need to think it through
-    // if (category !== undefined && query !== undefined) {
-    //? User is in search mode
+    if (isLocalizing) return;
 
+    //? User is in search mode
     let safeCategory = category ? category : "";
     let safeQuery = query ? query : "";
-    refetch({ category: safeCategory, query: safeQuery })
-      .catch((error) => console.log(error))
-      .finally(() => {
+
+    if (isLocalized && menus && menus.length > 0) {
+      //? Local First Search
+      if (category === "" && query === "") {
+        (async () => {
+          const simpleMenu = await getStoredData("mainMenu");
+          if (simpleMenu) setMenus(simpleMenu);
+        })();
+        return;
+      }
+      try {
+        searchLocally(safeCategory, safeQuery);
+      } catch (error) {
+      } finally {
         setIsSearching(false);
-      });
-  }, [category, query]);
+      }
+    } else {
+      //? Make refetch once local Storage is empty
+      //* Search over network
+      refetch({ category: safeCategory, query: safeQuery })
+        .catch((error) => console.log(error))
+        .finally(() => {
+          setIsSearching(false);
+        });
+    }
+  }, [category, query, isLocalizing]);
 
   return (
     <SafeAreaView>
@@ -126,33 +152,33 @@ export default function SearchScreen() {
       <Filter
         categories={categories ? (categories as unknown as Category[]) : []}
       />
-      <FlatList
-              style={circularFilter.cirularFilerMain}
-              data={categories}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingLeft: 10, paddingRight: 40 }}
-              renderItem={({ item, index }) => {
-                return (
-                  <View style={circularFilter.circularBtnWrapper}>
-                    <Pressable style={[circularFilter.circularBtn]}>
-                      {({ pressed }) => (
-                        <Fragment>
-                          <View>
-                            <Image
-                              source={images.coffeeOffer}
-                              style={circularFilter.imageStyles}
-                              resizeMode="contain"
-                            />
-                          </View>
-                        </Fragment>
-                      )}
-                    </Pressable>
-                    <Text style={circularFilter.btnText}>{item.name}</Text>
-                  </View>
-                );
-              }}
-            />
+      {/* <FlatList
+        style={circularFilter.cirularFilerMain}
+        data={categories}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingLeft: 10, paddingRight: 40 }}
+        renderItem={({ item, index }) => {
+          return (
+            <View style={circularFilter.circularBtnWrapper}>
+              <Pressable style={[circularFilter.circularBtn]}>
+                {({ pressed }) => (
+                  <Fragment>
+                    <View>
+                      <Image
+                        source={images.coffeeOffer}
+                        style={circularFilter.imageStyles}
+                        resizeMode="contain"
+                      />
+                    </View>
+                  </Fragment>
+                )}
+              </Pressable>
+              <Text style={circularFilter.btnText}>{item.name}</Text>
+            </View>
+          );
+        }}
+      /> */}
       <View style={searchPageStyles.container}>
         {isSearching ? <ActivityIndicator size="large" color="#0000ff" /> : ""}
       </View>
@@ -160,9 +186,14 @@ export default function SearchScreen() {
       <FlatList
         numColumns={2}
         columnWrapperStyle={styles.columnWrapper}
+        contentContainerStyle = {styles.contentContainer}
         keyExtractor={(item) => item.$id}
         style={styles.mainFlatListWrapper}
-        data={data}
+        data={
+          (isLocalized && menus && menus.length > 0
+            ? menus
+            : data) as unknown as MenuItem[]
+        }
         renderItem={({ item }) => (
           <MenuCard item={item as unknown as MenuItem} />
         )}
@@ -178,8 +209,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     overflowX: "hidden",
     marginTop: 0,
-    marginBottom: 200,
+    marginBottom: 0,
     // backgroundColor  : "yellow"
+  },
+  contentContainer : {
+    paddingBottom : 400,
+    marginVertical : 10
   },
   columnWrapper: {
     // backgroundColor  : 'red',
@@ -187,7 +222,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   seedBtn: {
-    display: "none",
+    // display: "none",
     justifyContent: "center",
     alignItems: "center",
     width: 220,
@@ -249,9 +284,10 @@ let circularFilter = StyleSheet.create({
   cirularFilerMain: {
     width: "auto",
     height: "auto",
+    // backgroundColor  : "red",
     paddingTop: 20,
     paddingLeft: 20,
-    marginBottom: 40,
+    marginBottom : 20,
   },
   btnText: {
     fontSize: 10,
@@ -277,3 +313,4 @@ let circularFilter = StyleSheet.create({
     height: "100%",
   },
 });
+

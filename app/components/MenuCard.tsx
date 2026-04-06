@@ -9,6 +9,7 @@ import { Link } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Stars from "./Stars";
+import { optimizeCloudinaryUrl } from "@/libs/helpers";
 
 const MenuCard = ({ item }: { item: MenuItem }) => {
   // console.log(item.image_url)
@@ -16,6 +17,7 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
   let { setCurrentProduct } = useSearchStore();
   let [cartExistanceCheck, setCartExistanceCheck] = useState<boolean>(false);
   let [cartQuantity, setCartQuantity] = useState<number>(0);
+
   const handleAddToCart = () => {
     console.log(item.customizations);
 
@@ -73,10 +75,9 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
     }
   };
 
-  const optimizeCloudinaryUrl = (url: string) => {
-    return url.replace("/upload/", "/upload/w_400,h_300,c_fill,q_auto,f_auto/");
-  };
-  console.log(item.image_url);
+
+
+  
   return (
     <Link
       href={{ pathname: "/products/[id]", params: { id: item.$id } }}
@@ -94,7 +95,7 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
             }}
             style={cardListStyles.cardImage}
             contentFit="cover"
-            onLoad={() => console.log(item.image_url)}
+            onLoad={() => {}}
             onError={(e) => console.log("❌ image error", e)}
           />
         </View>

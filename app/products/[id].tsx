@@ -32,6 +32,7 @@ const HERO_HEIGHT = height * 0.44;
 
 import SizeSelector from "@/app/components/SizeSelector";
 import Colors from "@/constants/Colors";
+import { optimizeCloudinaryUrl } from "@/libs/helpers";
 let {
   ORANGE,
   ORANGE_LIGHT,
@@ -355,7 +356,7 @@ export default function ProductScreen() {
         >
           <Text style={{ color: "white" }}>Take Screenshot</Text>
         </TouchableOpacity>
-        <ViewShot
+        {/* <ViewShot
           ref={viewShotRef}
           options={{ format: "png", quality: 1.0 }}
           onCapture={async (uri) => {
@@ -364,7 +365,7 @@ export default function ProductScreen() {
           }}
           captureMode="mount"
           style={{ flex: 1 }}
-        >
+        > */}
           <View style={styles.root}>
             <StatusBar barStyle="light-content" />
 
@@ -414,7 +415,7 @@ export default function ProductScreen() {
               {/* ── Hero Image ── */}
               <View style={styles.heroWrap}>
                 <Animated.Image
-                  source={{ uri: product.image_url }}
+                  source={{ uri: optimizeCloudinaryUrl(product.image_url, 800, 600 ) }}
                   style={[
                     styles.heroImg,
                     { transform: [{ translateY: heroTranslate }] },
@@ -618,7 +619,7 @@ export default function ProductScreen() {
               </TouchableOpacity>
             </View>
           </View>
-        </ViewShot>
+        {/* </ViewShot> */}
       </>
     ) : (
       ""
