@@ -1,21 +1,31 @@
-import { getMenuWithCustomizations } from "@/libs/appwrite";
+import { getCategories, getMenuWithCustomizations } from "@/libs/appwrite";
 import { getStoredData, storeData } from "@/libs/asyncStorage";
 import { requestLocationPermission } from "@/libs/helpers";
 import useAppwrite from "@/libs/useAppwrite";
 import useAuthStore from "@/stores/auth.store";
 import useLocationStore from "@/stores/location.store";
 import useMenusState from "@/stores/menus.store";
-import usePreferencesStore from "@/stores/preferences.store";
 import { LocalSearchFilter, MenuItem } from "@/types/type";
 import * as MediaLib from "expo-media-library";
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import LocationIcon from "@/assets/images/majesticons_map-marker.svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ViewShot from "react-native-view-shot";
 import HeroSlider from "../components/HeroSlider";
 import MenuCard from "../components/MenuCard";
 
+
 export default function Index() {
+  let {address} = useLocationStore()
   let { isLocalized, setIsLocalized, setMenus, menus, setIsLocalizing } =
     useMenusState();
   let { isAuthenticated } = useAuthStore();
@@ -39,10 +49,26 @@ export default function Index() {
     skip: !isAuthenticated || isLocalized,
   });
 
+  let { data: categories } = useAppwrite({
+    fn: getCategories,
+    skip: false,
+  });
+
   let { user } = useAuthStore();
   let { setAddress } = useLocationStore();
   const HeaderComponent = () => (
     <>
+      <View style={styles.locationWrapper}>
+        <Text style={styles.locationHeaderText}>Delivery to</Text>
+        <Pressable style={styles.locationPressable}>
+          <View style={styles.locationIcon}>
+            <LocationIcon width={24} height={24} />
+          </View>
+          <TouchableOpacity style={styles.locationPressable}>
+            <Text style={styles.locationText}>{address}</Text>
+          </TouchableOpacity>
+        </Pressable>
+      </View>
       <HeroSlider />
     </>
   );
@@ -97,6 +123,10 @@ export default function Index() {
       try {
         let menusInString = JSON.stringify(fetchedMenus);
         //? Localize the data to aysnc storage
+        let categoriesInString = JSON.stringify(categories);
+        storeData(categoriesInString, "categories").catch((err) =>
+          console.log(err),
+        );
         storeData(menusInString, "mainMenu").catch((error) =>
           console.log(error),
         );
@@ -113,8 +143,8 @@ export default function Index() {
       } catch (error) {
         console.log(error);
         setIsLocalized(false);
-      }finally {
-        setIsLocalizing(false)
+      } finally {
+        setIsLocalizing(false);
       }
     }
   }, [loadingMenus]);
@@ -249,6 +279,35 @@ let styles = StyleSheet.create({
   },
   background: {
     borderRadius: 2,
+  },
+  locationWrapper: {
+    width: "100%",
+    height: 100,
+    justifyContent: "center",
+    alignItems: "flex-start",
+    paddingHorizontal: 20,
+  },
+  locationHeaderText: {
+    fontSize: 12,
+    fontWeight: 600,
+    color: "#050505e1",
+  },
+  locationPressable: {
+    width: "auto",
+    height: 40,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+  locationText: {
+    fontSize: 16,
+    paddingHorizontal: 4,
+  },
+  locationIcon: {
+    width: 24,
+    height: 32,
+    justifyContent: "center",
+    alignItems: "flex-start",
   },
 });
 

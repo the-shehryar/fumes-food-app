@@ -52,11 +52,8 @@ export default function SignIn() {
       throw new Error(error as string);
     }
   };
-  function handleEmailLogin() {
-    router.push("/(auth)/signIn");
-  }
   function handleAppleLogin() {
-    router.push("/(auth)/signIn");
+    router.push("/(auth)/login");
   }
   async function handleGoogleLogin(provider: OAuthProvider) {
     let user = await OauthLogin(provider);
@@ -122,7 +119,7 @@ export default function SignIn() {
           /> */}
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>or login with emaail</Text>
+            <Text style={styles.dividerText}>or login with email</Text>
             <View style={styles.dividerLine} />
           </View>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

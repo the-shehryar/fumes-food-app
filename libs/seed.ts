@@ -1,13 +1,13 @@
 import { File, Paths } from "expo-file-system";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import { ID } from "react-native-appwrite";
-import { appwriteConfig, DATABASE_ID, databases, storage } from "./appwrite";
+import { appwriteConfig, databases, storage } from "./appwrite";
 import seedableData from "./data";
 
 interface Category {
   name: string;
   description: string;
-  image_url : string
+  image_url: string;
 }
 
 interface Customization {
@@ -70,6 +70,7 @@ interface SeedMenuItem {
     menuItemId: string;
     // isSelected: boolean;
   }[];
+  restaurant: string;
 }
 
 interface LocalMenusData {
@@ -129,7 +130,7 @@ async function compressImage(imageUri: string) {
 // Downloadinng image from remote URL to local cache and return local URI
 async function downloadImage(imageUrl: string): Promise<string> {
   // const fileName = imageUrl.split("/").pop() || `img-${Date.now()}.jpg`;
-const fileName = `img-${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
+  const fileName = `img-${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
   // Create a File reference pointing to cache directory
   const file = new File(Paths.join(Paths.cache, fileName));
   // Download the remote image into that file
@@ -139,9 +140,9 @@ const fileName = `img-${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
 
 async function uploadImageToStorage(imageUrl: string) {
   // Compressed Image
-  // Downloading image to local cache first because Appwrite SDK needs a file object or blob to upload, 
-  // it cannot directly take a remote URL. So I downloaded it first, compressing it, 
-  // and then will upload the compressed version. This way I can ensure faster uploads and 
+  // Downloading image to local cache first because Appwrite SDK needs a file object or blob to upload,
+  // it cannot directly take a remote URL. So I downloaded it first, compressing it,
+  // and then will upload the compressed version. This way I can ensure faster uploads and
   // optimized storage usage. The original image remains untouched in the remote source.
 
   const localUri = await downloadImage(imageUrl);
@@ -191,7 +192,7 @@ async function seed(): Promise<void> {
       data: {
         name: cat.name,
         description: cat.description,
-        image : cat.image_url
+        image: cat.image_url,
       },
     });
     categoryMap[cat.name] = doc.$id;
@@ -228,20 +229,20 @@ async function seed(): Promise<void> {
       data: {
         name: item.name,
         description: item.description,
-        image_url: item.image_url, 
+        image_url: item.image_url,
         // using original URL for because pexels keep blocking programatically fetching
-        // somehow cloudinary is not working too....... 
+        // somehow cloudinary is not working too.......
         price: item.price,
         rating: item.rating,
         calories: item.calories,
         protein: item.protein,
-        categories: categoryMap[item.category_name],
+        restaurant: item.restaurant,
+        category_name: categoryMap[item.category_name],
         // adding sizes as strigified JSON as relationships are not properly
         // working in appwrite i guess those are in experimental stage that is why.
-        sizes : JSON.stringify(item.sizes)
+        sizes: JSON.stringify(item.sizes),
       },
     });
-
 
     menuMap[item.name] = doc.$id;
     // const sizeIds = await Promise.all(

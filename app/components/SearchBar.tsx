@@ -9,27 +9,27 @@ const SearchBar = () => {
     query?: string;
     category?: string;
   }>();
+  
   const [query, setQuery] = useState(searchParams.query || "");
-  const { setIsSearching } = useSearchStore();
+  const { setIsSearching, setZQuery } = useSearchStore();
 
   const debounceSearch = useDebouncedCallback((text: string) => {
+    setZQuery(text)
     router.setParams({ query: text, category: searchParams.category || "" });
     if (!text) setIsSearching(false);
   }, 200);
 
   const handleSearch = (text: string) => {
-    setQuery(text);
     debounceSearch(text);
+    setQuery(text);
     if (text) setIsSearching(true);
   };
 
-  // console.log(`filter data ${JSON.stringify(filterData)}`);
   return (
     <CustomSearchInput
       icon
       label="Search"
       placeholder="Want something cheezzy??"
-      //   onSubmitEditing={handleSearch}
       onChangeText={handleSearch}
       value={query}
       returnKeyType="search"

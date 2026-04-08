@@ -9,11 +9,10 @@ import useMenusState from "@/stores/menus.store";
 import useSearchStore from "@/stores/search.store";
 import { Category, MenuItem } from "@/types/type";
 import { useLocalSearchParams } from "expo-router/build/hooks";
-import { Fragment, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -25,14 +24,15 @@ import Filter from "../components/Filter";
 import MenuCard from "../components/MenuCard";
 import SearchBar from "../components/SearchBar";
 
-import { images } from "@/constants";
 import { getStoredData } from "@/libs/asyncStorage";
+import { RefreshControl } from "react-native";
 
 export default function SearchScreen() {
   //? You're using the `useLocalSearchParams` hook to access the search parameters from the URL.
 
   let { address } = useLocationStore();
   const { isSearching, setIsSearching } = useSearchStore();
+  const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuthStore();
   let { category, query } = useLocalSearchParams<{
     category: string;
@@ -44,6 +44,7 @@ export default function SearchScreen() {
   //? parameters, and the results are stored in the `data` variable. You also have a
   //? `refetch` function that can be used to manually trigger a new fetch when the category
   //? or query parameters change.
+  let { zquery, zcategory } = useSearchStore();
 
   let { isLocalized, isLocalizing, menus, setMenus } = useMenusState();
 
@@ -56,34 +57,65 @@ export default function SearchScreen() {
     skip: isLocalized || isLocalizing,
   });
 
+  
   let { data: categories } = useAppwrite({
     fn: getCategories,
     skip: false,
   });
 
-  async function searchLocally(category: string, query: string) {
-    console.log("menus length:", menus?.length);
-    console.log("query:", query); // check what query is
-    console.log("category:", category); // check what category is
 
-    let matchedArray = menus?.filter((item) => {
-      console.log('matching....')
-      let target = item.name.toLowerCase();
-      return target.includes(query.toLowerCase());
-    });
+  
+
+  async function searchLocally(category: string, query: string) {
+
+    let matchedArray = [] as MenuItem[];
+    setIsSearching(true);
+    // Get all the available menu items
+    const simpleMenu = await getStoredData("mainMenu");
+    // if user has searched a keyword then filter the key else
+    // return categoried data as it is
+
     if (category.trim().length > 0) {
-      let categoryFiltered = matchedArray?.filter(
-        (item) => item.category_name === category,
-      );
-      console.log('reseting menus')
-      setMenus(categoryFiltered as MenuItem[]);
+      // Search the right category
+      let categories = await getStoredData('categories')
+      let requestedCategory = categories?.find(item => item.name.toLowerCase().trim() === category.toLowerCase().trim())
+      
+      try {
+        matchedArray = simpleMenu?.filter(
+          (item) => {
+            if(item.category_name.trim() === requestedCategory?.$id) {
+              return item;
+            }
+          },
+        ) as unknown as MenuItem[];
+      } catch (error) {
+        console.log(error)
+      }
+      
     } else {
-      console.log('reseting menus')
-      setMenus(matchedArray as MenuItem[]);
+      matchedArray = simpleMenu as MenuItem[];
     }
 
-    console.log("matchedArray:", matchedArray);
+    // now i have an array where category is already filtered
+    // so less data to search on
+    if (query) {
+      console.log(matchedArray.length)
+      matchedArray = matchedArray?.filter((item) => {
+        let target = item.name.toLowerCase();
+        return target.includes(query.toLowerCase());
+      }) as MenuItem[];
+      setMenus(matchedArray as MenuItem[]);
+    }else {
+      setMenus(matchedArray as MenuItem[])
+    }
     setIsSearching(false);
+  }
+
+  async function onRefresh() {
+    setRefreshing(true);
+    const fullMenu = await getStoredData("mainMenu");
+    if (fullMenu) setMenus(fullMenu as MenuItem[]);
+    setRefreshing(false);
   }
 
   useEffect(() => {
@@ -93,18 +125,12 @@ export default function SearchScreen() {
     let safeCategory = category ? category : "";
     let safeQuery = query ? query : "";
 
-    if (isLocalized && menus && menus.length > 0) {
+    if (isLocalized) {
       //? Local First Search
-      if (category === "" && query === "") {
-        (async () => {
-          const simpleMenu = await getStoredData("mainMenu");
-          if (simpleMenu) setMenus(simpleMenu);
-        })();
-        return;
-      }
       try {
-        searchLocally(safeCategory, safeQuery);
+        searchLocally(zcategory, zquery);
       } catch (error) {
+        console.log(error);
       } finally {
         setIsSearching(false);
       }
@@ -117,7 +143,8 @@ export default function SearchScreen() {
           setIsSearching(false);
         });
     }
-  }, [category, query, isLocalizing]);
+    // trying to migrate from urlparams search to zustand search
+  }, [zcategory, zquery, isLocalizing, isSearching]);
 
   return (
     <SafeAreaView>
@@ -133,17 +160,6 @@ export default function SearchScreen() {
       >
         <Text>Seed Data</Text>
       </TouchableOpacity>
-      <View style={styles.locationWrapper}>
-        <Text style={styles.locationHeaderText}>Delivery to</Text>
-        <Pressable style={styles.locationPressable}>
-          <View style={styles.locationIcon}>
-            <LocationIcon width={24} height={24} />
-          </View>
-          <TouchableOpacity style={styles.locationPressable}>
-            <Text style={styles.locationText}>{address}</Text>
-          </TouchableOpacity>
-        </Pressable>
-      </View>
 
       <SearchBar />
 
@@ -186,9 +202,17 @@ export default function SearchScreen() {
       <FlatList
         numColumns={2}
         columnWrapperStyle={styles.columnWrapper}
-        contentContainerStyle = {styles.contentContainer}
+        contentContainerStyle={styles.contentContainer}
         keyExtractor={(item) => item.$id}
         style={styles.mainFlatListWrapper}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#ff611d"]} // Android
+            tintColor="#ff611d" // iOS
+          />
+        }
         data={
           (isLocalized && menus && menus.length > 0
             ? menus
@@ -212,9 +236,9 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     // backgroundColor  : "yellow"
   },
-  contentContainer : {
-    paddingBottom : 400,
-    marginVertical : 10
+  contentContainer: {
+    paddingBottom: 300,
+    marginVertical: 10,
   },
   columnWrapper: {
     // backgroundColor  : 'red',
@@ -222,7 +246,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   seedBtn: {
-    // display: "none",
+    display: "none",
     justifyContent: "center",
     alignItems: "center",
     width: 220,
@@ -287,7 +311,7 @@ let circularFilter = StyleSheet.create({
     // backgroundColor  : "red",
     paddingTop: 20,
     paddingLeft: 20,
-    marginBottom : 20,
+    marginBottom: 20,
   },
   btnText: {
     fontSize: 10,
@@ -313,4 +337,3 @@ let circularFilter = StyleSheet.create({
     height: "100%",
   },
 });
-

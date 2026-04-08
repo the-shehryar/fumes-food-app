@@ -36,22 +36,22 @@ export const appwriteConfig = {
   databaseId: process.env.EXPO_PUBLIC_DATABASES_ID!,
   bucketId: process.env.EXPO_PUBLIC_BUCKET_ID!,
   userCollectionId: process.env.EXPO_PUBLIC_USER_COLLECTION_ID!,
-  categoriesCollectionId: process.env.EXPO_PUBLIC_CATEGORIES_COLLECtION_ID!,
-  menuCollectionId: process.env.EXPO_PUBLIC_MENU_COLLECtION_ID!,
+  categoriesCollectionId: process.env.EXPO_PUBLIC_CATEGORIES_COLLECTION_ID!,
+  menuCollectionId: process.env.EXPO_PUBLIC_MENU_COLLECTION_ID!,
   customizationsCollectionId:
-    process.env.EXPO_PUBLIC_CUSTOMIZATIONS_COLLECtION_ID!,
+    process.env.EXPO_PUBLIC_CUSTOMIZATIONS_COLLECTION_ID!,
   menuCustomizationsCollectionId:
-    process.env.EXPO_PUBLIC_MENU_CUSTOMIZATIONS_COLLECtION_ID!,
+    process.env.EXPO_PUBLIC_MENU_CUSTOMIZATIONS_COLLECTION_ID!,
   menuItemSizesCollectionId:
     process.env.EXPO_PUBLIC_MENU_ITEMSIZES_COLLECTION_ID!,
-    ordersCollectionId : process.env.EXPO_PUBLIC_ORDERS_COLLECCTION!,
+  ordersCollectionId: process.env.EXPO_PUBLIC_ORDERS_COLLECCTION!,
 };
 
 export const client = new Client()
   .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!)
   .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!)
   .setPlatform(process.env.EXPO_PUBLIC_APPWRITE_PLATFROM_NAME!);
-export const appwriteFunc = new Functions(client)
+export const appwriteFunc = new Functions(client);
 export const account = new Account(client);
 export const databases = new TablesDB(client);
 export const avatars = new Avatars(client);

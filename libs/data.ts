@@ -90,6 +90,7 @@ const seedbaleData = {
         },
       ],
       protein: 25,
+      restaurant : "Flavorz",
       category_name: "Burgers",
       customizations: ["Extra Cheese", "Coke", "Fries", "Onions", "Bacon"],
     },
@@ -102,6 +103,7 @@ const seedbaleData = {
       rating: 4.7,
       calories: 700,
       protein: 30,
+      restaurant : "Flavorz",
       category_name: "Pizzas",
       sizes: [
         {
@@ -150,6 +152,7 @@ const seedbaleData = {
       rating: 4.2,
       calories: 480,
       protein: 18,
+      restaurant : "Flavorz",
       category_name: "Burritos",
       sizes: [
         {
@@ -192,6 +195,7 @@ const seedbaleData = {
       rating: 4.8,
       calories: 650,
       protein: 29,
+      restaurant : "Flavorz",
       category_name: "Burgers",
       sizes: [
         {
@@ -213,6 +217,7 @@ const seedbaleData = {
       rating: 4.4,
       calories: 490,
       protein: 28,
+      restaurant : "Flavorz",
       category_name: "Wraps",
       sizes: [
         {
@@ -248,6 +253,7 @@ const seedbaleData = {
       rating: 4.1,
       calories: 420,
       protein: 19,
+      restaurant : "Flavorz",
       category_name: "Sandwiches",
       sizes: [
         {
@@ -276,6 +282,7 @@ const seedbaleData = {
       rating: 4.9,
       calories: 720,
       protein: 35,
+      restaurant : "Flavorz",
       category_name: "Burgers",
       sizes: [
         {
@@ -303,6 +310,7 @@ const seedbaleData = {
       rating: 4.6,
       calories: 470,
       protein: 20,
+      restaurant : "Flavorz",
       category_name: "Wraps",
       sizes: [
         {
@@ -338,6 +346,7 @@ const seedbaleData = {
       rating: 4.7,
       calories: 610,
       protein: 24,
+      restaurant : "Flavorz",
       category_name: "Bowls",
       sizes: [
         {
@@ -373,7 +382,8 @@ const seedbaleData = {
       rating: 4.3,
       calories: 540,
       protein: 26,
-      category_name: "Sandwiches",
+      restaurant : "Flavorz",
+      category_name: "Burgers",
       sizes: [
         {
           name: "regular",
@@ -400,6 +410,7 @@ const seedbaleData = {
       rating: 4.1,
       calories: 590,
       protein: 21,
+      restaurant : "Flavorz",
       category_name: "Pizzas",
       sizes: [
         {
@@ -435,6 +446,7 @@ const seedbaleData = {
       rating: 4.8,
       calories: 580,
       protein: 38,
+      restaurant : "Flavorz",
       category_name: "Bowls",
       sizes: [
         {
@@ -470,6 +482,7 @@ const seedbaleData = {
       rating: 4.2,
       calories: 510,
       protein: 22,
+      restaurant : "Flavorz",
       category_name: "Burritos",
       sizes: [
         {
@@ -505,6 +518,7 @@ const seedbaleData = {
       rating: 4.5,
       calories: 610,
       protein: 31,
+      restaurant : "Flavorz",
       category_name: "Sandwiches",
       sizes: [
         {

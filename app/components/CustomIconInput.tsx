@@ -44,6 +44,7 @@ const CustomSearchInput = ({
 
 let styles = StyleSheet.create({
   inputWrapper: {
+    marginTop : 50,
     width: "90%",
     paddingHorizontal: 10,
     justifyContent: "center",

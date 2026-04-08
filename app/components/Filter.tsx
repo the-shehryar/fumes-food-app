@@ -1,7 +1,8 @@
 import { optimizeCloudinaryUrl } from "@/libs/helpers";
+import useSearchStore from "@/stores/search.store";
 import { Category } from "@/types/type";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   FlatList,
@@ -13,20 +14,22 @@ import {
 } from "react-native";
 
 const Filter = ({ categories }: { categories: Category[] }) => {
+  let { setZCategory, zcategory } = useSearchStore();
   const searchParams = useLocalSearchParams();
   const [active, setActive] = useState<string>(
     (searchParams.category as string) || "all",
   );
   const scaleAnims = useRef<Record<string, Animated.Value>>({}).current;
 
-  const DEFAULT_ACTIVE = "All";
+  const defaultActive = "All";
 
   const getScale = (id: string, name: string) => {
     if (!scaleAnims[id]) {
-      scaleAnims[id] = new Animated.Value(name === DEFAULT_ACTIVE ? 1.1 : 1);
+      scaleAnims[id] = new Animated.Value(name === defaultActive ? 1.1 : 1);
     }
     return scaleAnims[id];
   };
+
   const handlePress = (id: string, name: string, query?: string) => {
     if (scaleAnims[active]) {
       Animated.spring(scaleAnims[active], {
@@ -43,8 +46,11 @@ const Filter = ({ categories }: { categories: Category[] }) => {
     }).start();
 
     setActive(id);
-    if (name === "All") router.setParams({ category: "" });
-    else {
+    if (name === "All") {
+      setZCategory("");
+      router.setParams({ category: "" });
+    } else {
+      setZCategory(name);
       router.setParams({
         category: id,
         query: query !== undefined ? query : "",
@@ -54,11 +60,25 @@ const Filter = ({ categories }: { categories: Category[] }) => {
 
   const filterData: (
     | Category
-    | { $id: string; name: string; image: string }
+    | { $id: string; name: string; image: string; description?: string }
   )[] = categories ? [...categories] : [{ $id: "all", name: "All", image: "" }];
 
-  // console.log(filterData[0]);
-  // console.log(`filter data ${JSON.stringify(filterData)}`);
+  useEffect(() => {
+    if (zcategory) {
+      let selectedActiveItem = filterData.find(
+        (item) => item.name === zcategory,
+      );
+      if (selectedActiveItem) {
+        setActive(selectedActiveItem?.$id);
+      }
+    } else {
+      let defaultActiveItem = filterData.find((item) => item.name === "All");
+      if (defaultActiveItem) {
+        setActive(defaultActiveItem?.$id);
+      }
+    }
+  }, [categories]);
+
   return (
     <FlatList
       horizontal
@@ -145,17 +165,17 @@ let circularFilter = StyleSheet.create({
   circularBtn: {
     width: 70,
     height: 70,
-    borderRadius: 35, 
+    borderRadius: 35,
     overflow: "hidden",
     borderWidth: 3,
     borderColor: "transparent",
   },
   activeBtn: {
     elevation: 24,
-    borderColor: "#ff611d", 
+    borderColor: "#ff611d",
   },
   imageStyles: {
-    width: "100%", 
+    width: "100%",
     height: "100%",
   },
   btnText: {
