@@ -3,13 +3,13 @@ import { create } from "zustand";
 
 type PreferencesState = {
   userAddresses: AddressAppwrite[];
-  setUserAddresses: (value: AddressAppwrite) => void;
+  setUserAddresses: (value: AddressAppwrite[]) => void;
 };
 
 const usePreferencesStore = create<PreferencesState>((set) => ({
   userAddresses: [],
-  setUserAddresses: (value: AddressAppwrite) =>
-    set((prev) => ({ userAddresses: [...prev.userAddresses, value] })),
+  setUserAddresses: (value: AddressAppwrite[]) =>
+    set(() => ({userAddresses : value })),
 }));
 
 export default usePreferencesStore;

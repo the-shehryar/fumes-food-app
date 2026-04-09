@@ -13,6 +13,7 @@ import * as MediaLib from "expo-media-library";
 import { useEffect, useRef, useState } from "react";
 import {
   FlatList,
+  Platform,
   Pressable,
   StatusBar,
   StyleSheet,
@@ -40,15 +41,7 @@ export default function Index() {
   } = useMenusState();
   let { isAuthenticated } = useAuthStore();
   let [topRated, setTopRated] = useState<MenuItem[]>([]);
-  // let { data, loading, error, refetch } = useAppwrite({
-  //   fn: getTopRatedMenu,
-  //   params: {
-  //     category: "",
-  //     query: "",
-  //     limit: 6,
-  //   },
-  //   skip: !isAuthenticated,
-  // });
+
 
   let { data: fetchedMenus, loading: loadingMenus } = useAppwrite({
     fn: getMenuWithCustomizations,
@@ -103,6 +96,7 @@ export default function Index() {
         </View>
       </View>
       <HeroSlider />
+      <Text style={styles.flatlistTextStyles}>Trending this week</Text>
     </>
   );
 
@@ -349,6 +343,18 @@ let styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  flatlistTextStyles: {
+      width: "100%",
+      // backgroundColor  :"red",
+      // paddingHorizontal : '10%',
+      justifyContent: "center",
+      alignItems: "center",
+      fontSize: 20,
+      paddingLeft : "4%",
+      marginVertical: 20,
+      fontFamily: Platform.OS === "ios" ? "SF Pro Display" : "sans-serif-medium",
+      fontWeight: 800,
+    },
 });
 
 let popularSectionStyles = StyleSheet.create({

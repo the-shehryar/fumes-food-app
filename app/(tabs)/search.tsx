@@ -23,6 +23,7 @@ import SearchBar from "../components/SearchBar";
 
 import { getStoredData } from "@/libs/asyncStorage";
 import { RefreshControl } from "react-native";
+import { MenuGridSkeleton } from "../components/skeletons";
 
 export default function SearchScreen() {
   //? You're using the `useLocalSearchParams` hook to access the search parameters from the URL.
@@ -212,8 +213,8 @@ export default function SearchScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={["#ff611d"]} // Android
-            tintColor="#ff611d" // iOS
+            colors={["#ff611d"]}
+            tintColor="#ff611d"
           />
         }
         data={
@@ -224,6 +225,7 @@ export default function SearchScreen() {
         renderItem={({ item }) => (
           <MenuCard item={item as unknown as MenuItem} />
         )}
+        ListEmptyComponent={<MenuGridSkeleton count={10} />}
       />
     </SafeAreaView>
   );

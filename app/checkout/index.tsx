@@ -177,7 +177,8 @@ export default function CheckoutScreen() {
           $createdAt: Date.now().toLocaleString(),
           $updatedAt: Date.now().toLocaleString(),
         };
-        setUserAddresses(alteredAddress as unknown as AddressAppwrite);
+        let newAddressesArray = [...userAddresses, alteredAddress]
+        setUserAddresses(newAddressesArray as unknown as AddressAppwrite[]);
         //? Add subscription event to reRender but for now add a state
       }
     } catch (error) {
@@ -198,9 +199,7 @@ export default function CheckoutScreen() {
           Query.orderDesc("$createdAt"),
         ],
       });
-      savedAddresses.rows.map((item) => {
-        setUserAddresses(item as unknown as AddressAppwrite);
-      });
+      setUserAddresses(savedAddresses as unknown as AddressAppwrite[])
       setFetchingAddresses(false);
       return savedAddresses.rows;
     } catch (error) {

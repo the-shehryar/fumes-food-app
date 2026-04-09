@@ -58,6 +58,10 @@ Sentry.init({
             name="checkout/index"
             options={{ headerShown: false, }}
           ></Stack.Screen>
+          <Stack.Screen
+            name="statics/addresses"
+            options={{ headerShown: false, }}
+          ></Stack.Screen>
         </Stack>
       )
   );

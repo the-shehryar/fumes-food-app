@@ -192,15 +192,14 @@ export default function ProfileScreen() {
     <View style={[styles.root]}>
       <StatusBar barStyle="dark-content" backgroundColor={WHITE} />
 
-      {/* ── Top Bar ── */}
       <View style={[styles.topBar, { paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity style={styles.iconBtn}>
+        {/* <TouchableOpacity style={styles.iconBtn}>
           <Ionicons name="chevron-back" size={22} color={DARK} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <Text style={styles.pageTitle}>Profile</Text>
-        <TouchableOpacity style={styles.iconBtn}>
+        {/* <TouchableOpacity style={styles.iconBtn}>
           <Ionicons name="create-outline" size={20} color={DARK} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <ScrollView
@@ -321,6 +320,7 @@ export default function ProfileScreen() {
             iconBg="#F0FDF4"
             iconColor="#16A34A"
             delay={350}
+            onPress={()=> router.push('/statics/addresses') }
           />
           <View style={styles.divider} />
           <MenuRow
@@ -421,7 +421,7 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
     paddingHorizontal: 16,
     paddingBottom: 12,
     backgroundColor: WHITE,
