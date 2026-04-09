@@ -200,3 +200,4 @@ export interface Order extends Models.Row {
   $updatedAt: string;
   $createdAt: string;
 }
+

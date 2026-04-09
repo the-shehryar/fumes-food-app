@@ -265,9 +265,10 @@ let styles = StyleSheet.create({
     borderBottomColor: "#f5f5f5",
   },
   divider: {
+    paddingHorizontal : 60,
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
+    marginVertical : 20,
     gap: 8,
   },
   dividerLine: {

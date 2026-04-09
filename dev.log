@@ -178,4 +178,12 @@ Circular Filter Buttons Added
 Custom Product Image not rendering fixed.
 Search page flatlist snapping fixed
 
-*Last updated: 3rd April 2026*
+8th April, 2026
+---------------
+1. Search functionailty is totally working with filter without code breaks
+2. Some UI changes made to make app look more alive
+3. Localized all initial prominent fetch request forcing them to one time fetch
+
+Bug.Pending Menu card weird remove to cart issue - haven't looked at it yet
+
+*Last updated: 8th April 2026*

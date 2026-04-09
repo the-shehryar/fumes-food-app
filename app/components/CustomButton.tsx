@@ -85,8 +85,8 @@ let styles = StyleSheet.create({
   },
   oauthBtnStyles: {
     width: "auto",
-    marginLeft: 20,
-    marginRight: 20,
+    marginLeft: 40,
+    marginRight: 40,
     marginBottom: 20,
     height: 50,
     justifyContent: "center",

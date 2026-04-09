@@ -1,3 +1,5 @@
+import LocationIcon from "@/assets/images/majesticons_map-marker.svg";
+import Colors from "@/constants/Colors";
 import { getCategories, getMenuWithCustomizations } from "@/libs/appwrite";
 import { getStoredData, storeData } from "@/libs/asyncStorage";
 import { requestLocationPermission } from "@/libs/helpers";
@@ -5,29 +7,37 @@ import useAppwrite from "@/libs/useAppwrite";
 import useAuthStore from "@/stores/auth.store";
 import useLocationStore from "@/stores/location.store";
 import useMenusState from "@/stores/menus.store";
-import { LocalSearchFilter, MenuItem } from "@/types/type";
+import { Category, LocalSearchFilter, MenuItem } from "@/types/type";
+import { Ionicons } from "@expo/vector-icons";
 import * as MediaLib from "expo-media-library";
 import { useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   Pressable,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import LocationIcon from "@/assets/images/majesticons_map-marker.svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ViewShot from "react-native-view-shot";
 import HeroSlider from "../components/HeroSlider";
 import MenuCard from "../components/MenuCard";
-
-
+import { MenuGridSkeleton } from "../components/skeletons";
+let { GRAY_LIGHT, DARK } = Colors;
 export default function Index() {
-  let {address} = useLocationStore()
-  let { isLocalized, setIsLocalized, setMenus, menus, setIsLocalizing } =
-    useMenusState();
+  let { address } = useLocationStore();
+  let {
+    isLocalized,
+    setIsLocalized,
+    isCategoriesAvailable,
+    setIsCategoriesAvailable,
+    setCategories,
+    setMenus,
+    menus,
+    setIsLocalizing,
+  } = useMenusState();
   let { isAuthenticated } = useAuthStore();
   let [topRated, setTopRated] = useState<MenuItem[]>([]);
   // let { data, loading, error, refetch } = useAppwrite({
@@ -58,16 +68,39 @@ export default function Index() {
   let { setAddress } = useLocationStore();
   const HeaderComponent = () => (
     <>
-      <View style={styles.locationWrapper}>
-        <Text style={styles.locationHeaderText}>Delivery to</Text>
-        <Pressable style={styles.locationPressable}>
-          <View style={styles.locationIcon}>
-            <LocationIcon width={24} height={24} />
-          </View>
-          <TouchableOpacity style={styles.locationPressable}>
-            <Text style={styles.locationText}>{address}</Text>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <View style={styles.locationWrapper}>
+          <Text style={styles.locationHeaderText}>Delivery to</Text>
+          <Pressable style={styles.locationPressable}>
+            <View style={styles.locationIcon}>
+              <LocationIcon width={24} height={24} />
+            </View>
+            <TouchableOpacity style={styles.locationPressable}>
+              <Text style={styles.locationText}>{address}</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </View>
+        <View
+          style={{
+            paddingHorizontal: 20,
+            height: "100%",
+            // backgroundColor: "red",
+            justifyContent : "center",
+            alignItems : 'center'
+          }}
+        >
+          <TouchableOpacity style={styles.iconBtn}>
+            <Ionicons name={'receipt-outline'} size={18} color={DARK} />
+            {/* <Ionicons name="menu" size={22} color={DARK} /> */}
           </TouchableOpacity>
-        </Pressable>
+        </View>
       </View>
       <HeroSlider />
     </>
@@ -127,6 +160,9 @@ export default function Index() {
         storeData(categoriesInString, "categories").catch((err) =>
           console.log(err),
         );
+        console.log(categories);
+        setCategories(categories as unknown as Category[]);
+        setIsCategoriesAvailable(true);
         storeData(menusInString, "mainMenu").catch((error) =>
           console.log(error),
         );
@@ -150,12 +186,7 @@ export default function Index() {
   }, [loadingMenus]);
   return (
     <View style={{ flex: 1, backgroundColor: "#FFF" }}>
-      {/* <TouchableOpacity
-        onPress={onCapture}
-        style={{ marginTop: 20, padding: 10, backgroundColor: "black" }}
-      >
-        <Text style={{ color: "white" }}>Take Screenshot</Text>
-      </TouchableOpacity> */}
+      <StatusBar barStyle={"dark-content"} />
       <ViewShot
         ref={viewShotRef}
         options={{ format: "png", quality: 1.0 }}
@@ -166,7 +197,7 @@ export default function Index() {
         style={{ flex: 1, backgroundColor: "#fff" }}
         captureMode="mount"
       >
-        <SafeAreaView style={{ backgroundColor: "#fff" }}>
+        <SafeAreaView edges={["top", 'bottom']} style={{ backgroundColor: "#fff" }}>
           <FlatList
             numColumns={2}
             columnWrapperStyle={cardListStyles.columnWrapper}
@@ -177,9 +208,7 @@ export default function Index() {
             renderItem={({ item }) => (
               <MenuCard item={item as unknown as MenuItem} />
             )}
-            ListEmptyComponent={
-              <ActivityIndicator size={"large"} color={"#de5151"} />
-            }
+            ListEmptyComponent={<MenuGridSkeleton count={6} />}
           />
         </SafeAreaView>
       </ViewShot>
@@ -281,11 +310,13 @@ let styles = StyleSheet.create({
     borderRadius: 2,
   },
   locationWrapper: {
-    width: "100%",
-    height: 100,
+    width: "auto",
+    maxWidth: "70%",
+    height: 80,
     justifyContent: "center",
     alignItems: "flex-start",
     paddingHorizontal: 20,
+    // backgroundColor : "red"
   },
   locationHeaderText: {
     fontSize: 12,
@@ -295,6 +326,7 @@ let styles = StyleSheet.create({
   locationPressable: {
     width: "auto",
     height: 40,
+    // backgroundColor : "green",
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
@@ -308,6 +340,14 @@ let styles = StyleSheet.create({
     height: 32,
     justifyContent: "center",
     alignItems: "flex-start",
+  },
+  iconBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 25,
+    backgroundColor: GRAY_LIGHT,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

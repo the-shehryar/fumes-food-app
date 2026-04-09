@@ -1,5 +1,3 @@
-import LocationIcon from "@/assets/images/majesticons_map-marker.svg";
-
 import { getCategories, getMenuWithCustomizations } from "@/libs/appwrite";
 import seed from "@/libs/seed";
 import useAppwrite from "@/libs/useAppwrite";
@@ -13,7 +11,6 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -46,7 +43,14 @@ export default function SearchScreen() {
   //? or query parameters change.
   let { zquery, zcategory } = useSearchStore();
 
-  let { isLocalized, isLocalizing, menus, setMenus } = useMenusState();
+  let {
+    isLocalized,
+    isLocalizing,
+    menus,
+    setMenus,
+    isCategoriesAvailable,
+    categories,
+  } = useMenusState();
 
   let { data, refetch, loading, error } = useAppwrite({
     fn: getMenuWithCustomizations,
@@ -57,17 +61,12 @@ export default function SearchScreen() {
     skip: isLocalized || isLocalizing,
   });
 
-  
-  let { data: categories } = useAppwrite({
+  let { data: newtworkCategories } = useAppwrite({
     fn: getCategories,
-    skip: false,
+    skip: isCategoriesAvailable,
   });
 
-
-  
-
   async function searchLocally(category: string, query: string) {
-
     let matchedArray = [] as MenuItem[];
     setIsSearching(true);
     // Get all the available menu items
@@ -77,21 +76,21 @@ export default function SearchScreen() {
 
     if (category.trim().length > 0) {
       // Search the right category
-      let categories = await getStoredData('categories')
-      let requestedCategory = categories?.find(item => item.name.toLowerCase().trim() === category.toLowerCase().trim())
-      
+      let categories = await getStoredData("categories");
+      let requestedCategory = categories?.find(
+        (item) =>
+          item.name.toLowerCase().trim() === category.toLowerCase().trim(),
+      );
+
       try {
-        matchedArray = simpleMenu?.filter(
-          (item) => {
-            if(item.category_name.trim() === requestedCategory?.$id) {
-              return item;
-            }
-          },
-        ) as unknown as MenuItem[];
+        matchedArray = simpleMenu?.filter((item) => {
+          if (item.category_name.trim() === requestedCategory?.$id) {
+            return item;
+          }
+        }) as unknown as MenuItem[];
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-      
     } else {
       matchedArray = simpleMenu as MenuItem[];
     }
@@ -99,14 +98,14 @@ export default function SearchScreen() {
     // now i have an array where category is already filtered
     // so less data to search on
     if (query) {
-      console.log(matchedArray.length)
+      console.log(matchedArray.length);
       matchedArray = matchedArray?.filter((item) => {
         let target = item.name.toLowerCase();
         return target.includes(query.toLowerCase());
       }) as MenuItem[];
       setMenus(matchedArray as MenuItem[]);
-    }else {
-      setMenus(matchedArray as MenuItem[])
+    } else {
+      setMenus(matchedArray as MenuItem[]);
     }
     setIsSearching(false);
   }
@@ -166,7 +165,11 @@ export default function SearchScreen() {
       {/* Categories Flatlist */}
 
       <Filter
-        categories={categories ? (categories as unknown as Category[]) : []}
+        categories={
+          isCategoriesAvailable
+            ? (categories as unknown as Category[])
+            : (newtworkCategories as unknown as Category[])
+        }
       />
       {/* <FlatList
         style={circularFilter.cirularFilerMain}

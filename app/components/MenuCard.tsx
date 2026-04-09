@@ -160,7 +160,7 @@ let cardListStyles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 16,
     marginVertical: 2,
-    elevation: 10,
+    elevation: 12,
     overflow: "hidden",
   },
   cardName: {

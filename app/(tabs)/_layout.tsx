@@ -4,6 +4,7 @@ import Feather from '@expo/vector-icons/Feather';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useCartStore } from "@/stores/cart.store";
 import { useEffect, useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 
 export default function TabLayout() {
@@ -45,9 +46,9 @@ export default function TabLayout() {
           // headerShown: true,
           tabBarIcon: ({ color, size, focused }) => {
             return focused ? (
-              <Octicons name="search" size={24} color={color} />
+              <Feather name="search" size={24} color={color} />
             ) : (
-              <Octicons name="search" size={24} color="#444" />
+              <Feather name="search" size={24} color="#444" />
             );
           },
         }}
@@ -61,9 +62,11 @@ export default function TabLayout() {
           tabBarBadgeStyle : { display : cartNumber > 0 ? "flex" :"none", backgroundColor  : "#ff611d", fontSize : 8, width : 18, height : 18, borderRadius : 20},
           tabBarIcon: ({ color, size, focused }) => {
             return focused ? (
-              <Feather name="shopping-cart" size={24} color={color} />
-            ) : (
-              <Feather name="shopping-cart" size={24} color="#444" />
+               <Ionicons name={'cart-outline'} size={24} color= {color} />
+               // <Feather name="shopping-cart" size={24} color={color} />
+              ) : (
+              <Ionicons name={'cart-outline'} size={24} color= {'#444'} />
+              // <Feather name="shopping-cart" size={24} color="#444" />
             );
           },
         }}
@@ -75,9 +78,9 @@ export default function TabLayout() {
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) => {
             return focused ? (
-              <Feather name="user" size={24} color={color} />
+              <Ionicons name="person-outline" size={24} color={color} />
             ) : (
-              <Feather name="user" size={24} color={'#444'} />
+              <Ionicons name="person-outline" size={24} color={'#444'} />
             );
           },
         }}
