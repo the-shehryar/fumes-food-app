@@ -235,13 +235,13 @@ const styles = StyleSheet.create({
   mainFlatListWrapper: {
     width: "100%",
     height: "auto",
-    paddingHorizontal: 20,
     overflowX: "hidden",
     marginTop: 0,
     marginBottom: 0,
     // backgroundColor  : "yellow"
   },
   contentContainer: {
+    paddingHorizontal: 20,
     paddingBottom: 300,
     marginVertical: 10,
   },

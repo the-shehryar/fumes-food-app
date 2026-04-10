@@ -202,7 +202,7 @@ export default function CheckoutScreen() {
         ],
       });
       console.log(savedAddresses)
-      setUserAddresses(savedAddresses as unknown as AddressAppwrite[]);
+      setUserAddresses(savedAddresses.rows as unknown as AddressAppwrite[]);
       setFetchingAddresses(false);
       return savedAddresses.rows;
     } catch (error) {

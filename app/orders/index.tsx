@@ -6,8 +6,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  FlatList,
+    ActivityIndicator,
   Platform,
+  SectionList,
   StatusBar,
   StyleSheet,
   Text,
@@ -65,13 +66,30 @@ function Orders() {
           <Ionicons name="create-outline" size={20} color={DARK} />
         </TouchableOpacity>
       </View>
-      <View>
-        <FlatList
-          style={styles.flatlistStyles}
-          data={userOrders}
+      <View style={{ flex: 1 }}>
+        <SectionList
+          contentContainerStyle={styles.sectionlistContainerStyles}
+          sections={[
+            {
+              title: "In Progress",
+              data: userOrders?.filter((o) => o.status !== "delivered") ?? [],
+            },
+            {
+              title: "Completed",
+              data: userOrders?.filter((o) => o.status === "delivered") ?? [],
+            },
+          ]}
           keyExtractor={(item) => item.$id}
           renderItem={({ item }) => (
-            <OrderCard order={item} key={item.$id} onCancel={() => {}} />
+            <OrderCard order={item} onCancel={() => {}} />
+          )}
+          ListEmptyComponent={<ActivityIndicator size={'large'} />}
+          renderSectionHeader={({ section: { title, data } }) => (
+            <View style={styles.firstSectionHeading}>
+              <Text style={styles.headingText}>
+                {title} ({data.length})
+              </Text>
+            </View>
           )}
         />
       </View>
@@ -82,10 +100,25 @@ function Orders() {
 export default Orders;
 
 let styles = StyleSheet.create({
+  firstSectionHeading: {
+    paddingTop: 10,
+    paddingBottom: 30,
+  },
+  headingText: {
+    fontSize: 16,
+    fontWeight: 800,
+  },
+  secondSectionHeading: {},
   flatlistStyles: {
     width: "100%",
   },
-  flatlistContainerStyes: {},
+  sectionlistContainerStyles: {
+    // backgroundColor : "red",
+    paddingHorizontal: 30,
+    justifyContent: "center",
+    width: "100%",
+    paddingVertical: 20,
+  },
   topBar: {
     flexDirection: "row",
     alignItems: "center",
