@@ -7,20 +7,20 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  FlatList,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    FlatList,
+    Platform,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import {
-  SafeAreaView,
-  useSafeAreaInsets,
+    SafeAreaView,
+    useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import AddressCard from "../components/AddressCard";
-import NewAddressModal from "../components/NewAddressModal";
+import AddressModal from "../components/AddressModal";
 
 let { DARK, GRAY_LIGHT, BORDER, WHITE, ORANGE, ORANGE_LIGHT } = Colors;
 
@@ -28,7 +28,10 @@ export default function Addresses() {
   let insets = useSafeAreaInsets();
   let [isFetchingAddress, setIsFetchingAddress] = useState<boolean>(false);
   let { userAddresses, setUserAddresses } = usePreferencesStore();
-  let [addressModal, setAddressModal] = useState<boolean>(false)
+  let [addressModal, setAddressModal] = useState<boolean>(false);
+  let [selectedAddress, setSelectedAddress] = useState<
+    AddressAppwrite | undefined
+  >(undefined);
   let { user } = useAuthStore();
 
   async function renderAddresses(user: User) {
@@ -55,11 +58,19 @@ export default function Addresses() {
 
   return (
     <SafeAreaView edges={[]} style={{ flex: 1 }}>
-      <NewAddressModal
+      <AddressModal
         visible={addressModal}
         onClose={() => setAddressModal(false)}
+        action="update"
+        onUpdate={(address) => {
+          (() => {
+            // Update the mentioned address
+            console.log(address);
+          })();
+        }}
+        target={selectedAddress}
         onSave={(newAddress) => {
-        //   creatNewAddress(newAddress);
+          //   creatNewAddress(newAddress);
         }}
       />
       <StatusBar barStyle={"default"} />
@@ -78,14 +89,19 @@ export default function Addresses() {
       </View>
       <View style={styles.addressPageWraper}>
         {/* Address Card */}
-        <TouchableOpacity onPress={() => {setAddressModal(!addressModal)}} style={styles.addMoreBtn}>
+        <TouchableOpacity
+          onPress={() => {
+            setAddressModal(!addressModal);
+          }}
+          style={styles.addMoreBtn}
+        >
           <Ionicons
             name="add-circle-outline"
             size={20}
             color={ORANGE}
             style={{ marginRight: 8 }}
           />
-          <Text style={styles.addMoreText}>Add more</Text>
+          <Text style={styles.addMoreText}>Add address</Text>
         </TouchableOpacity>
 
         <Text style={styles.flatlistTextStyles}>Address list</Text>
@@ -98,7 +114,10 @@ export default function Addresses() {
               address={item}
               index={index as any}
               onRemove={() => handleRemove(item)}
-              onEdit ={()=>{setAddressModal(true)}}
+              onEdit={() => {
+                setAddressModal(true);
+                setSelectedAddress(item);
+              }}
             />
           )}
         />

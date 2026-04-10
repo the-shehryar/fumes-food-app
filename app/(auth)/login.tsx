@@ -82,8 +82,8 @@ export default function SignIn() {
             icon={
               <AppleIcon
                 style={{ marginHorizontal: 8 }}
-                width={20}
-                height={20}
+                width={22}
+                height={22}
               />
             }
             leftIcon={true}
@@ -172,7 +172,7 @@ export default function SignIn() {
               {/* <View style={styles.seperatorWrapper}>
             <View style={styles.seperator}></View>
           </View> */}
-              <CustomButton
+              {/* <CustomButton
                 color={"#f5f5f5"}
                 icon={
                  <Feather name="user" size={24} color={'#000'}/>
@@ -183,7 +183,7 @@ export default function SignIn() {
                 style="big-filled"
                 onPressTouch={handleSignUpRedirect}
                 // value="googleAuth"
-              />
+              /> */}
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -195,6 +195,7 @@ export default function SignIn() {
 let styles = StyleSheet.create({
   eyboardWrapperv: {},
   signInWrapper: {
+    // flex : 1,
     position: "absolute",
     top: Dimensions.get("screen").height / 2.25 - 160,
     backgroundColor: "#ffffff",

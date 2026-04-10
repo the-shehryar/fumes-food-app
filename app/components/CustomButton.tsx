@@ -1,3 +1,4 @@
+import Colors from "@/constants/Colors";
 import { CustomButtonProps } from "@/types/type";
 import React from "react";
 import {
@@ -7,6 +8,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
+let {ORANGE, WHITE} = Colors
+
 function CustomButton({
   size,
   onPressTouch,
@@ -20,22 +24,9 @@ function CustomButton({
   value,
 }: CustomButtonProps) {
   return (
-    // <TouchableOpacity style={[style === 'oauth' ? styles.oauthBtnStyles :  styles.customBtnStyles, {backgroundColor : color}]} onPress={onPressTouch}>
-    //   <View>
-    //     {isLoading ? (
-    //       <ActivityIndicator size={"small"} color={"white"} />
-    //     ) : (
-    //       <View style={[style === 'oauth' ? styles.oauthBtnWrapper : ""]}>
-    //         {leftIcon ? <Feather style={[style === 'oauth' ? styles.btnAuthIcon : ""]} name="user-x" size={14} color="#fff" /> : (<></>)}
-    //         <Text style={[style === 'oauth' ? styles.oauthBtnText : styles.customBtnText, {color : textStyle}]}>{title}</Text>
-    //       </View>
-    //     )}
-    //   </View>
-    // </TouchableOpacity>
-
     <TouchableOpacity
       style={[
-        style === "big-filled" ? styles.oauthBtnStyles : styles.customBtnStyles,
+        style === "big-filled" ? styles.oauthBtnStyles : styles.placeOrderBtn,
         { backgroundColor: color },
       ]}
       onPress={onPressTouch}
@@ -50,7 +41,7 @@ function CustomButton({
               style={[
                 style === "big-filled"
                   ? styles.oauthBtnText
-                  : styles.customBtnText,
+                  : styles.placeOrderText,
                 { color: textStyle },
               ]}
             >
@@ -101,5 +92,28 @@ let styles = StyleSheet.create({
   },
   btnAuthIcon: {
     marginHorizontal: 8,
+  },
+
+
+    placeOrderBtn: {
+    // flex: 1,
+    height : 55,
+    width : "60%",
+    backgroundColor: ORANGE,
+    borderRadius: 14,
+    // paddingVertical: 15,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: ORANGE,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  placeOrderText: {
+    color: WHITE,
+    fontSize: 15,
+    fontWeight: "800",
+    letterSpacing: 0.3,
   },
 });

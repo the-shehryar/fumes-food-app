@@ -191,4 +191,10 @@ Added Skeleton Loading
 Created Static Address Route/Screen
 Add Cards to it and ability to call address modal there
 
+
+Bug.Spoted Even if address is not added order places with selected order undefined
+i need to add strict checks
+
+1. Also there is not indication that addresses are being fetched
+
 *Last updated: 10th April 2026*

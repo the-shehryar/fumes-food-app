@@ -21,7 +21,7 @@ import {
 } from "react-native";
 import { ID, Query } from "react-native-appwrite";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import NewAddressModal from "../components/NewAddressModal";
+import AddressModal from "../components/AddressModal";
 
 import AppleIcon from "@/assets/images/apple-icon.svg";
 import Card from "@/assets/images/card.svg";
@@ -177,7 +177,8 @@ export default function CheckoutScreen() {
           $createdAt: Date.now().toLocaleString(),
           $updatedAt: Date.now().toLocaleString(),
         };
-        let newAddressesArray = [...userAddresses, alteredAddress]
+        // Itterator method is not callable
+        let newAddressesArray = [...userAddresses, alteredAddress];
         setUserAddresses(newAddressesArray as unknown as AddressAppwrite[]);
         //? Add subscription event to reRender but for now add a state
       }
@@ -191,6 +192,7 @@ export default function CheckoutScreen() {
   }
   async function fetchUserAddress(targetUser: string) {
     try {
+      // console.log('tryingto ffetch addes')
       let savedAddresses = await databases.listRows({
         databaseId: DATABASE_ID,
         tableId: "addresses",
@@ -199,7 +201,8 @@ export default function CheckoutScreen() {
           Query.orderDesc("$createdAt"),
         ],
       });
-      setUserAddresses(savedAddresses as unknown as AddressAppwrite[])
+      console.log(savedAddresses)
+      setUserAddresses(savedAddresses as unknown as AddressAppwrite[]);
       setFetchingAddresses(false);
       return savedAddresses.rows;
     } catch (error) {
@@ -272,12 +275,12 @@ export default function CheckoutScreen() {
       fetchUserAddress(user?.$id);
       setFetchingAddresses(true);
     }
-  }, [userAddresses, total, itemsInCart]);
+  }, [fetchingAddress, total, itemsInCart]);
 
   return (
     <View style={styles.root}>
       {/* New Address Modal*/}
-      <NewAddressModal
+      <AddressModal
         visible={addressModal}
         onClose={() => setAddressModal(false)}
         onSave={(newAddress) => {

@@ -26,43 +26,68 @@ Sentry.init({
 });
 
 // let isAuthenticated = true
- export default Sentry.wrap(function RootLayout() {
-  const {isLoading, user, isAuthenticated,fetchAuthenticatedUser} = useAuthStore()
+//  export default Sentry.wrap(function RootLayout() {
+//   const {isLoading, user, isAuthenticated,fetchAuthenticatedUser} = useAuthStore()
+//   useEffect(() => {
+//     fetchAuthenticatedUser()
+//     console.log(`user from app entry ${user}`)
+//   }, []);
+
+//   return (     
+//       !isAuthenticated ? (
+//         <Stack>
+//           <Stack.Screen name="(auth)"
+//           options={{headerShown : false}}
+//           ></Stack.Screen>
+//         </Stack>
+//       ) : (
+//         <Stack>
+//           <Stack.Screen
+//             name="(tabs)"
+//             options={{ headerShown: false }}
+//           ></Stack.Screen>
+//           <Stack.Screen
+//             name="products/[id]"
+//             options={{ headerShown: false }}
+//           ></Stack.Screen>
+//           {/* <Stack.Screen
+//             name="products/sizeFinder"
+//             options={{ headerShown: false }}
+//           ></Stack.Screen> */}
+//           <Stack.Screen
+//             name="checkout/index"
+//             options={{ headerShown: false, }}
+//           ></Stack.Screen>
+//           <Stack.Screen
+//             name="statics/addresses"
+//             options={{ headerShown: false, }}
+//           ></Stack.Screen>
+//           <Stack.Screen
+//             name="orders/index.tsx"
+//             options={{ headerShown: false, }}
+//           ></Stack.Screen>
+//         </Stack>
+//       )
+//   );
+// });
+
+export default Sentry.wrap(function RootLayout() {
+  const { isAuthenticated, fetchAuthenticatedUser } = useAuthStore();
+
   useEffect(() => {
-    fetchAuthenticatedUser()
-    console.log(`user from app entry ${user}`)
+    fetchAuthenticatedUser();
   }, []);
 
-  return (     
-      !isAuthenticated ? (
-        <Stack>
-          <Stack.Screen name="(auth)"
-          options={{headerShown : false}}
-          ></Stack.Screen>
-        </Stack>
-      ) : (
-        <Stack>
-          <Stack.Screen
-            name="(tabs)"
-            options={{ headerShown: false }}
-          ></Stack.Screen>
-          <Stack.Screen
-            name="products/[id]"
-            options={{ headerShown: false }}
-          ></Stack.Screen>
-          {/* <Stack.Screen
-            name="products/sizeFinder"
-            options={{ headerShown: false }}
-          ></Stack.Screen> */}
-          <Stack.Screen
-            name="checkout/index"
-            options={{ headerShown: false, }}
-          ></Stack.Screen>
-          <Stack.Screen
-            name="statics/addresses"
-            options={{ headerShown: false, }}
-          ></Stack.Screen>
-        </Stack>
-      )
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Stack>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="products/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="checkout/index" options={{ headerShown: false }} />
+        <Stack.Screen name="statics/addresses" options={{ headerShown: false }} />
+        <Stack.Screen name="orders/index" options={{ headerShown: false }} />
+      </Stack>
+    </GestureHandlerRootView>
   );
 });

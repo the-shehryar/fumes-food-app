@@ -1,6 +1,6 @@
 import { requestLocationPermission } from "@/libs/helpers";
 import useAuthStore from "@/stores/auth.store";
-import { Address } from "@/types/type";
+import { Address, AddressAppwrite } from "@/types/type";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
@@ -36,13 +36,21 @@ interface AddAddressModalProps {
   visible: boolean;
   onClose: () => void;
   onSave: (address: Address) => void;
+  onUpdate?: (address: Address) => void;
+  action?: "update" | "create";
+  target?: AddressAppwrite | undefined;
 }
 
 export default function NewAddressModal({
   visible,
   onClose,
   onSave,
+  onUpdate,
+  action = "create",
+  target,
 }: AddAddressModalProps) {
+  let [modalTitle, setModalTitle] = useState("Add New Address");
+  let [actionBtn, setActionBtn] = useState("Save Address");
   const [selectedTag, setSelectedTag] = useState(TAGS[0]);
   const [street, setStreet] = useState("");
   const [city, setCity] = useState("");
@@ -60,10 +68,10 @@ export default function NewAddressModal({
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!street.trim() || !city.trim()) return;
 
-    if (user) {
+    if (user && action === "create") {
       const newAddress: Address = {
         userId: user?.$id,
         tag: selectedTag.label,
@@ -71,10 +79,32 @@ export default function NewAddressModal({
         address: street.trim(),
         city: city.trim(),
       };
-
-      onSave(newAddress);
+      try {
+        onSave(newAddress);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        handleClose();
+      }
+    } else if (user && action === "update") {
+      // get the address and update the main address
+      const newAddress: Address = {
+        userId: user?.$id,
+        tag: selectedTag.label,
+        icon: selectedTag.icon,
+        address: street.trim(),
+        city: city.trim(),
+      };
+      try {
+        onUpdate?.(newAddress);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        handleClose();
+      }
     }
-    handleClose();
+
+    // handleClose();
   };
 
   const handleClose = () => {
@@ -87,12 +117,23 @@ export default function NewAddressModal({
   const isValid = street.trim().length > 0 && city.trim().length > 0;
 
   useEffect(() => {
-    if (detecting) {
-      const timer = setTimeout(() => {
-        setDetecting(false);
-      }, 2000);
-      return () => clearTimeout(timer);}
-  }, [street, city]);
+    if (!detecting) return;
+    const timer = setTimeout(() => setDetecting(false), 2000);
+    return () => clearTimeout(timer);
+  }, [detecting]);
+
+  useEffect(() => {
+    if (action === "update") {
+      setModalTitle("Update Address");
+      console.log(target);
+      if (target !== undefined) {
+        setCity(target.city);
+        setStreet(target.address);
+        setActionBtn("Update Address");
+        console.log(target);
+      }
+    }
+  }, [target, action, modalTitle]);
   return (
     <Modal
       visible={visible}
@@ -113,7 +154,7 @@ export default function NewAddressModal({
           <ScrollView showsVerticalScrollIndicator={false}>
             {/* Header */}
             <View style={styles.header}>
-              <Text style={styles.title}>Add New Address</Text>
+              <Text style={styles.title}>{modalTitle}</Text>
               <TouchableOpacity onPress={handleClose} style={styles.closeBtn}>
                 <Text style={styles.closeText}>✕</Text>
               </TouchableOpacity>
@@ -121,12 +162,15 @@ export default function NewAddressModal({
 
             {/* Auto Detect */}
             <TouchableOpacity
-              style={[styles.detectBtn, detecting && { backgroundColor: ORANGE_LIGHT }]}
+              style={[
+                styles.detectBtn,
+                detecting && { backgroundColor: ORANGE_LIGHT },
+              ]}
               onPress={handleDetectLocation}
               disabled={detecting}
             >
               {detecting ? (
-                <ActivityIndicator color= {DARK} size="small" />
+                <ActivityIndicator color={DARK} size="small" />
               ) : (
                 <Ionicons name="location-sharp" size={20} color="#fff" />
                 // <Text style={styles.detectIcon}>📡</Text>
@@ -193,7 +237,7 @@ export default function NewAddressModal({
               onPress={handleSave}
               disabled={!isValid}
             >
-              <Text style={styles.saveBtnText}>Save Address</Text>
+              <Text style={styles.saveBtnText}>{actionBtn}</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>

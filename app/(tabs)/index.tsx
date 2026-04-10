@@ -26,7 +26,9 @@ import ViewShot from "react-native-view-shot";
 import HeroSlider from "../components/HeroSlider";
 import MenuCard from "../components/MenuCard";
 import { MenuGridSkeleton } from "../components/skeletons";
-let { GRAY_LIGHT, DARK } = Colors;
+import { Href, router } from "expo-router";
+let { GRAY_LIGHT, DARK, ORANGE, ORANGE_LIGHT, GREEN_LIGHT, GREEN } = Colors;
+
 export default function Index() {
   let { address } = useLocationStore();
   let {
@@ -73,7 +75,7 @@ export default function Index() {
           <Text style={styles.locationHeaderText}>Delivery to</Text>
           <Pressable style={styles.locationPressable}>
             <View style={styles.locationIcon}>
-              <LocationIcon width={24} height={24} />
+              <LocationIcon width={20} height={20} />
             </View>
             <TouchableOpacity style={styles.locationPressable}>
               <Text style={styles.locationText}>{address}</Text>
@@ -89,7 +91,7 @@ export default function Index() {
             alignItems : 'center'
           }}
         >
-          <TouchableOpacity style={styles.iconBtn}>
+          <TouchableOpacity style={styles.iconBtn} onPress={()=>router.push("/orders" as Href)}>
             <Ionicons name={'receipt-outline'} size={18} color={DARK} />
             {/* <Ionicons name="menu" size={22} color={DARK} /> */}
           </TouchableOpacity>
@@ -178,6 +180,7 @@ export default function Index() {
       }
     }
   }, [loadingMenus]);
+
   return (
     <View style={{ flex: 1, backgroundColor: "#FFF" }}>
       <StatusBar barStyle={"dark-content"} />
@@ -315,7 +318,7 @@ let styles = StyleSheet.create({
   locationHeaderText: {
     fontSize: 12,
     fontWeight: 600,
-    color: "#050505e1",
+    color: ORANGE,
   },
   locationPressable: {
     width: "auto",
