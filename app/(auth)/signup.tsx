@@ -1,5 +1,5 @@
 import Logo from "@/assets/images/applogo.svg";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
@@ -165,15 +165,17 @@ export default function SignUp() {
               Login
             </Link>
           </View> */}
-          <CustomButton
-            color={"#f5f5f5"}
-            icon={<Feather name="user" size={24} color={"#000"} />}
-            leftIcon={false}
-            title="Already have an account?"
-            textStyle="#000"
-            style="big-filled"
-            onPressTouch={handleLoginRedirect}
-          />
+          <View style={styles.redirectButtonWrapper}>
+            <CustomButton
+              color={"#ffffff"}
+              icon={<Feather name="user" size={24} color={"#000"} />}
+              leftIcon={false}
+              title="Already have an account?"
+              textStyle="#000"
+              style="big-filled"
+              onPressTouch={handleLoginRedirect}
+            />
+          </View>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -182,6 +184,11 @@ export default function SignUp() {
 
 let styles = StyleSheet.create({
   eyboardWrapperv: {},
+  redirectButtonWrapper: {
+    width: "100%",
+    height: "auto",
+    padding: 20,
+  },
   rulesWrapper: {
     width: "100%",
     paddingHorizontal: 40,

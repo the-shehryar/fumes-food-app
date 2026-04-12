@@ -217,6 +217,11 @@ i should stick to the agreed upon features since its my portfolio project so i w
 4. Profile page MenuRow updated to have an push towards orders when pressed
 5. Also added AI generated FAQs and privacy policy to cut time.
 
+11:00 PM
+
+1. Added a cta for usability in home page
+
+
 Bug.Fixed - Prevented the order placing without an address a big one actually.
 Bug.Fixed: Empty order is placeable - need to fix
 Bug.Fixed: Empty order is placeable - custom product not loading image

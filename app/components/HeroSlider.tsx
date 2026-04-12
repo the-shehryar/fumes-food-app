@@ -1,23 +1,32 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect } from "react";
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withDelay,
   withTiming,
 } from "react-native-reanimated";
-import Carousel, {
-  ICarouselInstance,
-  Pagination,
-} from "react-native-reanimated-carousel";
+import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
 
 //? Static Images
+import Colors from "@/constants/Colors";
+import { Link } from "expo-router";
 import { images } from "../../constants";
+import { Ionicons } from "@expo/vector-icons";
+
+let { ORANGE, WHITE } = Colors;
 
 const SliderImages = [
   {
-    id: 1,
+    id: "69d64af0001a57dd33ba",
     image: images.burgerTransparent,
     mainHeading: "Smashed, Seared",
     subHeading: "Burger Perfection",
@@ -25,7 +34,7 @@ const SliderImages = [
       "Premium beef smashed onto a scorching griddle, layered with melted cheese, crisp lettuce, and our secret house sauce — every bite hits different.",
   },
   {
-    id: 2,
+    id: "69d64b0a0022be612977",
     image: images.pizzaTransparentFull,
     mainHeading: "Wood-Fired Crust",
     subHeading: "Slice of Heaven",
@@ -33,7 +42,7 @@ const SliderImages = [
       "Bubbling mozzarella, rich tomato sauce, and hand-stretched dough baked to a golden crisp. One slice and you're in Naples.",
   },
   {
-    id: 3,
+    id: "69d64aff0038e0fa5108",
     image: images.biryaniTransparent,
     mainHeading: "Shahi Biryani",
     subHeading: "Slow-Cooked Spices",
@@ -56,6 +65,7 @@ function CarouselItem({
   index: number;
   activeIndex: number;
 }) {
+  const translateYButton = useSharedValue(100);
   const translateYMainHeading = useSharedValue(30);
   const opacityMainHeading = useSharedValue(0);
   const translateYSecHeading = useSharedValue(30);
@@ -64,21 +74,33 @@ function CarouselItem({
   const opacityDescHeading = useSharedValue(0);
 
   useEffect(() => {
-    if(activeIndex === index){
+    if (activeIndex === index) {
       translateYMainHeading.value = 30;
       opacityMainHeading.value = 0;
       translateYSecHeading.value = 30;
       opacitySecHeading.value = 0;
       translateYDescHeading.value = 30;
       opacityDescHeading.value = 0;
-  
+
       translateYMainHeading.value = withTiming(0, { duration: 400 });
       opacityMainHeading.value = withTiming(1, { duration: 400 });
-      translateYSecHeading.value = withDelay(100, withTiming(0, { duration: 400 }));
-      opacitySecHeading.value = withDelay(100, withTiming(1, { duration: 400 }));
-      translateYDescHeading.value = withDelay(200, withTiming(0, { duration: 400 }));;
-      opacityDescHeading.value = withDelay(200, withTiming(1, { duration: 400 }));;
-    }else {
+      translateYSecHeading.value = withDelay(
+        100,
+        withTiming(0, { duration: 400 }),
+      );
+      opacitySecHeading.value = withDelay(
+        100,
+        withTiming(1, { duration: 400 }),
+      );
+      translateYDescHeading.value = withDelay(
+        200,
+        withTiming(0, { duration: 400 }),
+      );
+      opacityDescHeading.value = withDelay(
+        200,
+        withTiming(1, { duration: 400 }),
+      );
+    } else {
       translateYMainHeading.value = 30;
       opacityMainHeading.value = 0;
       translateYSecHeading.value = 30;
@@ -86,8 +108,11 @@ function CarouselItem({
       translateYDescHeading.value = 30;
       opacityDescHeading.value = 0;
     }
-
   }, [activeIndex]);
+
+  const animatedStyleButton = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateYButton.value }],
+  }));
 
   const animatedMainStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateYMainHeading.value }],
@@ -101,7 +126,7 @@ function CarouselItem({
     transform: [{ translateY: translateYDescHeading.value }],
     opacity: opacityDescHeading.value,
   }));
-  let total = SliderImages.length
+  let total = SliderImages.length;
   return (
     <View style={[styles.fragmentStyles]}>
       <View
@@ -127,18 +152,6 @@ function CarouselItem({
       <View style={styles.heroTextWrapper}>
         <View style={styles.slideIndicator}>
           <LinearGradient
-            colors={["#FF611D", "#FFA680"]}
-            style={styles.background}
-          >
-            <View style={styles.firstArm}></View>
-          </LinearGradient>
-
-          <View style={styles.indicatorTextWrapper}>
-            <Text style={styles.indicatorTextStyles}>{"🔥"}</Text>
-            <Text style={styles.indicatorTextShadowStyles}></Text>
-          </View>
-
-          <LinearGradient
             // Background Linear Gradient
             colors={["#FF611D", "#FFA680"]}
             style={styles.background}
@@ -155,18 +168,39 @@ function CarouselItem({
                 animatedMainStyle,
               ]}
             >
-             {SliderImages[index].subHeading}
+              {SliderImages[index].subHeading}
             </Animated.Text>
             <Animated.Text
-              style={[{ fontSize: 32, fontWeight: "900", color: "#FF611D" }, animatedSecStyle]}
-              >
+              style={[
+                { fontSize: 32, fontWeight: "900", color: "#FF611D" },
+                animatedSecStyle,
+              ]}
+            >
               {SliderImages[index].mainHeading}
             </Animated.Text>
-          </View>
-          <View>
-            <Animated.Text style={[{ fontSize: 12, color: "#6e6e72" }, animatedDescStyle]}>
-              {SliderImages[index].description}
-            </Animated.Text>
+            <View>
+              <Animated.Text
+                style={[{ fontSize: 12, color: "#6e6e72" }, animatedDescStyle]}
+              >
+                {SliderImages[index].description}
+              </Animated.Text>
+            </View>
+
+            <View style={[styles.wrapper]}>
+              <Link
+                href={{
+                  pathname: "/products/[id]",
+                  params: { id: SliderImages[index].id },
+                }}
+                push
+                asChild
+              >
+                <TouchableOpacity style={styles.btn}>
+                  <Text style={styles.btnText}>Add to cart</Text>
+                  <Ionicons style={{marginHorizontal : 8}} name="arrow-forward-outline" size={16} color={WHITE}/> 
+                </TouchableOpacity>
+              </Link>
+            </View>
           </View>
         </View>
       </View>
@@ -198,7 +232,7 @@ function HeroSlider() {
       {/* Primary Sliding Target */}
       <Carousel
         ref={ref}
-        style={{ width, height: 480 }}
+        style={{ width, height: 560 }}
         autoPlay={true}
         autoPlayInterval={5000}
         width={width}
@@ -236,9 +270,34 @@ const styles = StyleSheet.create({
   background: {
     borderRadius: 2,
   },
+  wrapper: {
+    // // position: "absolute",
+    // bottom: 20,
+    // left: 20,
+    // right: 20,
+    width : 'auto',
+    height : 'auto',
+    paddingVertical : 20,
+    // backgroundColor: "red",
+  },
+  btn: {
+    backgroundColor: ORANGE,
+    borderRadius: 8,
+    paddingVertical: 16,
+    alignItems: "center",
+    width : '80%',
+    marginTop : 10,
+    flexDirection : "row",
+    justifyContent : "center",
+  },
+  btnText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 15,
+  },
   heroTextWrapper: {
     width: viewportWidth,
-    height: 140,
+    height: 200,
     overflow: "visible",
     flexDirection: "row",
   },
@@ -263,11 +322,11 @@ const styles = StyleSheet.create({
   },
   firstArm: {
     width: 4,
-    height : '16%'
+    height: "16%",
   },
   secondArm: {
     width: 4,
-    height: "50%",
+    height: "100%",
     borderRadius: 2,
   },
   indicatorTextWrapper: {

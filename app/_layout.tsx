@@ -92,6 +92,7 @@ export default Sentry.wrap(function RootLayout() {
           name="statics/addresses"
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="statics/personal" options={{ headerShown: false }} />
         <Stack.Screen name="statics/faqs" options={{ headerShown: false }} />
         <Stack.Screen
           name="statics/privacypolicy"

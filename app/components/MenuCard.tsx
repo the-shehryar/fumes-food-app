@@ -64,7 +64,9 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
     }
   };
   const handleRemoveFromCart = async () => {
+    // we check here if the selected item is already in cart
     let isAlreadyInCart = items.find((cartItem) => cartItem.id === item.$id);
+
     if (isAlreadyInCart !== undefined && isAlreadyInCart?.quantity === 1) {
       setCartExistanceCheck(false);
       removeItem(item.$id, []);

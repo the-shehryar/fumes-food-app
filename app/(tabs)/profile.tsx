@@ -308,6 +308,7 @@ export default function ProfileScreen() {
             iconBg={ORANGE_LIGHT}
             iconColor={ORANGE}
             delay={300}
+            onPress={()=> router.push('/statics/personal')}
           />
           <View style={styles.divider} />
           <MenuRow

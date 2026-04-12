@@ -4,7 +4,8 @@ import AppleIcon from "@/assets/images/ic_round-apple.svg";
 import { OauthLogin, signIn } from "@/libs/appwrite";
 import useAuthStore from "@/stores/auth.store";
 import { SignInForm, User } from "@/types/type";
-import { Link, router } from "expo-router";
+import { Feather } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
@@ -18,10 +19,11 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+let {WHITE, ORANGE, ORANGE_LIGHT, GRAY, GREEN, GREEN_LIGHT, BORDER, DARK} = Colors
 import { OAuthProvider } from "react-native-appwrite";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
-import { Feather } from "@expo/vector-icons";
+import Colors from "@/constants/Colors";
 
 export default function SignIn() {
   let { user, setUser, isAuthenticated } = useAuthStore();
@@ -66,8 +68,8 @@ export default function SignIn() {
       console.log("user cant do oauth");
     }
   }
-  function handleSignUpRedirect(){
-    router.replace('/(auth)/signup')
+  function handleSignUpRedirect() {
+    router.replace("/(auth)/signup");
   }
   return (
     <KeyboardAvoidingView
@@ -172,18 +174,18 @@ export default function SignIn() {
               {/* <View style={styles.seperatorWrapper}>
             <View style={styles.seperator}></View>
           </View> */}
-              {/* <CustomButton
-                color={"#f5f5f5"}
-                icon={
-                 <Feather name="user" size={24} color={'#000'}/>
-                }
-                leftIcon={false}
-                title= "Don't have an account?"
-                textStyle="#000"
-                style="big-filled"
-                onPressTouch={handleSignUpRedirect}
-                // value="googleAuth"
-              /> */}
+              <View style={styles.redirectButtonWrapper}>
+                <CustomButton
+                  color={"#ffffff"}
+                  icon={<Feather name="user" size={24} color={"#000"} />}
+                  leftIcon={false}
+                  title="Don't have an account?"
+                  textStyle="#000"
+                  style="big-filled"
+                  onPressTouch={handleSignUpRedirect}
+                  // value="googleAuth"
+                />
+              </View>
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -198,7 +200,7 @@ let styles = StyleSheet.create({
     // flex : 1,
     position: "absolute",
     top: Dimensions.get("screen").height / 2.25 - 160,
-    backgroundColor: "#ffffff",
+    backgroundColor: WHITE,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     width: "100%",
@@ -207,6 +209,12 @@ let styles = StyleSheet.create({
       Dimensions.get("screen").height / 2.25 +
       160,
     paddingTop: 48,
+  },
+  redirectButtonWrapper : {
+    width : "100%",
+    height : 'auto',
+    padding : 20,
+    backgroundColor : WHITE,
   },
   logoWrapper: {
     width: 100,
@@ -245,7 +253,7 @@ let styles = StyleSheet.create({
   },
   underlinedLink: {
     fontSize: 12,
-    color: "#ff611d",
+    color: ORANGE,
     fontWeight: "bold",
     textDecorationLine: "underline",
   },
@@ -263,13 +271,13 @@ let styles = StyleSheet.create({
     height: 20,
     marginBottom: 50,
     borderBottomWidth: 2,
-    borderBottomColor: "#f5f5f5",
+    borderBottomColor: BORDER,
   },
   divider: {
-    paddingHorizontal : 60,
+    paddingHorizontal: 60,
     flexDirection: "row",
     alignItems: "center",
-    marginVertical : 20,
+    marginVertical: 20,
     gap: 8,
   },
   dividerLine: {
@@ -279,6 +287,6 @@ let styles = StyleSheet.create({
   },
   dividerText: {
     fontSize: 12,
-    color: "#aaa",
+    color: GRAY,
   },
 });
