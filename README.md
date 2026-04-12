@@ -63,6 +63,11 @@ No bloat. No friction. Just 🔥 food.
 └── Image           → expo-image-manipulator
 ```
 
+## 🎢 Fumes - User Flow
+<img width="1483" height="2739" alt="Fumes-Appflow" src="https://github.com/user-attachments/assets/3d4daad5-cfcb-4623-a3cf-2fa7be54dc7b" />
+
+
+
 ---
 
 ## 🚀 Getting Started
