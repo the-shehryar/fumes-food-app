@@ -1,12 +1,15 @@
 import Colors from "@/constants/Colors";
 import { appwriteConfig, databases } from "@/libs/appwrite";
+import { getStoredData, storeData } from "@/libs/asyncStorage";
+import useAppwrite from "@/libs/useAppwrite";
 import useAuthStore from "@/stores/auth.store";
+import useMiscStore from "@/stores/misc.store";
 import { Order } from "@/types/type";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
+  ActivityIndicator,
   Platform,
   SectionList,
   StatusBar,
@@ -21,16 +24,28 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import OrderCard from "../components/OrderCard";
+import { TileListSkeleton } from "../components/skeletons";
 
 let { DARK, BORDER, WHITE, GRAY, GRAY_LIGHT } = Colors;
 
 function Orders() {
+  // Component Native States
+  let [loadingOrders, setLoadingOrders] = useState(false);
+  let [userOrders, setUserOrders] = useState<Order[] | undefined>(undefined);
+  let [refreshing, setRefeshing] = useState<boolean>(false);
+  // Global States
   let { user } = useAuthStore();
   let insets = useSafeAreaInsets();
-  let [userOrders, setUserOrders] = useState<Order[] | undefined>(undefined);
-  let [loadingOrders, setLoadingOrders] = useState(false);
+  let {
+    savedOrders,
+    setSavedOrders,
+    isLocalizedOrders,
+    setIsLocalizedOrders,
+    setIsLocalizingOrders,
+    isLocalizingOrders,
+  } = useMiscStore();
 
-  async function getUserOrder(userId: string) {
+  async function getUserOrder({ userId }: { userId: string }) {
     try {
       setLoadingOrders(true);
       let fetchedOrders = await databases.listRows({
@@ -39,6 +54,23 @@ function Orders() {
         queries: [Query.equal("userId", userId)],
       });
       setUserOrders(fetchedOrders.rows as unknown as Order[]);
+      // First Fetch done and saved
+      // Local first implementation
+      try {
+        setIsLocalizingOrders(true);
+        await storeData(JSON.stringify(fetchedOrders.rows), "savedOrders");
+        let savedData = await getStoredData("savedOrders");
+        console.log("orders were saved successfully");
+        setIsLocalizedOrders(true);
+        // This is global state containing the saved order in string not parsed
+        if (savedData) setSavedOrders(JSON.stringify(savedData));
+        // console.log("saved data" +savedData);
+      } catch (error) {
+        setIsLocalizedOrders(false);
+        console.log("failed to localize orders");
+      } finally {
+        setIsLocalizingOrders(false);
+      }
       setLoadingOrders(false);
     } catch (error) {
       setLoadingOrders(false);
@@ -46,9 +78,43 @@ function Orders() {
     }
   }
 
+  async function onRefresh() {
+    setRefeshing(true);
+    await refetch({ userId: user?.$id });
+    setRefeshing(false);
+  }
+
+  let {
+    data,
+    refetch,
+    loading: ordersLoading,
+  } = useAppwrite({
+    fn: getUserOrder,
+    params: {
+      userId: user?.$id as string,
+    },
+    skip: isLocalizedOrders,
+  });
+
   useEffect(() => {
-    if (user?.$id) getUserOrder(user.$id);
-    console.log(userOrders?.length);
+    if (isLocalizingOrders) return;
+    if (user?.$id) {
+      if (isLocalizedOrders && savedOrders !== "[]") {
+        // use local data
+        try {
+          let parsedOrders = JSON.parse(savedOrders);
+          setUserOrders(parsedOrders);
+          console.log("coming from local saved");
+        } catch (error) {
+          // parse failed, fall back to network
+          console.log("parse failed, fetching from network");
+          refetch({ userId: user.$id }).catch(console.log);
+        }
+      } else {
+        // fetch from network
+        refetch({ userId: user.$id }).catch(console.log);
+      }
+    }
   }, []);
   return (
     <SafeAreaView edges={[]} style={{ flex: 1 }}>
@@ -67,31 +133,37 @@ function Orders() {
         </TouchableOpacity>
       </View>
       <View style={{ flex: 1 }}>
-        <SectionList
-          contentContainerStyle={styles.sectionlistContainerStyles}
-          sections={[
-            {
-              title: "In Progress",
-              data: userOrders?.filter((o) => o.status !== "delivered") ?? [],
-            },
-            {
-              title: "Completed",
-              data: userOrders?.filter((o) => o.status === "delivered") ?? [],
-            },
-          ]}
-          keyExtractor={(item) => item.$id}
-          renderItem={({ item }) => (
-            <OrderCard order={item} onCancel={() => {}} />
-          )}
-          ListEmptyComponent={<ActivityIndicator size={'large'} />}
-          renderSectionHeader={({ section: { title, data } }) => (
-            <View style={styles.firstSectionHeading}>
-              <Text style={styles.headingText}>
-                {title} ({data.length})
-              </Text>
-            </View>
-          )}
-        />
+        {loadingOrders ? (
+          <TileListSkeleton count={6} />
+        ) : (
+          <SectionList
+            contentContainerStyle={styles.sectionlistContainerStyles}
+            sections={[
+              {
+                title: "In Progress",
+                data: userOrders?.filter((o) => o.status !== "delivered") ?? [],
+              },
+              {
+                title: "Completed",
+                data: userOrders?.filter((o) => o.status === "delivered") ?? [],
+              },
+            ]}
+            keyExtractor={(item) => item.$id}
+            renderItem={({ item }) => (
+              <OrderCard order={item} onCancel={() => {}} />
+            )}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            ListEmptyComponent={<ActivityIndicator size={"large"} />}
+            renderSectionHeader={({ section: { title, data } }) => (
+              <View style={styles.firstSectionHeading}>
+                <Text style={styles.headingText}>
+                  {title} ({data.length})
+                </Text>
+              </View>
+            )}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -113,7 +185,6 @@ let styles = StyleSheet.create({
     width: "100%",
   },
   sectionlistContainerStyles: {
-    // backgroundColor : "red",
     paddingHorizontal: 30,
     justifyContent: "center",
     width: "100%",

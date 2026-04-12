@@ -1,8 +1,9 @@
 import { account } from "@/libs/appwrite";
 import useAuthStore from "@/stores/auth.store";
+import useMiscStore from "@/stores/misc.store";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -27,7 +28,6 @@ const GRAY_LIGHT = "#F5F5F5";
 const WHITE = "#FFFFFF";
 const BORDER = "#F0F0F0";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 type StatCardProps = { emoji: string; value: string; label: string };
 type MenuRowProps = {
   icon: keyof typeof Ionicons.glyphMap;
@@ -36,13 +36,12 @@ type MenuRowProps = {
   iconBg: string;
   iconColor: string;
   delay?: number;
-  isWorking? : boolean
+  isWorking?: boolean;
   isDestructive?: boolean;
   badge?: string;
   onPress?: () => void;
 };
 
-// ─── Stat Card ────────────────────────────────────────────────────────────────
 const StatCard: React.FC<StatCardProps> = ({ emoji, value, label }) => (
   <View style={styles.statCard}>
     <Text style={styles.statEmoji}>{emoji}</Text>
@@ -51,7 +50,6 @@ const StatCard: React.FC<StatCardProps> = ({ emoji, value, label }) => (
   </View>
 );
 
-// ─── Menu Row ─────────────────────────────────────────────────────────────────
 const MenuRow: React.FC<MenuRowProps> = ({
   icon,
   label,
@@ -107,7 +105,10 @@ const MenuRow: React.FC<MenuRowProps> = ({
         </View>
         <View style={{ width: 24, alignItems: "center" }}>
           {isWorking ? (
-            <ActivityIndicator size="small" color={isDestructive ? "#EF4444" : ORANGE} />
+            <ActivityIndicator
+              size="small"
+              color={isDestructive ? "#EF4444" : ORANGE}
+            />
           ) : null}
         </View>
         {badge ? (
@@ -122,7 +123,6 @@ const MenuRow: React.FC<MenuRowProps> = ({
   );
 };
 
-// ─── Section ──────────────────────────────────────────────────────────────────
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({
   title,
   children,
@@ -133,8 +133,8 @@ const Section: React.FC<{ title: string; children: React.ReactNode }> = ({
   </View>
 );
 
-// ─── Screen ───────────────────────────────────────────────────────────────────
 export default function ProfileScreen() {
+  let { savedOrders } = useMiscStore();
   const insets = useSafeAreaInsets();
   const avatarAnim = useRef(new Animated.Value(0)).current;
   const infoAnim = useRef(new Animated.Value(14)).current;
@@ -149,19 +149,16 @@ export default function ProfileScreen() {
       useAuthStore.getState().setIsAuthenticated(false);
 
       router.replace("/(auth)/login");
-      
+
       ToastAndroid.showWithGravity(
         "User logged out successfully",
         ToastAndroid.LONG,
         ToastAndroid.BOTTOM,
       );
-
     } catch (error) {
       if (error instanceof Error)
         ToastAndroid.showWithGravity(error.message, ToastAndroid.LONG, 3);
     }
-
-    console.log("user needs to go");
   }
 
   useEffect(() => {
@@ -268,7 +265,7 @@ export default function ProfileScreen() {
           </View>
         </Animated.View>
 
-        {/* ── Stats ── */}
+        {/* ── Stats ──
         <Animated.View
           style={[
             styles.statsRow,
@@ -280,7 +277,7 @@ export default function ProfileScreen() {
           <StatCard emoji="❤️" value="12" label="Saved" />
           <View style={styles.statDivider} />
           <StatCard emoji="⭐" value="4.8" label="Avg Rating" />
-        </Animated.View>
+        </Animated.View> */}
 
         {/* ── Edit Button ── */}
         <Animated.View
@@ -320,7 +317,7 @@ export default function ProfileScreen() {
             iconBg="#F0FDF4"
             iconColor="#16A34A"
             delay={350}
-            onPress={()=> router.push('/statics/addresses') }
+            onPress={() => router.push("/statics/addresses")}
           />
           <View style={styles.divider} />
           <MenuRow
@@ -351,7 +348,15 @@ export default function ProfileScreen() {
             iconBg={ORANGE_LIGHT}
             iconColor={ORANGE}
             delay={500}
-            badge="48"
+            badge={(() => {
+              try {
+                const orders = JSON.parse(savedOrders);
+                return Array.isArray(orders) ? `${orders.length}` : "0";
+              } catch {
+                return "0";
+              }
+            })()}
+            onPress={() => router.push("/orders")}
           />
           <View style={styles.divider} />
           <MenuRow
@@ -381,6 +386,7 @@ export default function ProfileScreen() {
             iconBg="#F0FDF4"
             iconColor="#16A34A"
             delay={620}
+            onPress={() => router.push("/statics/faqs")}
           />
           <View style={styles.divider} />
           <MenuRow
@@ -397,6 +403,7 @@ export default function ProfileScreen() {
             iconBg="#F5F3FF"
             iconColor="#8B5CF6"
             delay={700}
+            onPress={() => router.push("/statics/privacypolicy")}
           />
           <View style={styles.divider} />
           <MenuRow

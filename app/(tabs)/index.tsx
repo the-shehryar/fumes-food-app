@@ -342,7 +342,7 @@ let styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 25,
-    backgroundColor: GRAY_LIGHT,
+    backgroundColor: ORANGE_LIGHT,
     alignItems: "center",
     justifyContent: "center",
   },

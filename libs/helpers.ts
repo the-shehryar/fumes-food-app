@@ -1,9 +1,11 @@
 import * as Location from "expo-location";
-import { DATABASE_ID, databases } from "./appwrite";
+import { appwriteConfig, DATABASE_ID, databases } from "./appwrite";
 import { Query } from "react-native-appwrite";
 import usePreferencesStore from "@/stores/preferences.store";
-import { AddressAppwrite } from "@/types/type";
+import { AddressAppwrite, Order } from "@/types/type";
 import { ToastAndroid } from "react-native";
+import useMiscStore from "@/stores/misc.store";
+import { useState } from "react";
 
 //* Locaton Helper Function
 

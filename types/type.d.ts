@@ -201,3 +201,19 @@ export interface Order extends Models.Row {
   $createdAt: string;
 }
 
+
+type MenusState = {
+  menus: MenuItem[] | null;
+  isLocalized: boolean;
+  isLocalizing: boolean;
+  updatingMenu: boolean;
+  categories : Category[];
+  isCategoriesAvailable: boolean;
+  setIsCategoriesAvailable: (value: boolean) => void;
+  setIsLocalized: (value: boolean) => void;
+  setMenus: (value: MenuItem[] | null) => void;
+  setCategories : (value : Category[]) => void
+  setUpdatingMenus: (value: boolean) => void;
+  setIsLocalizing: (value: boolean) => void;
+  clearMenu: () => void;
+};

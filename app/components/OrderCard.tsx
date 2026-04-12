@@ -30,6 +30,10 @@ const OrderCard = ({
     return JSON.parse(data) as Order[];
   }
 
+
+  function handleOrderRemoval (){
+    // Order removing logic goes here
+  }
   useEffect(() => {
     if (order) {
       let orderStatusCapitalized =
@@ -65,8 +69,11 @@ const OrderCard = ({
       ))}
       {/* <Ionicons size={18} name={address.icon as any} color={ORANGE} /> */}
       <View style={styles.actionBtnsWrapper}>
-        <TouchableOpacity style={styles.deleteBtn} onPress={() => {}}>
+        <TouchableOpacity style={styles.cancelBtn} onPress={() => {handleOrderRemoval}}>
           <Text style={{ color: "#df2424" }}>Cancel Order</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.reorderBtn} onPress={() => {}}>
+          <Text style={{ color: GREEN }}> Re-order</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -77,7 +84,6 @@ export default OrderCard;
 
 const styles = StyleSheet.create({
   card: {
-    // padding: 12,
     borderRadius: 8,
     marginBottom: 12,
     width: "100%",
@@ -86,29 +92,27 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     backgroundColor: "#fafafa",
   },
-  cardDefault: {
-    borderWidth: 1,
-    borderColor: ORANGE,
-  },
   actionBtnsWrapper: {
     width: "100%",
     alignItems: "center",
     flexDirection: "row",
     marginTop: 16,
+    // justifyContent : "sp"
   },
-  editBtn: {
-    width: 200,
+  reorderBtn: {
+    width: '45%',
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 4,
     borderColor: BORDER,
     borderWidth: 2,
     height: 44,
-    marginHorizontal: 4,
+    marginRight: 4,
   },
-  deleteBtn: {
-    width: "40%",
+  cancelBtn: {
+    width: "45%",
     // marginHorizontal: 4,
+    marginRight: 8,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 4,

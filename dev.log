@@ -199,10 +199,27 @@ i need to add strict checks
 
 
 11th April, 2026
+----------------
 1:05 AM 
-Fixed UI Issues
-New order screen UI added, cancellation implementation is pending yet.
 
+1.Fixed UI Issues
+2.New order screen UI added, cancellation implementation is pending yet.
 
+12th April, 2026
+----------------
+12:20 PM - 2:15 PM
 
-*Last updated: 10th April 2026*
+1. Order screen UI - Skeletons added while fetching data
+2. Single Fetch structure added to prevent constant fetch request that significantly decrease the load
+times and make the app feels smoother. 
+3. Refetch on refresh also implemented though pull down to refresh was not in original plan i understand
+i should stick to the agreed upon features since its my portfolio project so i wanna do the best.
+4. Profile page MenuRow updated to have an push towards orders when pressed
+5. Also added AI generated FAQs and privacy policy to cut time.
+
+Bug.Fixed - Prevented the order placing without an address a big one actually.
+Bug.Fixed: Empty order is placeable - need to fix
+Bug.Fixed: Empty order is placeable - custom product not loading image
+Bug.Pending Menu card weird remove to cart issue - haven't looked at it yet
+
+*Last updated: 12th April 2026*
