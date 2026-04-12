@@ -66,6 +66,10 @@ No bloat. No friction. Just 🔥 food.
 ## 🎢 Fumes - User Flow
 <img width="1483" height="2739" alt="Fumes-Appflow" src="https://github.com/user-attachments/assets/3d4daad5-cfcb-4623-a3cf-2fa7be54dc7b" />
 
+## 🎢 Fumes - Order Flow
+<img width="2555" height="2548" alt="orderflow" src="https://github.com/user-attachments/assets/9ce94d84-cf99-4436-bc4c-e76cb14782b5" />
+
+
 
 
 ---
