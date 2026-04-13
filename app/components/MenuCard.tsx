@@ -1,33 +1,30 @@
 import AddButton from "@/assets/images/Product-Add-Btn.svg";
 import SubstractBtn from "@/assets/images/Product-Subtract-Btn.svg";
+import { optimizeCloudinaryUrl } from "@/libs/helpers";
 import { useCartStore } from "@/stores/cart.store";
-import useSearchStore from "@/stores/search.store";
-import { MenuItem } from "@/types/type";
+import { CartCustomization, MenuItem } from "@/types/type";
 import * as Crypto from "expo-crypto";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Stars from "./Stars";
-import { optimizeCloudinaryUrl } from "@/libs/helpers";
 
 const MenuCard = ({ item }: { item: MenuItem }) => {
   // console.log(item.image_url)
   let { items, addItem, removeItem, increaseQty, decreaseQty } = useCartStore();
-  let { setCurrentProduct } = useSearchStore();
-  let [cartExistanceCheck, setCartExistanceCheck] = useState<boolean>(false);
-  let [cartQuantity, setCartQuantity] = useState<number>(0);
+  // let [cartExistanceCheck, setCartExistanceCheck] = useState<boolean>(false);
+  // let [cartQuantity, setCartQuantity] = useState<number>(0);
+
+  const cartItem = items.find((i) => i.id === item.$id);
+  const cartExistanceCheck = !!cartItem;
+  const cartQuantity = cartItem?.quantity ?? 0;
 
   const handleAddToCart = () => {
-    console.log(item.customizations);
-
-    setCartExistanceCheck(true);
 
     let isAlreadyInCart = items.find((cartItem) => cartItem.id === item.$id);
-
     if (isAlreadyInCart) {
-      increaseQty(item.$id, []);
-      setCartQuantity(isAlreadyInCart.quantity + 1);
+      increaseQty(item.$id, item.customizations ?? [] as CartCustomization[]);
     } else {
       addItem({
         id: item.$id,
@@ -60,7 +57,6 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
         category_name: item.category_name,
         uid: Crypto.randomUUID(),
       } as any);
-      setCartQuantity(1);
     }
   };
   const handleRemoveFromCart = async () => {
@@ -68,18 +64,13 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
     let isAlreadyInCart = items.find((cartItem) => cartItem.id === item.$id);
 
     if (isAlreadyInCart !== undefined && isAlreadyInCart?.quantity === 1) {
-      setCartExistanceCheck(false);
-      removeItem(item.$id, []);
-      setCartQuantity(0);
+      removeItem(item.$id, item.customizations ?? [] as CartCustomization[]);
     } else if (isAlreadyInCart !== undefined && isAlreadyInCart?.quantity > 1) {
-      decreaseQty(item.$id, []);
-      setCartQuantity(isAlreadyInCart.quantity - 1);
+      decreaseQty(item.$id, item.customizations ?? [] as CartCustomization[]);
     }
   };
 
 
-
-  
   return (
     <Link
       href={{ pathname: "/products/[id]", params: { id: item.$id } }}

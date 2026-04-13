@@ -227,4 +227,20 @@ Bug.Fixed: Empty order is placeable - need to fix
 Bug.Fixed: Empty order is placeable - custom product not loading image
 Bug.Pending Menu card weird remove to cart issue - haven't looked at it yet
 
-*Last updated: 12th April 2026*
+
+
+13th April, 2026
+----------------
+
+11:22 AM
+
+Working on menucard bug - internet is extremely slow
+
+11:43 AM
+1. Menu Card bug is fixed turns out local states were stale, i make a mistake there
+
+TODO: change ToastAndroid to toast lib cuz, the latter will work on iOS as well unlike the first one.
+TODO: Better error handling is required by using error boundries
+TODO: Auth errors should be rendered in auth screen.
+
+*Last updated: 13th April 2026*

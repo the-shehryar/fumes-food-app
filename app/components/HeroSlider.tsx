@@ -196,7 +196,7 @@ function CarouselItem({
                 asChild
               >
                 <TouchableOpacity style={styles.btn}>
-                  <Text style={styles.btnText}>Add to cart</Text>
+                  <Text style={styles.btnText}>Get it now</Text>
                   <Ionicons style={{marginHorizontal : 8}} name="arrow-forward-outline" size={16} color={WHITE}/> 
                 </TouchableOpacity>
               </Link>
