@@ -222,9 +222,9 @@ i should stick to the agreed upon features since its my portfolio project so i w
 1. Added a cta for usability in home page
 
 
-Bug.Fixed - Prevented the order placing without an address a big one actually.
-Bug.Fixed: Empty order is placeable - need to fix
-Bug.Fixed: Empty order is placeable - custom product not loading image
+Bug.Fixed Prevented the order placing without an address a big one actually.
+Bug.Fixed Empty order is placeable - need to fix
+Bug.Fixed Empty order is placeable - custom product not loading image
 Bug.Pending Menu card weird remove to cart issue - haven't looked at it yet
 
 
@@ -239,8 +239,10 @@ Working on menucard bug - internet is extremely slow
 11:43 AM
 1. Menu Card bug is fixed turns out local states were stale, i make a mistake there
 
+Bug.Fixed Menu card stale states fixed
+Bug.Spotted Homepage refetched data even it was in the local store once not sure why need to investigate
+
 TODO: change ToastAndroid to toast lib cuz, the latter will work on iOS as well unlike the first one.
 TODO: Better error handling is required by using error boundries
 TODO: Auth errors should be rendered in auth screen.
-
 *Last updated: 13th April 2026*

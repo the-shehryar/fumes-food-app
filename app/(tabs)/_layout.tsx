@@ -5,6 +5,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useCartStore } from "@/stores/cart.store";
 import { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import TabBar from "../components/TabBar";
 
 
 export default function TabLayout() {
@@ -20,37 +21,38 @@ export default function TabLayout() {
   return (
     
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: "#F97316",
-        headerShown : false
-      }}
+      // screenOptions={{
+      //   tabBarActiveTintColor: "#F97316",
+      //   headerShown : false
+      // }}
+      tabBar={(props) => <TabBar {...props}/>}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: "Home",
           headerShown: false,
-          tabBarIcon: ({ color, size, focused }) => {
-            return focused ? (
-              <Feather name="coffee" size={24} color={color} />
-            ) : (
-             <Feather name="coffee" size={24} color="#444" />
-            );
-          },
+          // tabBarIcon: ({ color, size, focused }) => {
+          //   return focused ? (
+          //     <Feather name="coffee" size={24} color={color} />
+          //   ) : (
+          //    <Feather name="coffee" size={24} color="#444" />
+          //   );
+          // },
         }}
       />
       <Tabs.Screen 
       name="search"
         options={{
           title: "Search",
-          // headerShown: true,
-          tabBarIcon: ({ color, size, focused }) => {
-            return focused ? (
-              <Feather name="search" size={24} color={color} />
-            ) : (
-              <Feather name="search" size={24} color="#444" />
-            );
-          },
+          headerShown: false,
+          // tabBarIcon: ({ color, size, focused }) => {
+          //   return focused ? (
+          //     <Feather name="search" size={24} color={color} />
+          //   ) : (
+          //     <Feather name="search" size={24} color="#444" />
+          //   );
+          // },
         }}
       />
       <Tabs.Screen 
@@ -60,15 +62,15 @@ export default function TabLayout() {
           headerShown: false,
           tabBarBadge : cartNumber,
           tabBarBadgeStyle : { display : cartNumber > 0 ? "flex" :"none", backgroundColor  : "#ff611d", fontSize : 8, width : 18, height : 18, borderRadius : 20},
-          tabBarIcon: ({ color, size, focused }) => {
-            return focused ? (
-               <Ionicons name={'cart-outline'} size={24} color= {color} />
-               // <Feather name="shopping-cart" size={24} color={color} />
-              ) : (
-              <Ionicons name={'cart-outline'} size={24} color= {'#444'} />
-              // <Feather name="shopping-cart" size={24} color="#444" />
-            );
-          },
+          // tabBarIcon: ({ color, size, focused }) => {
+          //   return focused ? (
+          //      <Ionicons name={'cart-outline'} size={24} color= {color} />
+          //      // <Feather name="shopping-cart" size={24} color={color} />
+          //     ) : (
+          //     <Ionicons name={'cart-outline'} size={24} color= {'#444'} />
+          //     // <Feather name="shopping-cart" size={24} color="#444" />
+          //   );
+          // },
         }}
       />
       <Tabs.Screen 
@@ -76,13 +78,13 @@ export default function TabLayout() {
         options={{
           title: "Profile",
           headerShown: false,
-          tabBarIcon: ({ color, size, focused }) => {
-            return focused ? (
-              <Ionicons name="person-outline" size={24} color={color} />
-            ) : (
-              <Ionicons name="person-outline" size={24} color={'#444'} />
-            );
-          },
+          // tabBarIcon: ({ color, size, focused }) => {
+          //   return focused ? (
+          //     <Ionicons name="person-outline" size={24} color={color} />
+          //   ) : (
+          //     <Ionicons name="person-outline" size={24} color={'#444'} />
+          //   );
+          // },
         }}
       />
     </Tabs>

@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingHorizontal: 20,
-    paddingBottom: 300,
+    paddingBottom: 360,
     marginVertical: 10,
   },
   columnWrapper: {

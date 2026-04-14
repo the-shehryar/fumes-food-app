@@ -201,6 +201,7 @@ export default function Index() {
             keyExtractor={(item) => item.$id}
             style={[cardListStyles.mainFlatListWrapper]}
             data={topRated}
+            contentContainerStyle = {cardListStyles.containerStyles}
             ListHeaderComponent={HeaderComponent}
             renderItem={({ item }) => (
               <MenuCard item={item as unknown as MenuItem} />
@@ -376,7 +377,10 @@ let cardListStyles = StyleSheet.create({
     height: "auto",
     paddingHorizontal: 0,
     overflowX: "hidden",
-    // marginTop: 20,
+    paddingBottom: 200,
+  },
+  containerStyles : {
+    paddingBottom : 100,
   },
   columnWrapper: {
     justifyContent: "space-between",

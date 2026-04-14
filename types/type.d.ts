@@ -217,3 +217,5 @@ type MenusState = {
   setIsLocalizing: (value: boolean) => void;
   clearMenu: () => void;
 };
+
+export type RouteNames = 'index' | 'search' | 'cart' | 'profile';
