@@ -428,7 +428,7 @@ export default function ProductScreen() {
             scrollEventThrottle={16}
             contentContainerStyle={{ paddingBottom: insets.bottom + 110 }}
           >
-            {/* ── Hero Image ── */}
+            {/* Hero Image */}
             <View style={styles.heroWrap}>
               <Animated.Image
                 source={{
@@ -529,7 +529,7 @@ export default function ProductScreen() {
                   </Text>
                 </TouchableOpacity>
               </View>
-              {/* ── Extra Ingredients ── */}
+              {/* Extra Ingredients  */}
               <SizeSelector
                 sizes={getSizes(product.sizes) !== undefined ? getSizes(product.sizes) : []}
                 selected={selectedSize}

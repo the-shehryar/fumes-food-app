@@ -1,5 +1,5 @@
 import { RouteNames } from "@/types/type";
-import { Feather, Ionicons } from "@expo/vector-icons";
+import {Ionicons } from "@expo/vector-icons";
 import { JSX } from "react";
 
 const Icon: Record<RouteNames, (props: any) => JSX.Element> = {
@@ -11,4 +11,5 @@ const Icon: Record<RouteNames, (props: any) => JSX.Element> = {
   ),
 };
 
-export default Icon
+export default Icon;
+

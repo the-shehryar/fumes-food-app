@@ -245,4 +245,10 @@ Bug.Spotted Homepage refetched data even it was in the local store once not sure
 TODO: change ToastAndroid to toast lib cuz, the latter will work on iOS as well unlike the first one.
 TODO: Better error handling is required by using error boundries
 TODO: Auth errors should be rendered in auth screen.
+
+14th April, 2026
+----------------
+
+1. Animated Tab bar added
+
 *Last updated: 13th April 2026*
