@@ -1,6 +1,7 @@
 import Logo from "@/assets/images/applogo.svg";
 import GoogleIcon from "@/assets/images/google-icon.svg";
 import AppleIcon from "@/assets/images/ic_round-apple.svg";
+import Colors from "@/constants/Colors";
 import { OauthLogin, signIn } from "@/libs/appwrite";
 import useAuthStore from "@/stores/auth.store";
 import { SignInForm, User } from "@/types/type";
@@ -19,11 +20,11 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-let {WHITE, ORANGE, ORANGE_LIGHT, GRAY, GREEN, GREEN_LIGHT, BORDER, DARK} = Colors
 import { OAuthProvider } from "react-native-appwrite";
-import CustomButton from "../components/CustomButton";
-import CustomInput from "../components/CustomInput";
-import Colors from "@/constants/Colors";
+import CustomButton from "../../components/CustomButton";
+import CustomInput from "../../components/CustomInput";
+let { WHITE, ORANGE, ORANGE_LIGHT, GRAY, GREEN, GREEN_LIGHT, BORDER, DARK } =
+  Colors;
 
 export default function SignIn() {
   let { user, setUser, isAuthenticated } = useAuthStore();
@@ -210,11 +211,11 @@ let styles = StyleSheet.create({
       160,
     paddingTop: 48,
   },
-  redirectButtonWrapper : {
-    width : "100%",
-    height : 'auto',
-    padding : 20,
-    backgroundColor : WHITE,
+  redirectButtonWrapper: {
+    width: "100%",
+    height: "auto",
+    padding: 20,
+    backgroundColor: WHITE,
   },
   logoWrapper: {
     width: 100,

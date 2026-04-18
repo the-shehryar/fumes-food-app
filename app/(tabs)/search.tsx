@@ -17,13 +17,13 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Filter from "../components/Filter";
-import MenuCard from "../components/MenuCard";
-import SearchBar from "../components/SearchBar";
+import Filter from "../../components/Filter";
+import MenuCard from "../../components/MenuCard";
+import SearchBar from "../../components/SearchBar";
 
 import { getStoredData } from "@/libs/asyncStorage";
 import { RefreshControl } from "react-native";
-import { MenuGridSkeleton } from "../components/skeletons";
+import { MenuGridSkeleton } from "../../components/skeletons";
 
 export default function SearchScreen() {
   //? You're using the `useLocalSearchParams` hook to access the search parameters from the URL.

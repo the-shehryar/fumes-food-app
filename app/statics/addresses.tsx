@@ -7,20 +7,20 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    FlatList,
-    Platform,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import {
-    SafeAreaView,
-    useSafeAreaInsets,
+  SafeAreaView,
+  useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import AddressCard from "../components/AddressCard";
-import AddressModal from "../components/AddressModal";
+import AddressCard from "../../components/AddressCard";
+import AddressModal from "../../components/AddressModal";
 
 let { DARK, GRAY_LIGHT, BORDER, WHITE, ORANGE, ORANGE_LIGHT } = Colors;
 

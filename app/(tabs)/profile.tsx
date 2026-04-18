@@ -1,9 +1,10 @@
+import Colors from "@/constants/Colors";
 import { account } from "@/libs/appwrite";
 import useAuthStore from "@/stores/auth.store";
 import useMiscStore from "@/stores/misc.store";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -19,14 +20,9 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-// ─── Design Tokens ────────────────────────────────────────────────────────────
-const ORANGE = "#F97316";
-const ORANGE_LIGHT = "#FFF4EE";
-const DARK = "#1A1A1A";
-const GRAY = "#9CA3AF";
-const GRAY_LIGHT = "#F5F5F5";
-const WHITE = "#FFFFFF";
-const BORDER = "#F0F0F0";
+
+
+let {ORANGE, ORANGE_LIGHT, DARK, GRAY, GRAY_LIGHT,WHITE,BORDER} = Colors
 
 type StatCardProps = { emoji: string; value: string; label: string };
 type MenuRowProps = {
@@ -41,14 +37,6 @@ type MenuRowProps = {
   badge?: string;
   onPress?: () => void;
 };
-
-const StatCard: React.FC<StatCardProps> = ({ emoji, value, label }) => (
-  <View style={styles.statCard}>
-    <Text style={styles.statEmoji}>{emoji}</Text>
-    <Text style={styles.statValue}>{value}</Text>
-    <Text style={styles.statLabel}>{label}</Text>
-  </View>
-);
 
 const MenuRow: React.FC<MenuRowProps> = ({
   icon,
@@ -139,11 +127,13 @@ export default function ProfileScreen() {
   const avatarAnim = useRef(new Animated.Value(0)).current;
   const infoAnim = useRef(new Animated.Value(14)).current;
   const infoOpacity = useRef(new Animated.Value(0)).current;
+  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false)
 
   const { user } = useAuthStore();
 
   async function handleLogout() {
     try {
+      setIsLoggingOut(true)
       let logoutRequest = await account.deleteSession({ sessionId: "current" });
       useAuthStore.getState().setUser(null);
       useAuthStore.getState().setIsAuthenticated(false);
@@ -158,6 +148,8 @@ export default function ProfileScreen() {
     } catch (error) {
       if (error instanceof Error)
         ToastAndroid.showWithGravity(error.message, ToastAndroid.LONG, 3);
+    }finally{
+      setIsLoggingOut(false)
     }
   }
 
@@ -242,9 +234,10 @@ export default function ProfileScreen() {
             opacity: infoOpacity,
             transform: [{ translateY: infoAnim }],
             alignItems: "center",
+            marginBottom : 40,
           }}
         >
-          <Text style={styles.displayName}>Tom Hanks</Text>
+          <Text style={styles.displayName}>{user?.name}</Text>
           <View style={styles.emailRow}>
             <Ionicons
               name="mail-outline"
@@ -252,9 +245,9 @@ export default function ProfileScreen() {
               color={GRAY}
               style={{ marginRight: 4 }}
             />
-            <Text style={styles.emailText}>tom.hanks@gmail.com</Text>
+            <Text style={styles.emailText}>{user?.email}</Text>
           </View>
-          <View style={styles.memberBadge}>
+          {/* <View style={styles.memberBadge}>
             <Ionicons
               name="star"
               size={11}
@@ -262,7 +255,7 @@ export default function ProfileScreen() {
               style={{ marginRight: 4 }}
             />
             <Text style={styles.memberBadgeText}>Gold Member · Since 2022</Text>
-          </View>
+          </View> */}
         </Animated.View>
 
         {/* ── Stats ──
@@ -280,7 +273,7 @@ export default function ProfileScreen() {
         </Animated.View> */}
 
         {/* ── Edit Button ── */}
-        <Animated.View
+        {/* <Animated.View
           style={{
             opacity: infoOpacity,
             transform: [{ translateY: infoAnim }],
@@ -297,7 +290,7 @@ export default function ProfileScreen() {
             />
             <Text style={styles.editBtnText}>Edit Profile</Text>
           </TouchableOpacity>
-        </Animated.View>
+        </Animated.View> */}
 
         {/* ── Preferences ── */}
         <Section title="Preferences">
@@ -320,24 +313,24 @@ export default function ProfileScreen() {
             delay={350}
             onPress={() => router.push("/statics/addresses")}
           />
-          <View style={styles.divider} />
-          <MenuRow
+          {/* <View style={styles.divider} /> */}
+          {/* <MenuRow
             icon="card-outline"
             label="Payment Methods"
             sublabel="Cards & wallets"
             iconBg="#EFF6FF"
             iconColor="#3B82F6"
             delay={400}
-          />
-          <View style={styles.divider} />
-          <MenuRow
+          /> */}
+          {/* <View style={styles.divider} /> */}
+          {/* <MenuRow
             icon="notifications-outline"
             label="Notifications"
             sublabel="Alerts & reminders"
             iconBg="#FFF7ED"
             iconColor="#F59E0B"
             delay={450}
-          />
+          /> */}
         </Section>
 
         {/* ── Activity ── */}
@@ -359,15 +352,15 @@ export default function ProfileScreen() {
             })()}
             onPress={() => router.push("/orders")}
           />
-          <View style={styles.divider} />
-          <MenuRow
+          {/* <View style={styles.divider} /> */}
+          {/* <MenuRow
             icon="heart-outline"
             label="Favorites"
             sublabel="Saved restaurants & dishes"
             iconBg="#FFF1F2"
             iconColor="#F43F5E"
             delay={540}
-          />
+          /> */}
           <View style={styles.divider} />
           <MenuRow
             icon="star-outline"
@@ -414,7 +407,7 @@ export default function ProfileScreen() {
             iconColor="#EF4444"
             delay={740}
             isDestructive
-            isWorking={true}
+            isWorking={isLoggingOut}
             onPress={handleLogout}
           />
         </Section>
@@ -424,8 +417,10 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: WHITE },
-  scroll: {},
+  root: { flex: 1, backgroundColor: WHITE, marginBottom : 30, },
+  scroll: {
+    
+  },
   topBar: {
     flexDirection: "row",
     alignItems: "center",
@@ -542,7 +537,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: 0.3,
   },
-  section: { marginBottom: 20, paddingHorizontal: 20 },
+  section: { marginBottom: 30, paddingHorizontal: 20 },
   sectionTitle: {
     fontSize: 11,
     fontWeight: "700",

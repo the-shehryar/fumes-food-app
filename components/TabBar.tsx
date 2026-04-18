@@ -1,33 +1,39 @@
 import Colors from "@/constants/Colors";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { useState } from "react";
 import { LayoutChangeEvent, StyleSheet, View } from "react-native";
 import Animated, {
+  useDerivedValue,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
 import TabBarItem from "./TabBarItem";
 
-let { ORANGE, DARK, BORDER, WHITE } = Colors;
-type RouteNames = "index" | "search" | "cart" | "profile";
+let { ORANGE, DARK, WHITE } = Colors;
 
 function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
-  let [dimensions, setDimensions] = useState({ width: 100, height: 20 });
-  const buttonWidth = dimensions.width / state.routes.length;
-  const onTabBarLayout = (e: LayoutChangeEvent) => {
-    setDimensions({
-      width: e.nativeEvent.layout.width,
-      height: e.nativeEvent.layout.height,
-    });
-  };
+  // ✅ shared values instead of useState — no re-renders
+  const tabBarWidth = useSharedValue(100);
+  const tabBarHeight = useSharedValue(20);
+
+  // ✅ derived on UI thread, not JS thread
+  const buttonWidth = useDerivedValue(() =>
+    tabBarWidth.value / state.routes.length
+  );
+
   const tabPositionX = useSharedValue(0);
 
-  const animatedBackgroundCircle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: tabPositionX.value }],
-    };
-  });
+  const onTabBarLayout = (e: LayoutChangeEvent) => {
+    // ✅ no setState = no re-render
+    tabBarWidth.value = e.nativeEvent.layout.width;
+    tabBarHeight.value = e.nativeEvent.layout.height;
+  };
+
+  const animatedBackgroundCircle = useAnimatedStyle(() => ({
+    transform: [{ translateX: tabPositionX.value }],
+    width: buttonWidth.value - 40,
+    height: tabBarHeight.value - 20,
+  }));
 
   return (
     <View onLayout={onTabBarLayout} style={styles.container}>
@@ -38,9 +44,7 @@ function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             position: "absolute",
             backgroundColor: ORANGE,
             borderRadius: 50,
-            width: buttonWidth - 40,
             left: 20,
-            height: dimensions.height - 20,
           },
         ]}
       />
@@ -56,7 +60,7 @@ function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
         const isFocused = state.index === index;
 
         const onPress = () => {
-          tabPositionX.value = withSpring(buttonWidth * index, {
+          tabPositionX.value = withSpring(buttonWidth.value * index, {
             duration: 500,
           });
           const event = navigation.emit({
@@ -64,17 +68,13 @@ function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             target: route.key,
             canPreventDefault: true,
           });
-
           if (!isFocused && !event.defaultPrevented) {
             navigation.navigate(route.name, route.params);
           }
         };
 
         const onLongPress = () => {
-          navigation.emit({
-            type: "tabLongPress",
-            target: route.key,
-          });
+          navigation.emit({ type: "tabLongPress", target: route.key });
         };
 
         return (
@@ -97,7 +97,6 @@ export default TabBar;
 
 let styles = StyleSheet.create({
   container: {
-    flex: 1,
     position: "absolute",
     bottom: 0,
     backgroundColor: "#FFF",
@@ -108,6 +107,7 @@ let styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     elevation: 12,
+    width : '100%',
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.1,

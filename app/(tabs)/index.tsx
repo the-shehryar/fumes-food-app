@@ -9,7 +9,7 @@ import useLocationStore from "@/stores/location.store";
 import useMenusState from "@/stores/menus.store";
 import { Category, LocalSearchFilter, MenuItem } from "@/types/type";
 import { Ionicons } from "@expo/vector-icons";
-import * as MediaLib from "expo-media-library";
+import { Href, router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   FlatList,
@@ -23,45 +23,14 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ViewShot from "react-native-view-shot";
-import HeroSlider from "../components/HeroSlider";
-import MenuCard from "../components/MenuCard";
-import { MenuGridSkeleton } from "../components/skeletons";
-import { Href, router } from "expo-router";
-let { GRAY_LIGHT, DARK, ORANGE, ORANGE_LIGHT, GREEN_LIGHT, GREEN } = Colors;
+import HeroSlider from "../../components/HeroSlider";
+import MenuCard from "../../components/MenuCard";
+import { MenuGridSkeleton } from "../../components/skeletons";
+let { DARK, ORANGE, ORANGE_LIGHT } = Colors;
 
-export default function Index() {
-  let { address } = useLocationStore();
-  let {
-    isLocalized,
-    setIsLocalized,
-    isCategoriesAvailable,
-    setIsCategoriesAvailable,
-    setCategories,
-    setMenus,
-    menus,
-    setIsLocalizing,
-  } = useMenusState();
-  let { isAuthenticated } = useAuthStore();
-  let [topRated, setTopRated] = useState<MenuItem[]>([]);
-
-
-  let { data: fetchedMenus, loading: loadingMenus } = useAppwrite({
-    fn: getMenuWithCustomizations,
-    params: {
-      category: "",
-      query: "",
-    },
-    skip: !isAuthenticated || isLocalized,
-  });
-
-  let { data: categories } = useAppwrite({
-    fn: getCategories,
-    skip: false,
-  });
-
-  let { user } = useAuthStore();
-  let { setAddress } = useLocationStore();
-  const HeaderComponent = () => (
+const HeaderComponent = () => {
+  const { address } = useLocationStore();
+  return (
     <>
       <View
         style={{
@@ -86,14 +55,15 @@ export default function Index() {
           style={{
             paddingHorizontal: 20,
             height: "100%",
-            // backgroundColor: "red",
-            justifyContent : "center",
-            alignItems : 'center'
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          <TouchableOpacity style={styles.iconBtn} onPress={()=>router.push("/orders" as Href)}>
-            <Ionicons name={'receipt-outline'} size={18} color={DARK} />
-            {/* <Ionicons name="menu" size={22} color={DARK} /> */}
+          <TouchableOpacity
+            style={styles.iconBtn}
+            onPress={() => router.push("/orders" as Href)}
+          >
+            <Ionicons name={"receipt-outline"} size={18} color={DARK} />
           </TouchableOpacity>
         </View>
       </View>
@@ -101,6 +71,36 @@ export default function Index() {
       <Text style={styles.flatlistTextStyles}>Trending this week</Text>
     </>
   );
+}
+
+export default function Index() {
+  let { address } = useLocationStore();
+  let {
+    isLocalized,
+    setIsLocalized,
+    setIsCategoriesAvailable,
+    setCategories,
+    setMenus,
+    setIsLocalizing,
+  } = useMenusState();
+  let { isAuthenticated } = useAuthStore();
+  let [topRated, setTopRated] = useState<MenuItem[]>([]);
+
+  let { data: fetchedMenus, loading: loadingMenus } = useAppwrite({
+    fn: getMenuWithCustomizations,
+    params: {
+      category: "",
+      query: "",
+    },
+    skip: !isAuthenticated || isLocalized,
+  });
+
+  let { data: categories } = useAppwrite({
+    fn: getCategories,
+    skip: false,
+  });
+
+  let { setAddress } = useLocationStore();
 
   //? Requesting User Permision for Location
 
@@ -139,37 +139,77 @@ export default function Index() {
     }
   };
 
+  // useEffect(() => {
+  //   //? Location Permission
+  //   registerUserLocation();
+
+  //   if (loadingMenus) {
+  //     setIsLocalizing(true);
+  //     return;
+  //   }
+  //   if (!loadingMenus && fetchedMenus) {
+  //     //? Once the getMenuWithCustomization is completed
+  //     try {
+  //       let menusInString = JSON.stringify(fetchedMenus);
+  //       //? Localize the data to aysnc storage
+  //       let categoriesInString = JSON.stringify(categories);
+  //       storeData(categoriesInString, "categories").catch((err) =>
+  //         console.log(err),
+  //       );
+  //       setCategories(categories as unknown as Category[]);
+  //       setIsCategoriesAvailable(true);
+  //       storeData(menusInString, "mainMenu").catch((error) =>
+  //         console.log(error),
+  //       );
+  //       setMenus(fetchedMenus as unknown as MenuItem[]);
+  //       loadTopRatedMenu({
+  //         limit: 6,
+  //         filter: "rating",
+  //         criteria: {
+  //           type: "equals",
+  //           value: 4,
+  //         },
+  //       });
+  //       setIsLocalized(true);
+  //     } catch (error) {
+  //       console.log(error);
+  //       setIsLocalized(false);
+  //     } finally {
+  //       setIsLocalizing(false);
+  //     }
+  //   }
+  // }, [loadingMenus]);
+
   useEffect(() => {
     //? Location Permission
     registerUserLocation();
-
+    //? Better Approach
     if (loadingMenus) {
       setIsLocalizing(true);
       return;
     }
+
+    if (isLocalized && !fetchedMenus) {
+      loadTopRatedMenu({
+        limit: 6,
+        filter: "rating",
+        criteria: { type: "equals", value: 4 },
+      });
+      return;
+    }
+
     if (!loadingMenus && fetchedMenus) {
       //? Once the getMenuWithCustomization is completed
       try {
-        let menusInString = JSON.stringify(fetchedMenus);
-        //? Localize the data to aysnc storage
-        let categoriesInString = JSON.stringify(categories);
-        storeData(categoriesInString, "categories").catch((err) =>
-          console.log(err),
-        );
-        console.log(categories);
+        storeData(JSON.stringify(fetchedMenus), "mainMenu").catch(console.log);
+        storeData(JSON.stringify(categories), "categories").catch(console.log);
         setCategories(categories as unknown as Category[]);
         setIsCategoriesAvailable(true);
-        storeData(menusInString, "mainMenu").catch((error) =>
-          console.log(error),
-        );
         setMenus(fetchedMenus as unknown as MenuItem[]);
         loadTopRatedMenu({
           limit: 6,
           filter: "rating",
-          criteria: {
-            type: "equals",
-            value: 4,
-          },
+          criteria: { type: "equals", value: 4 },
         });
         setIsLocalized(true);
       } catch (error) {
@@ -179,12 +219,11 @@ export default function Index() {
         setIsLocalizing(false);
       }
     }
-  }, [loadingMenus]);
-
+  }, [loadingMenus, isLocalized]);
   return (
     <View style={{ flex: 1, backgroundColor: "#FFF" }}>
       <StatusBar barStyle={"dark-content"} />
-      <ViewShot
+      {/* <ViewShot
         ref={viewShotRef}
         options={{ format: "png", quality: 1.0 }}
         onCapture={async (uri) => {
@@ -193,23 +232,26 @@ export default function Index() {
         }}
         style={{ flex: 1, backgroundColor: "#fff" }}
         captureMode="mount"
+      > */}
+      <SafeAreaView
+        edges={["top", "bottom"]}
+        style={{ backgroundColor: "#fff" }}
       >
-        <SafeAreaView edges={["top", 'bottom']} style={{ backgroundColor: "#fff" }}>
-          <FlatList
-            numColumns={2}
-            columnWrapperStyle={cardListStyles.columnWrapper}
-            keyExtractor={(item) => item.$id}
-            style={[cardListStyles.mainFlatListWrapper]}
-            data={topRated}
-            contentContainerStyle = {cardListStyles.containerStyles}
-            ListHeaderComponent={HeaderComponent}
-            renderItem={({ item }) => (
-              <MenuCard item={item as unknown as MenuItem} />
-            )}
-            ListEmptyComponent={<MenuGridSkeleton count={6} />}
-          />
-        </SafeAreaView>
-      </ViewShot>
+        <FlatList
+          numColumns={2}
+          columnWrapperStyle={cardListStyles.columnWrapper}
+          keyExtractor={(item) => item.$id}
+          style={[cardListStyles.mainFlatListWrapper]}
+          data={topRated}
+          contentContainerStyle={cardListStyles.containerStyles}
+          ListHeaderComponent={HeaderComponent}
+          renderItem={({ item }) => (
+            <MenuCard item={item as unknown as MenuItem} />
+          )}
+          ListEmptyComponent={<MenuGridSkeleton count={6} />}
+        />
+      </SafeAreaView>
+      {/* </ViewShot> */}
     </View>
   );
 }
@@ -348,29 +390,19 @@ let styles = StyleSheet.create({
     justifyContent: "center",
   },
   flatlistTextStyles: {
-      width: "100%",
-      // backgroundColor  :"red",
-      // paddingHorizontal : '10%',
-      justifyContent: "center",
-      alignItems: "center",
-      fontSize: 20,
-      paddingLeft : "4%",
-      marginVertical: 20,
-      fontFamily: Platform.OS === "ios" ? "SF Pro Display" : "sans-serif-medium",
-      fontWeight: 800,
-    },
+    width: "100%",
+    // backgroundColor  :"red",
+    // paddingHorizontal : '10%',
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: 20,
+    paddingLeft: "4%",
+    marginVertical: 20,
+    fontFamily: Platform.OS === "ios" ? "SF Pro Display" : "sans-serif-medium",
+    fontWeight: 800,
+  },
 });
 
-let popularSectionStyles = StyleSheet.create({
-  mainHeading: {
-    color: "#000",
-    fontSize: 24,
-  },
-  secondaryText: {
-    color: "#10cf90",
-    fontSize: 24,
-  },
-});
 let cardListStyles = StyleSheet.create({
   mainFlatListWrapper: {
     width: "100%",
@@ -379,8 +411,8 @@ let cardListStyles = StyleSheet.create({
     overflowX: "hidden",
     paddingBottom: 200,
   },
-  containerStyles : {
-    paddingBottom : 100,
+  containerStyles: {
+    paddingBottom: 100,
   },
   columnWrapper: {
     justifyContent: "space-between",

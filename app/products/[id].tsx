@@ -1,4 +1,4 @@
-import Stars from "@/app/components/Stars";
+import Stars from "@/components/Stars";
 import { getStoredData } from "@/libs/asyncStorage";
 import { useCartStore } from "@/stores/cart.store";
 import {
@@ -24,12 +24,12 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ViewShot from "react-native-view-shot";
-import Extras from "../components/Extras";
+import Extras from "../../components/Extras";
 
 const { width, height } = Dimensions.get("window");
 const HERO_HEIGHT = height * 0.44;
 
-import SizeSelector from "@/app/components/SizeSelector";
+import SizeSelector from "@/components/SizeSelector";
 import Colors from "@/constants/Colors";
 import { optimizeCloudinaryUrl } from "@/libs/helpers";
 let {
@@ -531,7 +531,11 @@ export default function ProductScreen() {
               </View>
               {/* Extra Ingredients  */}
               <SizeSelector
-                sizes={getSizes(product.sizes) !== undefined ? getSizes(product.sizes) : []}
+                sizes={
+                  getSizes(product.sizes) !== undefined
+                    ? getSizes(product.sizes)
+                    : []
+                }
                 selected={selectedSize}
                 onSelect={(sizeName) => {
                   setSelectedSize(sizeName);
@@ -548,7 +552,7 @@ export default function ProductScreen() {
                 }}
               />
               <Extras items={product.customizations} />
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 style={styles.ratebtn}
                 onPress={() => setShowRating(true)}
                 activeOpacity={0.85}
@@ -558,10 +562,10 @@ export default function ProductScreen() {
                 </View>
                 <Text style={styles.ratetext}>Rate this item</Text>
                 <Ionicons name="chevron-forward" size={14} color={ORANGE} />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
 
               {/* ── You may also like I'll use open ai here ── */}
-              <View style={styles.relatedSection}>
+              {/* <View style={styles.relatedSection}>
                 <Text style={styles.relatedTitle}>
                   From the Same Restaurant
                 </Text>
@@ -592,7 +596,7 @@ export default function ProductScreen() {
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
-              </View>
+              </View> */}
             </View>
           </Animated.ScrollView>
 

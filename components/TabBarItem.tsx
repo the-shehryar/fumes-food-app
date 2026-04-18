@@ -55,7 +55,7 @@ const TabBarItem = ({
 
   const animatedTabbarIconStyles = useAnimatedStyle(()=>{
     
-    const scaleValue  = interpolate(scale.value, [0, 1], [1, 1.2])
+    const scaleValue  = interpolate(scale.value, [0, 1], [1, 1.1])
     const top = interpolate(scale.value, [0, 1], [0, 8])
     return {
         transform  : [{

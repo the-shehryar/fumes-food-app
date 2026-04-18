@@ -17,8 +17,8 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import CartItem from "../components/CartItem";
-import EmptyCart from "../components/EmptyCart";
+import CartItem from "../../components/CartItem";
+import EmptyCart from "../../components/EmptyCart";
 
 const ORANGE = "#F97316";
 const ORANGE_LIGHT = "#FFF4EE";
@@ -160,7 +160,6 @@ export default function CartScreen() {
                             if (validCoupon) {
                               setCouponApplied(!isCouponApplied);
                             }
-
                           }}
                         >
                           <Text

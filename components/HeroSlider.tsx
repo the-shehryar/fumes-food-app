@@ -18,9 +18,9 @@ import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
 
 //? Static Images
 import Colors from "@/constants/Colors";
-import { Link } from "expo-router";
-import { images } from "../../constants";
 import { Ionicons } from "@expo/vector-icons";
+import { Link } from "expo-router";
+import { images } from "../constants";
 
 let { ORANGE, WHITE } = Colors;
 
@@ -197,7 +197,12 @@ function CarouselItem({
               >
                 <TouchableOpacity style={styles.btn}>
                   <Text style={styles.btnText}>Get it now</Text>
-                  <Ionicons style={{marginHorizontal : 8}} name="arrow-forward-outline" size={16} color={WHITE}/> 
+                  <Ionicons
+                    style={{ marginHorizontal: 8 }}
+                    name="arrow-forward-outline"
+                    size={16}
+                    color={WHITE}
+                  />
                 </TouchableOpacity>
               </Link>
             </View>
@@ -275,9 +280,9 @@ const styles = StyleSheet.create({
     // bottom: 20,
     // left: 20,
     // right: 20,
-    width : 'auto',
-    height : 'auto',
-    paddingVertical : 20,
+    width: "auto",
+    height: "auto",
+    paddingVertical: 20,
     // backgroundColor: "red",
   },
   btn: {
@@ -285,10 +290,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 16,
     alignItems: "center",
-    width : '80%',
-    marginTop : 10,
-    flexDirection : "row",
-    justifyContent : "center",
+    width: "80%",
+    marginTop: 10,
+    flexDirection: "row",
+    justifyContent: "center",
   },
   btnText: {
     color: "#fff",

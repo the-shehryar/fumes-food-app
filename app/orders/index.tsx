@@ -23,8 +23,8 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import OrderCard from "../components/OrderCard";
-import { TileListSkeleton } from "../components/skeletons";
+import OrderCard from "../../components/OrderCard";
+import { TileListSkeleton } from "../../components/skeletons";
 
 let { DARK, BORDER, WHITE, GRAY, GRAY_LIGHT } = Colors;
 

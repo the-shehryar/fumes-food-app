@@ -21,7 +21,7 @@ import {
 } from "react-native";
 import { ID, Query } from "react-native-appwrite";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import AddressModal from "../components/AddressModal";
+import AddressModal from "../../components/AddressModal";
 
 import AppleIcon from "@/assets/images/apple-icon.svg";
 import Card from "@/assets/images/card.svg";
@@ -29,7 +29,7 @@ import GoogleIcon from "@/assets/images/google-icon.svg";
 import Cash from "@/assets/images/pakistan-rupee-note-color-icon.svg";
 import Colors from "@/constants/Colors";
 import { router } from "expo-router";
-import OrderCompletion from "../components/OrderCompletion";
+import OrderCompletion from "../../components/OrderCompletion";
 
 const { ORANGE, ORANGE_LIGHT, DARK, GRAY, GRAY_LIGHT, WHITE, BORDER, GREEN } =
   Colors;
@@ -201,7 +201,7 @@ export default function CheckoutScreen() {
           Query.orderDesc("$createdAt"),
         ],
       });
-      console.log(savedAddresses)
+      console.log(savedAddresses);
       setUserAddresses(savedAddresses.rows as unknown as AddressAppwrite[]);
       setFetchingAddresses(false);
       return savedAddresses.rows;

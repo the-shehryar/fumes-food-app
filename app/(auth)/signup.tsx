@@ -13,8 +13,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import CustomButton from "../components/CustomButton";
-import CustomInput from "../components/CustomInput";
+import CustomButton from "../../components/CustomButton";
+import CustomInput from "../../components/CustomInput";
 
 import {
   lowerCaseCheckRegex,
