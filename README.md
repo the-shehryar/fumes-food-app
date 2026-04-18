@@ -1,21 +1,17 @@
 <div align="center">
 
-<img src="assets/images/icon.png" alt="Fumes Logo" width="110" />
+<img src="https://github.com/user-attachments/assets/3d610453-c1f1-4319-b08c-275cc3de10e7" width="400" height="auto" alt="App Logo"/>
 
-# 🔥 FUMES
-
-### *Your Food, Your Way, Delivered Today*
-
-[![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev)
-[![Expo](https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
-[![Appwrite](https://img.shields.io/badge/Appwrite-F02E65?style=for-the-badge&logo=appwrite&logoColor=white)](https://appwrite.io)
+### _Your Food, Your Way, Delivered Today._
 
 <br/>
 
-> **FUMES** is a premium food delivery app built with React Native + Expo.
-> Offline-first architecture, real-time cart management, and a buttery-smooth UI
-> that makes ordering feel as good as eating.
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev/)
+[![Expo](https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev/)
+[![Appwrite](https://img.shields.io/badge/Appwrite-FD366E?style=for-the-badge&logo=appwrite&logoColor=white)](https://appwrite.io/)
+[![NativeWind](https://img.shields.io/badge/NativeWind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://www.nativewind.dev/)
+[![Zustand](https://img.shields.io/badge/Zustand-443E38?style=for-the-badge&logo=react&logoColor=white)](https://zustand-demo.pmnd.rs/)
 
 <br/>
 
@@ -23,12 +19,9 @@
 
 ### 📲 Download & Test
 
-[![Download APK](https://img.shields.io/badge/⬇︎%20Download%20APK-F97316?style=for-the-badge)](https://github.com/the-shehryar/fumes-food-app/releases/latest)
+[![Download APK](https://img.shields.io/badge/⬇︎%20Download%20APK-F97316?style=for-the-badge)](https://expo.dev/artifacts/eas/f4BLWs7Ua4XWZs3uiC8Bbw.apk)
 
-> ⚠️ **APK link coming soon** — will be updated after the next EAS build.
-> In the meantime, clone the repo and run locally with `npx expo start`.
 
----
 
 </div>
 
