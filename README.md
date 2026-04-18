@@ -1,67 +1,114 @@
 <div align="center">
 
-<img src="https://github.com/user-attachments/assets/3d610453-c1f1-4319-b08c-275cc3de10e7" width="400" height="auto" alt="App Logo"/>
+<img src="assets/images/icon.png" alt="Fumes Logo" width="110" />
 
-### _Your Food, Your Way, Delivered Today._
+# 🔥 FUMES
 
-<br/>
+### *Your Food, Your Way, Delivered Today*
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev/)
-[![Expo](https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev/)
-[![Appwrite](https://img.shields.io/badge/Appwrite-FD366E?style=for-the-badge&logo=appwrite&logoColor=white)](https://appwrite.io/)
-[![NativeWind](https://img.shields.io/badge/NativeWind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://www.nativewind.dev/)
-[![Zustand](https://img.shields.io/badge/Zustand-443E38?style=for-the-badge&logo=react&logoColor=white)](https://zustand-demo.pmnd.rs/)
+[![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev)
+[![Expo](https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
+[![Appwrite](https://img.shields.io/badge/Appwrite-F02E65?style=for-the-badge&logo=appwrite&logoColor=white)](https://appwrite.io)
 
 <br/>
 
-> **FUMES** is a blazing-fast, mobile-first food delivery app.  
-> Browse menus, customize every bite, and get it delivered — your way, every time.
+> **FUMES** is a premium food delivery app built with React Native + Expo.
+> Offline-first architecture, real-time cart management, and a buttery-smooth UI
+> that makes ordering feel as good as eating.
 
 <br/>
+
+---
+
+### 📲 Download & Test
+
+[![Download APK](https://img.shields.io/badge/⬇︎%20Download%20APK-F97316?style=for-the-badge)](https://github.com/the-shehryar/fumes-food-app/releases/latest)
+
+> ⚠️ **APK link coming soon** — will be updated after the next EAS build.
+> In the meantime, clone the repo and run locally with `npx expo start`.
 
 ---
 
 </div>
 
-## 🔥 About
+<br/>
 
-FUMES is a modern food delivery experience built entirely in **TypeScript** with **React Native + Expo**. Backed by **Appwrite** for auth, database, and file storage — FUMES is designed to be fast, offline-ready, and user-first.
+## ✨ What Makes FUMES Different
 
-No bloat. No friction. Just 🔥 food.
+**Most food delivery apps are slow, bloated, and require constant internet.**  
+FUMES takes a different approach:
 
----
+- 🗄️ **Offline-first** — menus and categories are cached locally so the app loads instantly, even on bad connections
+- ⚡ **Local search** — searching never hits the network unless the local cache is empty
+- 🧠 **Smart state** — Zustand stores keep cart, auth, location, and search state in sync across every screen
+- 🎨 **Zero UI libraries** — every component is hand-crafted, no generic look-alike components
 
-## ✨ Features
+<br/>
 
-| Feature                                           | Status     |
-| --------------------------------------------------| ---------- |
-| 🍔 Browse menu with category filters              | ✅ Done    |
-| 🔍 Local-first smart search                       | ✅ Done    |
-| 💸 Safepay (Stripe alternative in Pakistan)       | 🚧 Planned |
-| 🛒 Cart with item customizations                  | ✅ Done    |
-| 🛒 Cloudinary added for image optimizations       | ✅ Done    |
-| 🎞️ Cart animations                                | ✅ Done    |
-| 🖼️ Compressed image uploads to Appwrite           | ✅ Done    |
-| 📍 Location detection + mock location guard       | ✅ Done    |
-| 🔐 Secure image loading via JWT in v.2            | 🚧 Planned |
-| 🔄 Swipe down to refresh in v.2                   | 🚧 Planned |
-| 🗑️ Swipe to delete from cart in v.2               | 🚧 Planned |
+## 🌟 Features
 
----
+| | Feature | Details |
+|---|---|---|
+| 🏠 | **Home Feed** | Hero offer banner + top-rated menu grid sorted by rating |
+| 🔍 | **Search & Filter** | Category chips + keyword search, local-first with network fallback |
+| 🛒 | **Cart** | Quantity controls, promo code validation, live bill summary |
+| 🎟️ | **Promo Codes** | `NEWFUMES` (10% off), `SOUTH5` (5% off) and extensible coupon list |
+| 📍 | **Location** | Auto-detects delivery address using device GPS |
+| 📦 | **Orders** | Receipt history accessible from the header |
+| 🔐 | **Auth** | Login/signup via Appwrite with persistent session |
+| 💾 | **Caching** | Menu + category data persisted to AsyncStorage |
+| 🖼️ | **Screenshots** | ViewShot integration for saving app screenshots to gallery |
 
-## 🛠️ Tech Stack
+<br/>
+
+## 📸 Screenshots
+
+| Home | Search | Cart | Profile |
+|:---:|:---:|:---:|:---:|
+| ![Home](assets/images/home.png) | ![Search](assets/images/search.png) | ![Cart](assets/images/cart.png) | ![Profile](assets/images/profile.png) |
+
+
+<br/>
+
+## 🏗️ Project Structure
 
 ```
-├── Language        → TypeScript (99.3%)
-├── Framework       → React Native + Expo (File-based routing)
-├── Backend         → Appwrite (Auth · Database · Storage)
-├── Styling         → NativeWind (TailwindCSS for RN)
-├── State           → Zustand
-├── Local Storage   → AsyncStorage
-├── Location        → expo-location
-└── Image           → expo-image-manipulator
+fumes-food-app/
+├── app/
+│   ├── (tabs)/
+│   │   ├── index.tsx           # Home — hero + trending grid
+│   │   ├── search.tsx          # Search + category filter
+│   │   └── cart.tsx            # Cart + coupon + checkout
+│   ├── components/
+│   │   ├── MenuCard.tsx        # Product card (grid item)
+│   │   ├── CartItem.tsx        # Cart row with qty controls
+│   │   ├── HeroSlider.tsx      # Offer banner carousel
+│   │   ├── Filter.tsx          # Category chip bar
+│   │   ├── SearchBar.tsx       # Search input with Zustand
+│   │   ├── EmptyCart.tsx
+│   │   └── skeletons/          # Loading placeholders
+│   ├── checkout.tsx
+│   └── orders.tsx
+├── stores/                     # Zustand global state
+│   ├── auth.store.ts           # User session
+│   ├── cart.store.ts           # Cart items, coupons, totals
+│   ├── location.store.ts       # Delivery address
+│   ├── menus.store.ts          # Menu + category cache state
+│   └── search.store.ts         # Search query + category
+├── libs/
+│   ├── appwrite.ts             # All Appwrite API calls
+│   ├── asyncStorage.ts         # Local cache read/write
+│   ├── helpers.ts              # Location permission + utils
+│   └── useAppwrite.ts          # Data fetching hook
+├── constants/
+│   └── Colors.ts
+├── types/
+│   └── type.ts
+└── app.json
 ```
+
+<br/>
 
 ## 🎢 Fumes - User Flow
 <img width="1483" height="2739" alt="Fumes-Appflow" src="https://github.com/user-attachments/assets/3d4daad5-cfcb-4623-a3cf-2fa7be54dc7b" />
@@ -70,149 +117,115 @@ No bloat. No friction. Just 🔥 food.
 <img width="2555" height="2548" alt="orderflow" src="https://github.com/user-attachments/assets/9ce94d84-cf99-4436-bc4c-e76cb14782b5" />
 
 
-
-
----
-
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js `18+`
-- Expo CLI
-- Appwrite Cloud or self-hosted instance
-- Android/iOS device or emulator
+- Node.js 18+
+- [Expo CLI](https://docs.expo.dev/get-started/installation/)
+- An [Appwrite](https://cloud.appwrite.io) project with a database set up
+- Android Studio (for emulator) or a physical Android device
 
-### Installation
+### 1. Clone & Install
 
 ```bash
-# Clone the repo
 git clone https://github.com/the-shehryar/fumes-food-app.git
 cd fumes-food-app
-
-# Install dependencies
 npm install
+```
 
-# Start the development server
+### 2. Configure Appwrite
+
+Update your credentials in `libs/appwrite.ts`:
+
+```ts
+const client = new Client()
+  .setEndpoint("https://cloud.appwrite.io/v1")
+  .setProject("YOUR_PROJECT_ID");
+```
+
+### 3. Run
+
+```bash
 npx expo start
+# Press 'a' for Android emulator
+# Scan QR code with Expo Go for physical device
 ```
 
-> ⚠️ Some features (mock location detection) require a **dev build** — not Expo Go.
->
-> ```bash
-> npx expo run:android
-> ```
+<br/>
 
-### Environment Variables
+## 🧰 Tech Stack
 
-Create a `.env` file in the root (see `.env` already in repo — **do not commit real keys**):
+| Layer | Technology |
+|---|---|
+| Framework | React Native + Expo SDK 55 |
+| Language | TypeScript |
+| Navigation | Expo Router (file-based) |
+| State Management | Zustand |
+| Backend | Appwrite (BaaS) |
+| Local Storage | AsyncStorage |
+| Location | Expo Location |
+| Icons | Expo Vector Icons — Ionicons |
+| Media | Expo Media Library + ViewShot |
+| Build | EAS Build (Expo Application Services) |
 
-```env
-EXPO_PUBLIC_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
-EXPO_PUBLIC_APPWRITE_PROJECT_ID=your_project_id
-EXPO_PUBLIC_APPWRITE_DATABASE_ID=your_database_id
-EXPO_PUBLIC_APPWRITE_BUCKET_ID=your_bucket_id
+<br/>
+
+## 📦 Building the APK
+
+### Preview build (installable APK)
+
+```bash
+eas build -p android --profile preview
 ```
 
----
+Make sure your `eas.json` preview profile includes:
 
-## 📁 Project Structure
-
-```
-fumes-food-app/
-│
-├── app/                  # Expo Router — file-based screens & navigation
-├── assets/
-│   └── images/           # Static images, SVGs, icons
-├── constants/            # App-wide constants, categories, static data
-├── design/               # Design references / mockups
-├── libs/                 # Appwrite client, useAppwrite hook, AsyncStorage utils
-├── stores/               # Zustand global state (auth, menus, cart)
-├── types/                # TypeScript type definitions
-│
-├── app.json              # Expo config
-├── tailwind.config.js    # NativeWind / TailwindCSS config
-├── metro.config.js       # Metro bundler config
-├── babel.config.js       # Babel config
-├── tsconfig.json         # TypeScript config
-└── type.d.ts             # Global type declarations
+```json
+"preview": {
+  "distribution": "internal",
+  "android": {
+    "buildType": "apk"
+  }
+}
 ```
 
----
+### Production build (Play Store AAB)
 
-## 🏗️ Architecture Highlights
-
-### 🔄 Local-First Search Strategy
-
-```
-App Load    →  Fetch menus from Appwrite  →  Save to AsyncStorage
-Search      →  Read AsyncStorage          →  Filter locally (instant ⚡)
-            →  Cache miss?                →  Fallback to Appwrite
+```bash
+eas build -p android --profile production
 ```
 
-### 🖼️ Image Pipeline
+<br/>
 
-```
-Pick Image  →  Compress (1024px / 0.7 quality)  →  Upload to Appwrite Storage
-```
+## ⚠️ Known Issues Being Fixed
 
-### 🔐 Secure Image Loading
+- `expo-file-system` version conflict between `react-native-appwrite` and the main project
+- `react-native-webview` peer dependency missing (required by `@sfpy/react-native`)
+- `react-native-turbo-mock-location-detector` is unmaintained — evaluating alternatives
 
-```
-Request image  →  Generate JWT  →  Download to device cache  →  Render from local URI
-```
+<br/>
 
-### 📍 Location + Mock Guard
+## Try it out yourself
 
-```
-App opens  →  Request location permission
-           →  Check for mock location (turbo-mock-location-detector)
-           →  Mock detected? Block + Alert
-           →  Real location? Reverse geocode → get city name
-```
-
----
-
-## 🗺️ Roadmap
-
-- [ ] Swipe to delete cart items
-- [ ] Pull-to-refresh on home feed
-- [ ] Order placement flow
-- [ ] Order history screen
-- [ ] Push notifications
-- [ ] v1 production release
-
----
+Get the app [Download Link](https://expo.dev/artifacts/eas/f4BLWs7Ua4XWZs3uiC8Bbw.apk) 
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome!
+1. Fork the repo
+2. Create a branch: `git checkout -b feat/your-feature`
+3. Commit: `git commit -m 'feat: add your feature'`
+4. Push: `git push origin feat/your-feature`
+5. Open a pull request
 
-```bash
-# Create your feature branch
-git checkout -b feature/amazing-feature
-
-# Commit your changes
-git commit -m "feat: add amazing feature"
-
-# Push to the branch
-git push origin feature/amazing-feature
-
-# Open a Pull Request
-```
-
----
+<br/>
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+MIT © [Shehryar](https://github.com/the-shehryar)
 
----
+<br/>
 
 <div align="center">
-
-**Crafted with 🔥 by [@the-shehryar](https://github.com/the-shehryar)**
-
-_Drop a ⭐ if FUMES made you hungry!_
-
+  <sub>Built with 🔥 in Pakistan · Powered by Expo + Appwrite</sub>
 </div>
